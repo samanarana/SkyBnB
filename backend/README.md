@@ -2,7 +2,7 @@
 
 ## Database Schema Design
 
-`<insert database schema design here>`
+file://wsl.localhost/Ubuntu/home/samanarana/PROJECTS/AirBnb%20Database%20Schema.pdf
 
 ## API Documentation
 
