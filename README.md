@@ -1,4 +1,4 @@
-`<AirBnb API Documentation>`
+# AirBnb API Documentation
 
 ## Database Schema Design
 
