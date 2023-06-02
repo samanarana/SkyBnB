@@ -50,7 +50,7 @@ Returns the information about the current user that is logged in.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: `/user/{userId}/current`
+  * URL: `/user/:userId`
   * Body: none
 
 * Successful Response when there is a logged in user
@@ -91,7 +91,7 @@ information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * URL: `/user/{userId}/login`
+  * URL: `/login`
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -157,7 +157,7 @@ user's information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * URL: `/user/{userId}/signup`
+  * URL: `/signup`
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -287,7 +287,7 @@ Returns all the spots owned (created) by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: `/spots/owned`
+  * URL: `/spots/:userId`
   * Body: none
 
 * Successful Response
@@ -1386,7 +1386,7 @@ Return spots filtered by query parameters.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: `/spots`
+  * URL: `/spots/api/spots?page={page}&size={size}&minLat={minLat}&maxLat={maxLat}&minLng={minLng}&maxLng={maxLng}&minPrice={minPrice}&maxPrice={maxPrice}`
   * Query Parameters
     * page: integer, minimum: 1, maximum: 10, default: 1
     * size: integer, minimum: 1, maximum: 20, default: 20
