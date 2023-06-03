@@ -1,4 +1,4 @@
-const { validationResults } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 //middleware for formatting errors from express validator middleware
 
