@@ -8,7 +8,7 @@
   "devDependencies": {},
   "scripts": {
     "install": "npm --prefix backend install backend",
-    "dev:backend": "npm install --prefix backend start",
+    "dev:backend": "npm --prefix backend start",
     "sequelize": "npm run --prefix backend sequelize",
     "sequelize-cli": "npm run --prefix backend sequelize-cli",
     "start": "npm start --prefix backend",
