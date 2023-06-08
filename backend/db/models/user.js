@@ -4,7 +4,8 @@ const { Model, Validator } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // define association here
+      this.hasMany(models.Spot, { foreignKey: 'owner_id', as: 'spots' });
+      this.hasMany(models.Booking, { foreignKey: 'user_id', as: 'bookings' });
     }
   };
 
