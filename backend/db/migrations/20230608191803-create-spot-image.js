@@ -10,7 +10,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       spot_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Spots',
+          field: 'id'
+        }
       },
       url: {
         type: Sequelize.STRING
@@ -19,31 +23,28 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE
       }
     });
 
     // FOREIGN KEY CONSTRAINT
-    return queryInterface.addConstraint('SpotImages', {
-      fields: ['spot_id'],
-      type: 'foreign key',
-      name: 'fk_spot_id',
-      references: {
-        table: 'Spots',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    });
+    // return queryInterface.addConstraint('SpotImages', {
+    //   fields: ['spot_id'],
+    //   type: 'foreign key',
+    //   name: 'fk_spot_id',
+    //   references: {
+    //     table: 'Spots',
+    //     field: 'id'
+    //   },
+    //   onDelete: 'cascade',
+    //   onUpdate: 'cascade'
+    // });
 
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeConstraint('SpotImages', 'fk_spot_id');
     await queryInterface.dropTable('SpotImages');
 
   }

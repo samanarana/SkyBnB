@@ -10,7 +10,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       spot_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Spots',
+          field: 'id'
+        }
       },
       review: {
         type: Sequelize.TEXT
@@ -18,41 +22,32 @@ module.exports = {
       stars: {
         type: Sequelize.INTEGER
       },
-      created_at: {
-        type: Sequelize.DATE
-      },
-      updated_at: {
-        type: Sequelize.DATE
-      },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE
       }
     });
 
     // FOREIGN KEY CONSTRAINTTT!!!!
-    return queryInterface.addConstraint('Reviews', {
-      fields: ['spot_id'],
-      type: 'foreign key',
-      name: 'fk_spot_id_reviews',
-      references: {
-        table: 'Spots',
-        field: 'id'
-      },
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
-    });
+    // return queryInterface.addConstraint('Reviews', {
+    //   fields: ['spot_id'],
+    //   type: 'foreign key',
+    //   name: 'fk_spot_id_reviews',
+    //   references: {
+    //     table: 'Spots',
+    //     field: 'id'
+    //   },
+    //   onDelete: 'cascade',
+    //   onUpdate: 'cascade'
+    // });
 
 
 
 
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeConstraint('Reviews', 'fk_spot_id_reviews');
     await queryInterface.dropTable('Reviews');
   }
 };
