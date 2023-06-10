@@ -15,7 +15,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Review.init({
-    id: DataTypes.INTEGER,
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     spot_id: DataTypes.INTEGER,
     review: DataTypes.TEXT,
     stars: DataTypes.INTEGER,

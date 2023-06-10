@@ -11,7 +11,11 @@ const { ValidationError } = require('sequelize');
 const { environment } = require('./config');
 const isProduction = environment === 'production';
 
-const routes = require('./routes');
+//const routes = require('./routes');
+
+const userRoutes = require('./routes/api/users'); // Import the users router
+const spotRoutes = require('./routes/api/spots'); // Import the spots router
+
 
 
 const app = express();
@@ -45,7 +49,18 @@ if (!isProduction) {
     })
   );
 
-  app.use(routes); // Connect all the routes
+//app.use(routes); // Connect all the routes
+
+app.use('/api/users', userRoutes); // Mount the users router at /api/users
+app.use('/api/spots', spotRoutes); // Mount the spots router at /api/spots
+
+
+// csrf token for testing purposes
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+
 
 // Catch unhandled requests and forward to error handler.
 app.use((_req, _res, next) => {
