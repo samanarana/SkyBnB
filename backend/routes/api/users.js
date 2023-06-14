@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
+const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
 
 const router = express.Router();
@@ -79,7 +79,7 @@ router.post(
 //     }
 //   })
 
-  router.get('/user/:userId', async (req, res) => {
+  router.get('/user/:userId', restoreUser, async (req, res) => {
     const id = req.params.userId;
     let user = await User.findOne({ where: { id: id } })
      if (user) {
@@ -155,12 +155,22 @@ router.post('/login', async (req, res) => {
     attributes: ['id', 'username', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
   });
 
-  console.log(user);
+  const token = await setTokenCookie (res, user)
+
+  let resObj = user.toSafeObject();
+
+  resObj.token = token;
+
+  user.token = token;
+
+  //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++this should be my user ^");
   if (!user || !bcrypt.compareSync(password, user.hashedPassword)) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
-
-  res.status(200).json({ user: { id, firstName, lastName, email, username } = user });
+  console.log({ user: resObj }, "+++++++++++++++++++++++++++++++++++++++++++++++++++++this is my user")
+  //res.status(200)
+  res.json(resObj);
+  //res.status(200).json({ user: { id, firstName, lastName, email, username } = user });
 });
 
 

@@ -33,6 +33,9 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [2, 50],
+      }
     },
     description: {
       type: DataTypes.STRING,
@@ -45,11 +48,11 @@ module.exports = (sequelize, DataTypes) => {
         min: 0,
       },
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
