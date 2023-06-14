@@ -215,6 +215,38 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
 });
 
 
+// ROUTE TO DELETE A BOOKING
+router.delete('/:bookingId', requireAuth, async (req, res, next) => {
+
+    const bookingId = req.params.bookingId;
+
+        // Find the booking
+        const booking = await Booking.findOne({
+            where: {
+                id: bookingId,
+                [Op.or]: [
+                    {user_id: req.user.id}, // Booking belongs to the user
+                    {'$Spot.ownerId$': req.user.id} // Spot of the booking belongs to the user
+                ]
+            },
+            include: Spot
+        });
+
+        // If booking not found or does not belong to the user or the spot does not belong to the user, throw an error
+        if (!booking) {
+            return res.status(404).json({ message: "Booking couldn't be found" });
+        }
+
+        // Bookings that have started can't be deleted
+        if (new Date(booking.start_date) <= new Date()) {
+            return res.status(403).json({ message: "Bookings that have been started can't be deleted" });
+        }
+
+        // Delete the booking
+        await booking.destroy();
+        return res.status(200).json({ message: "Successfully deleted" });
+
+});
 
 
 module.exports = router;
