@@ -1,6 +1,8 @@
 const express = require('express');
 const { Spot, SpotImage, Review, User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
+const { Op } = require('sequelize');
+const { validateQueryParams, queryFilters } = require('../../utils/validation');
 
 const router = express.Router();
 
@@ -218,5 +220,43 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 
 
 
+
+// ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
+router.get('/api/spots', validateQueryParams(queryFilters), async (req, res) => {
+    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+
+    // Defaults
+    page = parseInt(page) || 1;
+    size = parseInt(size) || 20;
+
+    let where = {};
+
+    // If filters exist, add them to the where clause
+    if(minLat) where.lat = { [Op.gte]: parseFloat(minLat) };
+    if(maxLat) where.lat = { ...where.lat, [Op.lte]: parseFloat(maxLat) };
+    if(minLng) where.lng = { [Op.gte]: parseFloat(minLng) };
+    if(maxLng) where.lng = { ...where.lng, [Op.lte]: parseFloat(maxLng) };
+    if(minPrice) where.price = { [Op.gte]: parseFloat(minPrice) };
+    if(maxPrice) where.price = { ...where.price, [Op.lte]: parseFloat(maxPrice) };
+
+    try {
+        const spots = await Spot.findAndCountAll({
+            where,
+            offset: (page - 1) * size,
+            limit: size,
+        });
+
+        res.json({
+            Spots: spots.rows,
+            page,
+            size,
+        });
+    } catch (err) {
+        res.status(400).json({
+            message: "Bad Request",
+            errors: err.errors
+        });
+    }
+});
 
 module.exports = router;
