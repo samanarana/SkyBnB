@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Spot, { foreignKey: 'spot_id', as: 'spot' });
       this.hasMany(models.ReviewImage, { foreignKey: 'review_id', as: 'images' });
+      this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
     }
   }
   Review.init({
@@ -20,11 +21,12 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
+    user_id: DataTypes.INTEGER,
     spot_id: DataTypes.INTEGER,
     review: DataTypes.TEXT,
     stars: DataTypes.INTEGER,
-    created_at: DataTypes.DATE,
-    updated_at: DataTypes.DATE
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Review',

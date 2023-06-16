@@ -9,6 +9,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      user_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          field: 'id'
+        }
+      },
       spot_id: {
         type: Sequelize.INTEGER,
         references: {
@@ -29,19 +36,6 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
-
-    // FOREIGN KEY CONSTRAINTTT!!!!
-    // return queryInterface.addConstraint('Reviews', {
-    //   fields: ['spot_id'],
-    //   type: 'foreign key',
-    //   name: 'fk_spot_id_reviews',
-    //   references: {
-    //     table: 'Spots',
-    //     field: 'id'
-    //   },
-    //   onDelete: 'cascade',
-    //   onUpdate: 'cascade'
-    // });
 
 
 

@@ -6,80 +6,13 @@ const { handleValidationErrors } = require('../../utils/validation');
 
 const router = express.Router();
 
+
+
 // ROUTE TO GET ALL SPOTS
 router.get('/', async (req, res, next) => {
 
     let spots = await Spot.findAll();
         return res.status(200).json({ Spots: spots });
-});
-
-
-// router.get('/:userId', async (req, res, next) => {
-//     const userId = req.params.userId;
-
-//     const spots = await Spot.findAll( { where: { owner_id: userId } } );
-
-//     return res.status(200).json( { spots: spots} );
-// });
-
-
-// ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/current', requireAuth, async (req, res, next) => {
-    const userId = req.user.id;  // Get the user ID from the authenticated user
-
-        let spots = await Spot.findAll({
-            where: {
-                owner_id: userId
-            },
-            include: [
-                { model: SpotImage, as: 'images' },
-                { model: User, as: 'owner' }
-            ]
-        });
-
-        if (!spots) {
-            return res.status(404).json({
-                message: "No spots found for the current user"
-            });
-        }
-
-        res.status(200).json(spots)
-
-});
-
-
-
-// ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
-router.post('/:SpotId/images', requireAuth, async (req, res, next) => {
-    console.log(req.user);
-    const { url, preview } = req.body;
-    const SpotId = req.params.SpotId;
-    const userId = req.user.id;
-
-    if (!url || typeof preview !== 'boolean') {
-        return res.status(400).json({
-            message: "Bad Request",
-            errors: {
-                "url": "Url is required",
-                "preview": "Preview should be true or false"
-            }
-        });
-    }
-
-    const spot = await Spot.findOne({
-        where: {
-            id: SpotId,
-            owner_id: userId,
-        }
-    });
-
-    if (!spot) {
-        return res.status(404).json({ message: "Spot couldn't be found" });
-    }
-
-    const newImage = await SpotImage.create({ spot_id: SpotId, url, preview });
-
-    res.json(newImage);
 });
 
 
@@ -119,8 +52,113 @@ router.get('/:spotId', async (req, res) => {
 
 
 
+// ROUTE TO CREATE A REVIEW FOR A SPOT BASED ON THE SPOTS ID
+router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
+    try {
+      const spotId = req.params.spotId; // Extract spotId from the request parameters
+      const { review, stars } = req.body; // Extract review and stars from the request body
 
-//POST //spots - Creates a new spot
+      // Check if spot exists
+      const spot = await Spot.findByPk(spotId);
+      if (!spot) {
+        res.status(404).json({ message: "Spot couldn't be found" });
+        return;
+      }
+
+      // Check if user already reviewed this spot
+      const userReview = await Review.findOne({
+        where: {
+          user_id: req.user.id, // Contains authenticated user
+          spot_id: spotId
+        }
+      });
+
+      if (userReview) {
+        res.status(500).json({ message: "User already has a review for this spot" });
+        return;
+      }
+
+      // Create the new review
+      const newReview = await Review.create({
+        userId: req.user.id, // Contains authenticated user
+        spotId: spotId,
+        review: review,
+        stars: stars,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      // Respond with the new review
+      res.status(201).json(newReview);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+
+
+// ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
+router.post('/:SpotId/images', requireAuth, async (req, res, next) => {
+    console.log(req.user);
+    const { url, preview } = req.body;
+    const SpotId = req.params.SpotId;
+    const userId = req.user.id;
+
+    if (!url || typeof preview !== 'boolean') {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                "url": "Url is required",
+                "preview": "Preview should be true or false"
+            }
+        });
+    }
+
+    const spot = await Spot.findOne({
+        where: {
+            id: SpotId,
+            owner_id: userId,
+        }
+    });
+
+    if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    const newImage = await SpotImage.create({ spot_id: SpotId, url, preview });
+
+    res.json(newImage);
+});
+
+
+
+// ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
+router.get('/current', requireAuth, async (req, res, next) => {
+    const userId = req.user.id;  // Get the user ID from the authenticated user
+
+        let spots = await Spot.findAll({
+            where: {
+                owner_id: userId
+            },
+            include: [
+                { model: SpotImage, as: 'images' },
+                { model: User, as: 'owner' }
+            ]
+        });
+
+        if (!spots) {
+            return res.status(404).json({
+                message: "No spots found for the current user"
+            });
+        }
+
+        res.status(200).json(spots)
+
+});
+
+
+// ROUTE TO CREATE A NEW SPOT
 router.post('/', requireAuth, async (req, res) => {
     const { address, city, state, country, lat, lng, name, description, price } = req.body;
 
@@ -165,8 +203,6 @@ router.post('/', requireAuth, async (req, res) => {
 
     res.json(newSpot);
 });
-
-
 
 
 
@@ -231,6 +267,7 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 });
 
 
+
 // ROUTE TO DELETE A SPOT
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
     const spotId = req.params.spotId;
@@ -258,7 +295,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/api/spots', handleValidationErrors, async (req, res) => {
+router.get('/api/spots', requireAuth, async (req, res) => {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
     // Defaults
