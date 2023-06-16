@@ -22,6 +22,9 @@ module.exports = {
       preview: {
         type: Sequelize.BOOLEAN
       },
+      avgStarRating: {
+        type: Sequelize.DECIMAL,
+      },
       createdAt: {
         type: Sequelize.DATE
       },

@@ -48,8 +48,13 @@ module.exports = {
         type: Sequelize.DECIMAL,
         allowNull: false
       },
-      avg_rating: {
-        type: Sequelize.DECIMAL
+      numReviews: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+      },
+      avgStarRating: {
+        type: Sequelize.DECIMAL,
       },
       preview_image: {
         type: Sequelize.STRING
@@ -64,19 +69,6 @@ module.exports = {
       }
     });
 
-
-    // FOREIGN KEY CONSTRAINT!!!!!
-    // return queryInterface.addConstraint('Spots', {
-    //   fields: ['owner_id'],
-    //   type: 'foreign key',
-    //   name: 'fk_owner_id',
-    //   references: {
-    //     model: 'Users',
-    //     field: 'id'
-    //   },
-    //   onDelete: 'cascade',
-    //   onUpdate: 'cascade'
-    // });
 
 
   },

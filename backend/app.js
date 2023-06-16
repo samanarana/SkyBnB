@@ -15,11 +15,14 @@ const routes = require('./routes');
 
 const userRoutes = require('./routes/api/users'); // Import the users router
 const spotRoutes = require('./routes/api/spots'); // Import the spots router
+const spotImagesRouter = require('./routes/api/spotimages');
 
 
 
 const app = express();
 app.use(morgan('dev'));
+
+app.use('/api/spots', spotImagesRouter);
 
 app.use(cookieParser());
 app.use(express.json());

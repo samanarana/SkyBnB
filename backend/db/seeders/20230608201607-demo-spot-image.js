@@ -13,7 +13,7 @@ module.exports = {
     {
       id: 2,
       spot_id: 1,
-      url: 'http://placekitten.com/200/300',
+      url: 'https://www.google.com/',
       preview: false
     },
     {
@@ -25,7 +25,7 @@ module.exports = {
     {
       id: 4,
       spot_id: 3,
-      url: 'http://placekitten.com/200/300',
+      url: 'https://www.twitter.com/',
       preview: true
     }
   ], {});

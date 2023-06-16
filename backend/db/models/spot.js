@@ -56,7 +56,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    avg_rating: {
+    numReviews: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+    avgStarRating: {
       type: DataTypes.DECIMAL,
       validate: {
         min: 0,

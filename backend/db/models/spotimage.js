@@ -21,7 +21,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     spot_id: DataTypes.INTEGER,
     url: DataTypes.STRING,
-    preview: DataTypes.BOOLEAN
+    preview: DataTypes.BOOLEAN,
+    avgStarRating: {
+      type: DataTypes.DECIMAL,
+      validate: {
+        min: 0,
+        max: 5,
+      },
+    }
+
   }, {
     sequelize,
     modelName: 'SpotImage',

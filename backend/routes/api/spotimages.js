@@ -4,8 +4,11 @@ const { Spot, SpotImage } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 
 
+
+
+
 // ROUTE TO DELETE A SPOT IMAGE
-router.delete('/spots/:spotId/images/:imageId', requireAuth, async (req, res, next) => {
+router.delete('/:imageId', requireAuth, async (req, res, next) => {
     const { spotId, imageId } = req.params;
 
         // Find the spot

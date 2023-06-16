@@ -2,11 +2,11 @@ const express = require('express');
 const { Spot, SpotImage, Review, User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
-const { validateQueryParams, queryFilters } = require('../../utils/validation');
+const { handleValidationErrors } = require('../../utils/validation');
 
 const router = express.Router();
 
-
+// ROUTE TO GET ALL SPOTS
 router.get('/', async (req, res, next) => {
 
     let spots = await Spot.findAll();
@@ -23,14 +23,13 @@ router.get('/', async (req, res, next) => {
 // });
 
 
-router.get('/:spotId', async (req, res, next) => {
-    console.log("In the spot route");
-    const spotId = req.params.spotId;
+// ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
+router.get('/current', requireAuth, async (req, res, next) => {
+    const userId = req.user.id;  // Get the user ID from the authenticated user
 
-    try {
-        let spot = await Spot.findOne({
+        let spots = await Spot.findAll({
             where: {
-                id: spotId
+                owner_id: userId
             },
             include: [
                 { model: SpotImage, as: 'images' },
@@ -38,15 +37,83 @@ router.get('/:spotId', async (req, res, next) => {
             ]
         });
 
-        if (!spot) {
+        if (!spots) {
             return res.status(404).json({
-                message: "Spot couldn't be found"
+                message: "No spots found for the current user"
             });
         }
 
-        res.status(200).json(spot)
+        res.status(200).json(spots)
+
+});
+
+
+
+// ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
+router.post('/:SpotId/images', requireAuth, async (req, res, next) => {
+    console.log(req.user);
+    const { url, preview } = req.body;
+    const SpotId = req.params.SpotId;
+    const userId = req.user.id;
+
+    if (!url || typeof preview !== 'boolean') {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                "url": "Url is required",
+                "preview": "Preview should be true or false"
+            }
+        });
+    }
+
+    const spot = await Spot.findOne({
+        where: {
+            id: SpotId,
+            owner_id: userId,
+        }
+    });
+
+    if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    const newImage = await SpotImage.create({ spot_id: SpotId, url, preview });
+
+    res.json(newImage);
+});
+
+
+
+// ROUTE TO GET DETAILS OF A SPOT FROM AN ID
+router.get('/:spotId', async (req, res) => {
+    const spotId = req.params.spotId;
+
+    try {
+        const spot = await Spot.findOne({
+            where: { id: spotId },
+            include: [
+                {
+                    model: SpotImage,
+                    as: 'images', // change this from 'SpotImages' to 'images'
+                    attributes: ['id', 'url', 'preview', 'avgStarRating']
+                },
+                {
+                    model: User,
+                    as: 'owner', // 'owner' is correct if you have used this alias in your association
+                    attributes: ['id', 'firstName', 'lastName']
+                }
+            ],
+            attributes: ['id', 'owner_id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgStarRating']
+        });
+
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+
+        res.status(200).json(spot);
     } catch (err) {
-        next(err); // Forward error to handler
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -100,37 +167,6 @@ router.post('/', requireAuth, async (req, res) => {
 });
 
 
-// ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
-router.post('/:SpotId/images', requireAuth, async (req, res) => {
-    const { url, preview } = req.body;
-    const SpotId = req.params.SpotId;
-    const userId = req.user.id;
-
-    if (!url || typeof preview !== 'boolean') {
-        return res.status(400).json({
-            message: "Bad Request",
-            errors: {
-                "url": "Url is required",
-                "preview": "Preview should be true or false"
-            }
-        });
-    }
-
-    const spot = await Spot.findOne({
-        where: {
-            id: SpotId,
-            owner_id: userId,
-        }
-    });
-
-    if (!spot) {
-        return res.status(404).json({ message: "Spot couldn't be found" });
-    }
-
-    const newImage = await SpotImage.create({ spot_id: SpotId, url, preview });
-
-    res.json(newImage);
-});
 
 
 
@@ -222,7 +258,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/api/spots', validateQueryParams(queryFilters), async (req, res) => {
+router.get('/api/spots', handleValidationErrors, async (req, res) => {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
     // Defaults
