@@ -78,10 +78,12 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
         return;
       }
 
+      console.log(req.user.id);
+
       // Create the new review
       const newReview = await Review.create({
-        userId: req.user.id, // Contains authenticated user
-        spotId: spotId,
+        user_id: req.user.id, // Contains authenticated user
+        spot_id: spotId,
         review: review,
         stars: stars,
         createdAt: new Date(),
@@ -99,10 +101,9 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
-router.post('/:SpotId/images', requireAuth, async (req, res, next) => {
-    console.log(req.user);
+router.post('/:spotId/images', requireAuth, async (req, res, next) => {
     const { url, preview } = req.body;
-    const SpotId = req.params.SpotId;
+    const spotId = req.params.spotId;  // It should be spotId
     const userId = req.user.id;
 
     if (!url || typeof preview !== 'boolean') {
@@ -115,18 +116,18 @@ router.post('/:SpotId/images', requireAuth, async (req, res, next) => {
         });
     }
 
-    const spot = await Spot.findOne({
+    const spot = await Spot.findOne({  // It should be Spot, not Review
         where: {
-            id: SpotId,
-            owner_id: userId,
+            id: spotId,
+            owner_id: userId
         }
     });
 
-    if (!spot) {
-        return res.status(404).json({ message: "Spot couldn't be found" });
+    if (!spot) {  // If the spot doesn't exist
+        return res.status(404).json({ message: "Spot couldn't be found or user does not own the spot." });
     }
 
-    const newImage = await SpotImage.create({ spot_id: SpotId, url, preview });
+    const newImage = await SpotImage.create({ spot_id: spotId, url, preview });
 
     res.json(newImage);
 });
@@ -134,7 +135,7 @@ router.post('/:SpotId/images', requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/current', requireAuth, async (req, res, next) => {
+router.get('/:userId', requireAuth, async (req, res, next) => {
     const userId = req.user.id;  // Get the user ID from the authenticated user
 
         let spots = await Spot.findAll({
@@ -160,7 +161,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
 
 // ROUTE TO CREATE A NEW SPOT
 router.post('/', requireAuth, async (req, res) => {
-    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+    const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
 
     const { user } = req;
     //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++THIS SHOULD BE MY USER")
@@ -198,7 +199,9 @@ router.post('/', requireAuth, async (req, res) => {
         lng,
         name,
         description,
-        price
+        price,
+        createdAt,
+        updatedAt
     });
 
     res.json(newSpot);

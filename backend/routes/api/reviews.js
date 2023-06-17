@@ -14,7 +14,7 @@ router.get('/user/:userId', async (req, res) => {
     // Find all reviews by this user
     const reviews = await Review.findAll({
         where: {
-            userId: userId,
+            user_id: userId,
         },
         include: [{ model: Spot, as: 'spot' }, { model: ReviewImage, as: 'images' }]
     });
@@ -49,75 +49,75 @@ router.get('/spot/:spotId', async (req, res, next) => {
 });
 
 
-
-
-
 // ROUTE TO ADD AN IMAGE TO A REVIEW BASED ON THE REVIEW'S ID
 router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
+    const { reviewId } = req.params;
+    const { url } = req.body;
 
-        const { reviewId } = req.params;
-        const { url } = req.body;
+    // Get the review
+    const review = await Review.findByPk(reviewId);
 
-        // Get the review
-        const review = await Review.findByPk(reviewId);
+    console.log(typeof req.user.id, typeof review.user_id);
+    console.log(req.user.id, review.user_id);
 
-        if(!review) {
-            return res.status(404).json({ message: "Review couldn't be found" });
-        }
+    if (!review) {
+        return res.status(404).json({ message: "Review couldn't be found" });
+    }
 
-        // Check if review belongs to the current user
-        if (req.user.id !== review.userId) {
-            return res.status(403).json({ message: "Not authorized" });
-        }
+    // Check if review belongs to the current user
+    if (String(req.user.id) !== String(review.user_id)) {
+        return res.status(403).json({ message: "Not authorized" });
+    }
 
-        // Check if number of images for the review is not more than the maximum allowed
-        const reviewImages = await ReviewImage.findAll({ where: { reviewId: review.id }});
-        if (reviewImages.length > 10) {
-            return res.status(403).json({ message: "Maximum number of images for this resource was reached" })
-        }
+    // Check if number of images for the review is not more than the maximum allowed
+    const reviewImages = await review.getImages();
+    if (reviewImages.length >= 10) {
+        return res.status(403).json({ message: "Maximum number of images for this resource was reached" })
+    }
 
-        // Create new image
-        const newImage = await ReviewImage.create ({
-            reviewId: review.id,
-            url: url
-        });
-
-
-        // Respond w the new image
-        res.status(200).json(newImage);
+    // Create new image
+    const newImage = await ReviewImage.create ({
+        reviewId: review.id,
+        url: url
     });
 
+    // Respond with the new image
+    res.status(200).json(newImage);
+});
 
 
 
-    // ROUTE FOR EDITING A REVIEW
+// ROUTE FOR EDITING A REVIEW
 router.put('/:reviewId', requireAuth, async (req, res, next) => {
-
     const { reviewId } = req.params;
-    const { review, stars } = req.body;
+    const { review, stars, spotId } = req.body;
+    const userId = req.user.id; // Get the authenticated user's ID
 
     // Get the review
     const reviewToUpdate = await Review.findByPk(reviewId);
 
+    // Check if the review couldn't be found
     if (!reviewToUpdate) {
-        return res.status(404).json({ message: "Review couldn't be found" });
-    }
-
-     // Check if the review belongs to the current user
-     if (req.user.id !== reviewToUpdate.userId) {
-        return res.status(403).json({ message: "You are not authorized to modify this review" });
+      return res.status(404).json({ message: "Review couldn't be found" });
     }
 
     // Update the review
     await reviewToUpdate.update({
-        review: review,
-        stars: stars
+      review: review,
+      stars: stars,
+      user_id: userId,
+      spot_id: spotId, // Assign spotId value to spot_id field
     });
 
-    // Respond with the updated review
-    res.status(200).json(reviewToUpdate);
+    // Fetch the updated review
+    const updatedReview = await Review.findByPk(reviewId);
 
-});
+    // Remove user and spot fields from the response
+    const { user, spot, ...reviewData } = updatedReview.toJSON();
+
+    // Respond with the updated review
+    res.status(200).json(reviewData);
+  });
 
 
 

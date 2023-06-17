@@ -21,13 +21,24 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: DataTypes.INTEGER,
-    spot_id: DataTypes.INTEGER,
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    spot_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Spot',
+        key: 'id',
+      },
+    },
     review: DataTypes.TEXT,
     stars: DataTypes.INTEGER,
     createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
-  }, {
+    updatedAt: DataTypes.DATE,
+  },
+  {
     sequelize,
     modelName: 'Review',
   });

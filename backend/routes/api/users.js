@@ -37,12 +37,14 @@ router.post(
   '',
   validateSignup,
   async (req, res) => {
-    const { email, password, username } = req.body;
+    const { firstName, lastName, email, password, username } = req.body;
     const hashedPassword = bcrypt.hashSync(password);
-    const user = await User.create({ email, username, hashedPassword });
+    const user = await User.create({ firstName, lastName, email, username, hashedPassword });
 
     const safeUser = {
       id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       username: user.username,
     };
@@ -101,42 +103,8 @@ router.post(
     })
 
 
-// NEW ROUTE - GET THE LOGIN WITH VALID CREDENTIALS
-// router.post('/login', async (req, res) => {
-//   const { credential, password } = req.body;
 
-//   if (!credential || !password) {
-//     return res.status(400).json({
-//       message: "Bad Request",
-//       errors: {
-//         "credential": "Email or username is required",
-//         "password": "Password is required"
-//       }
-//     });
-//   }
-
-//   const user = await User.findOne({
-//     where: { email: credential }
-//   });
-
-//   if (!user || !bcrypt.compareSync(password, user.hashedPassword)) {
-//     return res.status(401).json({ message: "Invalid credentials" });
-//   }
-
-//   const { id, firstName, lastName, email, username } = user;
-
-//   res.status(200).json({
-//     user: {
-//       id,
-//       firstName,
-//       lastName,
-//       email,
-//       username
-//     }
-//   });
-// });
-
-
+// ROUTE TO LOGIN
 router.post('/login', async (req, res) => {
   const { credential, password } = req.body;
 
