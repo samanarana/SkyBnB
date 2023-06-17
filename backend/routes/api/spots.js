@@ -1,5 +1,5 @@
 const express = require('express');
-const { Spot, SpotImage, Review, User } = require('../../db/models');
+const { Spot, SpotImage, Review, User, Booking } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 const { handleValidationErrors } = require('../../utils/validation');
@@ -159,13 +159,19 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
             where: {
                 id: spotId,
                 owner_id: req.user.id // Check ownership
-            }
+            },
+            include: [
+                { model: SpotImage, as: 'images' },
+                { model: Review, as: 'reviews' },
+                { model: Booking, as: 'bookings' }
+            ]
         });
 
         // If spot not found or does not belong to the user, throw an error
         if (!spot) {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
+
 
         // Delete the spot
         await spot.destroy();

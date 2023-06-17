@@ -15,6 +15,8 @@ const userRoutes = require('./routes/api/users'); // Import the users router
 const spotRoutes = require('./routes/api/spots'); // Import the spots router
 const spotImagesRouter = require('./routes/api/spotimages');
 const reviewsRouter = require('./routes/api/reviews');
+const bookingsRouter = require('./routes/api/bookings');
+const reviewImagesRouter = require('./routes/api/reviewimages');
 
 const app = express();
 
@@ -50,6 +52,8 @@ app.use('/api/users', userRoutes); // Mount the users router at /api/users
 app.use('/api/spots', spotRoutes); // Mount the spots router at /api/spots
 app.use('/api/spotImages', spotImagesRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/bookings', bookingsRouter);
+app.use('/api/reviewImages', reviewImagesRouter);
 
 // Catch unhandled requests and forward to error handler.
 app.use((_req, _res, next) => {

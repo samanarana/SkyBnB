@@ -34,40 +34,51 @@ router.get('/spot/:spotId', requireAuth, async (req, res, next) => {
     const spot = await Spot.findByPk(spotId);
 
     if(!spot) {
-        res.status(404).json({ message: "Spot couldn't be found" });
-        return;
+        return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
     // Find all bookings for this spot
     const bookings = await Booking.findAll({
-        where: {
-            spot_id: spotId,
-        },
+        where: { spot_id: spotId },
+        include: [
+            { model: User, as: 'user' }
+        ]
     });
 
-    // If the current user is the owner of the spot, include user data in response
-    if(req.user.id === spot.ownerId) {
-        for(let booking of bookings) {
-            booking.user = await User.findByPk(booking.user_id);
-        }
-
-        // Respond w the bookings w user details
-        res.json({ Bookings: bookings });
-    } else {
-        // Respond w the bookings w/o user details
-        res.json({
-            Bookings: bookings.map(booking => ({
+    const transformedBookings = [];
+    const isOwner = req.user.id === spot.owner_id;
+    for(let booking of bookings) {
+        if (isOwner) {
+            transformedBookings.push({
+                User: {
+                    id: booking.user.id,
+                    firstName: booking.user.firstName,
+                    lastName: booking.user.lastName
+                },
+                id: booking.id,
+                spotId: booking.spot_id,
+                userId: booking.user_id,
+                startDate: booking.start_date,
+                endDate: booking.end_date,
+                createdAt: booking.created_at,
+                updatedAt: booking.updated_at
+            });
+        } else {
+            transformedBookings.push({
                 spotId: booking.spot_id,
                 startDate: booking.start_date,
-                end_date: booking.end_date
-            }))
-        });
+                endDate: booking.end_date
+            });
+        }
     }
+
+    // Respond w the bookings
+    res.json({ Bookings: transformedBookings });
 
 });
 
 // CREATE A BOOKING FROM A SPOT BASED ON THE SPOTS ID
-router.post('/bookings/spot/:spotId', requireAuth, async (req, res) => {
+router.post('/spots/:spotId', requireAuth, async (req, res) => {
 
     const spotId = req.params.spotId;
     const userId = req.user.id;
@@ -80,10 +91,6 @@ router.post('/bookings/spot/:spotId', requireAuth, async (req, res) => {
         return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
-    // The user should not book their own spot
-    if (userId === spot.owner_id) {
-        return res.status(403).json({ message: "Cannot book your own spot" });
-    }
 
     // Check if the start date is before the end date
     if (new Date(startDate) >= new Date(endDate)) {
@@ -216,35 +223,28 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
 
 // ROUTE TO DELETE A BOOKING
 router.delete('/:bookingId', requireAuth, async (req, res, next) => {
-
     const bookingId = req.params.bookingId;
 
-        // Find the booking
-        const booking = await Booking.findOne({
-            where: {
-                id: bookingId,
-                [Op.or]: [
-                    {user_id: req.user.id}, // Booking belongs to the user
-                    {'$Spot.ownerId$': req.user.id} // Spot of the booking belongs to the user
-                ]
-            },
-            include: Spot
-        });
+    // Find the booking
+    const booking = await Booking.findOne({
+        where: {
+            id: bookingId,
+            [Op.or]: [
+                {user_id: req.user.id}, // Booking belongs to the user
+                { '$spot.owner_id$': req.user.id } // Spot of the booking belongs to the user
+            ]
+        },
+        include: { model: Spot, as: 'spot' }
+    });
 
-        // If booking not found or does not belong to the user or the spot does not belong to the user, throw an error
-        if (!booking) {
-            return res.status(404).json({ message: "Booking couldn't be found" });
-        }
+    // If booking not found or does not belong to the user or the spot does not belong to the user, throw an error
+    if (!booking) {
+        return res.status(404).json({ message: "Booking couldn't be found" });
+    }
 
-        // Bookings that have started can't be deleted
-        if (new Date(booking.start_date) <= new Date()) {
-            return res.status(403).json({ message: "Bookings that have been started can't be deleted" });
-        }
-
-        // Delete the booking
-        await booking.destroy();
-        return res.status(200).json({ message: "Successfully deleted" });
-
+    // Delete the booking
+    await booking.destroy();
+    return res.status(200).json({ message: "Successfully deleted" });
 });
 
 

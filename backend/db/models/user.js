@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       return { id, firstName, lastName, email, username };
     }
     static associate(models) {
-      this.hasMany(models.Spot, { foreignKey: 'owner_id', as: 'spots' });
+      this.hasMany(models.Spot, { foreignKey: 'owner_id', as: 'spots', onDelete: 'CASCADE', hooks: true });
       this.hasMany(models.Booking, { foreignKey: 'user_id', as: 'bookings' });
       this.hasMany(models.Review, { foreignKey: 'user_id', as: 'reviews' });
     }
