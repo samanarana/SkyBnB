@@ -35,7 +35,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     review: DataTypes.TEXT,
     stars: DataTypes.INTEGER,
-    createdAt: DataTypes.DATE,
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW, // Set the default value to the current timestamp
+    },
     updatedAt: DataTypes.DATE,
   },
   {

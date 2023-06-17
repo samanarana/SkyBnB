@@ -8,46 +8,36 @@ const router = express.Router();
 
 
 
-// ROUTE TO GET ALL SPOTS
-router.get('/', async (req, res, next) => {
+// ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
+router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+    const { url, preview } = req.body;
+    const spotId = req.params.spotId;  // It should be spotId
+    const userId = req.user.id;
 
-    let spots = await Spot.findAll();
-        return res.status(200).json({ Spots: spots });
-});
-
-
-
-// ROUTE TO GET DETAILS OF A SPOT FROM AN ID
-router.get('/:spotId', async (req, res) => {
-    const spotId = req.params.spotId;
-
-    try {
-        const spot = await Spot.findOne({
-            where: { id: spotId },
-            include: [
-                {
-                    model: SpotImage,
-                    as: 'images', // change this from 'SpotImages' to 'images'
-                    attributes: ['id', 'url', 'preview', 'avgStarRating']
-                },
-                {
-                    model: User,
-                    as: 'owner', // 'owner' is correct if you have used this alias in your association
-                    attributes: ['id', 'firstName', 'lastName']
-                }
-            ],
-            attributes: ['id', 'owner_id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgStarRating']
+    if (!url || typeof preview !== 'boolean') {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                "url": "Url is required",
+                "preview": "Preview should be true or false"
+            }
         });
-
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
-
-        res.status(200).json(spot);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
     }
+
+    const spot = await Spot.findOne({  // It should be Spot, not Review
+        where: {
+            id: spotId,
+            owner_id: userId
+        }
+    });
+
+    if (!spot) {  // If the spot doesn't exist
+        return res.status(404).json({ message: "Spot couldn't be found or user does not own the spot." });
+    }
+
+    const newImage = await SpotImage.create({ spot_id: spotId, url, preview });
+
+    res.json(newImage);
 });
 
 
@@ -55,7 +45,7 @@ router.get('/:spotId', async (req, res) => {
 // ROUTE TO CREATE A REVIEW FOR A SPOT BASED ON THE SPOTS ID
 router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
     try {
-      const spotId = req.params.spotId; // Extract spotId from the request parameters
+      const spotId = parseInt(req.params.spotId, 10); // Extract spotId from the request parameters
       const { review, stars } = req.body; // Extract review and stars from the request body
 
       // Check if spot exists
@@ -100,38 +90,38 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
 
 
 
-// ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
-router.post('/:spotId/images', requireAuth, async (req, res, next) => {
-    const { url, preview } = req.body;
-    const spotId = req.params.spotId;  // It should be spotId
-    const userId = req.user.id;
+// ROUTE TO GET DETAILS OF A SPOT FROM AN ID
+router.get('/:spotId', async (req, res) => {
+    const spotId = req.params.spotId;
 
-    if (!url || typeof preview !== 'boolean') {
-        return res.status(400).json({
-            message: "Bad Request",
-            errors: {
-                "url": "Url is required",
-                "preview": "Preview should be true or false"
-            }
+    try {
+        const spot = await Spot.findOne({
+            where: { id: spotId },
+            include: [
+                {
+                    model: SpotImage,
+                    as: 'images', // change this from 'SpotImages' to 'images'
+                    attributes: ['id', 'url', 'preview', 'avgStarRating']
+                },
+                {
+                    model: User,
+                    as: 'owner', // 'owner' is correct if you have used this alias in your association
+                    attributes: ['id', 'firstName', 'lastName']
+                }
+            ],
+            attributes: ['id', 'owner_id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgStarRating']
         });
-    }
 
-    const spot = await Spot.findOne({  // It should be Spot, not Review
-        where: {
-            id: spotId,
-            owner_id: userId
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
         }
-    });
 
-    if (!spot) {  // If the spot doesn't exist
-        return res.status(404).json({ message: "Spot couldn't be found or user does not own the spot." });
+        res.status(200).json(spot);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
     }
-
-    const newImage = await SpotImage.create({ spot_id: spotId, url, preview });
-
-    res.json(newImage);
 });
-
 
 
 // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
@@ -159,52 +149,28 @@ router.get('/:userId', requireAuth, async (req, res, next) => {
 });
 
 
-// ROUTE TO CREATE A NEW SPOT
-router.post('/', requireAuth, async (req, res) => {
-    const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
 
-    const { user } = req;
-    //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++THIS SHOULD BE MY USER")
+// ROUTE TO DELETE A SPOT
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
+    const spotId = req.params.spotId;
 
-
-    if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
-        return res.status(400).json({
-            message: "Bad Request",
-            errors: {
-                "address": "Street address is required",
-                "city": "City is required",
-                "state": "State is required",
-                "country": "Country is required",
-                "lat": "Latitude is not valid",
-                "lng": "Longitude is not valid",
-                "name": "Name must be less than 50 characters",
-                "description": "Description is required",
-                "price": "Price per day is required"
+        // Find the spot
+        const spot = await Spot.findOne({
+            where: {
+                id: spotId,
+                owner_id: req.user.id // Check ownership
             }
         });
-    }
 
-    //console.log(req.user.id);
+        // If spot not found or does not belong to the user, throw an error
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
 
-    const owner_id = req.user.id;
+        // Delete the spot
+        await spot.destroy();
+        return res.status(200).json({ message: "Successfully deleted" });
 
-
-    const newSpot = await Spot.create({
-        owner_id: user.id,
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price,
-        createdAt,
-        updatedAt
-    });
-
-    res.json(newSpot);
 });
 
 
@@ -271,29 +237,12 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 
 
 
-// ROUTE TO DELETE A SPOT
-router.delete('/:spotId', requireAuth, async (req, res, next) => {
-    const spotId = req.params.spotId;
+// ROUTE TO GET ALL SPOTS
+router.get('/', async (req, res, next) => {
 
-        // Find the spot
-        const spot = await Spot.findOne({
-            where: {
-                id: spotId,
-                owner_id: req.user.id // Check ownership
-            }
-        });
-
-        // If spot not found or does not belong to the user, throw an error
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
-
-        // Delete the spot
-        await spot.destroy();
-        return res.status(200).json({ message: "Successfully deleted" });
-
+    let spots = await Spot.findAll();
+        return res.status(200).json({ Spots: spots });
 });
-
 
 
 
@@ -334,5 +283,58 @@ router.get('/api/spots', requireAuth, async (req, res) => {
         });
     }
 });
+
+
+// ROUTE TO CREATE A NEW SPOT
+router.post('/', requireAuth, async (req, res) => {
+    const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
+
+    const { user } = req;
+    //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++THIS SHOULD BE MY USER")
+
+
+    if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                "address": "Street address is required",
+                "city": "City is required",
+                "state": "State is required",
+                "country": "Country is required",
+                "lat": "Latitude is not valid",
+                "lng": "Longitude is not valid",
+                "name": "Name must be less than 50 characters",
+                "description": "Description is required",
+                "price": "Price per day is required"
+            }
+        });
+    }
+
+    //console.log(req.user.id);
+
+    const owner_id = req.user.id;
+
+
+    const newSpot = await Spot.create({
+        owner_id: user.id,
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price,
+        createdAt,
+        updatedAt
+    });
+
+    res.json(newSpot);
+});
+
+
+
+
 
 module.exports = router;

@@ -93,30 +93,33 @@ router.put('/:reviewId', requireAuth, async (req, res, next) => {
     const { review, stars, spotId } = req.body;
     const userId = req.user.id; // Get the authenticated user's ID
 
-    // Get the review
-    const reviewToUpdate = await Review.findByPk(reviewId);
+      // Get the review
+      const reviewToUpdate = await Review.findByPk(reviewId);
 
-    // Check if the review couldn't be found
-    if (!reviewToUpdate) {
-      return res.status(404).json({ message: "Review couldn't be found" });
-    }
+      // Check if the review couldn't be found
+      if (!reviewToUpdate) {
+        return res.status(404).json({ message: "Review couldn't be found" });
+      }
 
-    // Update the review
-    await reviewToUpdate.update({
-      review: review,
-      stars: stars,
-      user_id: userId,
-      spot_id: spotId, // Assign spotId value to spot_id field
-    });
 
-    // Fetch the updated review
-    const updatedReview = await Review.findByPk(reviewId);
+      // Update the review
+      await reviewToUpdate.update({
+        review: review,
+        stars: stars,
+        user_id: userId,
+        spot_id: spotId,
+    },
+      { fields: ['review', 'stars', 'user_id', 'spot_id', 'createdAt'] }
+    );
 
-    // Remove user and spot fields from the response
-    const { user, spot, ...reviewData } = updatedReview.toJSON();
+      // Fetch the updated review
+      const updatedReview = await Review.findByPk(reviewId);
 
-    // Respond with the updated review
-    res.status(200).json(reviewData);
+
+
+      // Respond with the updated review
+      res.status(200).json(updatedReview);
+
   });
 
 

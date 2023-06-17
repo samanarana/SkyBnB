@@ -66,10 +66,8 @@ router.get('/spot/:spotId', requireAuth, async (req, res, next) => {
 
 });
 
-
-
 // CREATE A BOOKING FROM A SPOT BASED ON THE SPOTS ID
-router.post('/spot/:spotId', requireAuth, async (req, res) => {
+router.post('/bookings/spot/:spotId', requireAuth, async (req, res) => {
 
     const spotId = req.params.spotId;
     const userId = req.user.id;
@@ -83,7 +81,7 @@ router.post('/spot/:spotId', requireAuth, async (req, res) => {
     }
 
     // The user should not book their own spot
-    if (userId === spot.ownerId) {
+    if (userId === spot.owner_id) {
         return res.status(403).json({ message: "Cannot book your own spot" });
     }
 
@@ -137,6 +135,7 @@ router.post('/spot/:spotId', requireAuth, async (req, res) => {
 
     res.status(200).json(booking);
 });
+
 
 
 
