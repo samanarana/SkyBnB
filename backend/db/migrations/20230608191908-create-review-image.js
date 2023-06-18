@@ -1,8 +1,17 @@
 'use strict';
+
+let options = {};
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA;  // define your schema in options object
+}
+
+
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ReviewImages', {
+  up: async (queryInterface, Sequelize) => {
+    options.tableName = "ReviewImages";
+    await queryInterface.createTable("ReviewImages", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -27,23 +36,13 @@ module.exports = {
       }
     });
 
-    // FOREIGN KEY CONSTRAINTS!!
-    // return queryInterface.addConstraint('ReviewImages', {
-    //   fields: ['review_id'],
-    //   type: 'foreign key',
-    //   name: 'fk_review_id_reviewimages',
-    //   references: {
-    //     table: 'Reviews',
-    //     field: 'id'
-    //   },
-    //   onDelete: 'cascade',
-    //   onUpdate: 'cascade'
-    // });
+
 
 
 
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ReviewImages');
+  down: async (queryInterface, Sequelize) => {
+    options.tableName = "ReviewImages";
+    await queryInterface.dropTable(options);
   }
 };
