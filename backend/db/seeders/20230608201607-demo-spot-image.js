@@ -38,6 +38,7 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
+    options.tableName = "SpotImages";
     return queryInterface.bulkDelete(options, null, {});
   }
 };
