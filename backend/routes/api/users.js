@@ -32,59 +32,10 @@ const validateSignup = [
 
 
 
-// Sign up
-// router.post(
-//   '',
-//   validateSignup,
-//   async (req, res) => {
-//     const { firstName, lastName, email, password, username } = req.body;
-//     const hashedPassword = bcrypt.hashSync(password);
-//     const user = await User.create({ firstName, lastName, email, username, hashedPassword });
-
-//     const safeUser = {
-//       id: user.id,
-//       firstName: user.firstName,
-//       lastName: user.lastName,
-//       email: user.email,
-//       username: user.username,
-//     };
-
-//     await setTokenCookie(res, safeUser);
-
-//     return res.json({
-//       user: safeUser
-//     });
-//   }
-// );
-
-
-
-
-// router.get('./user/:userId', async (req, res) => {
-//   const id = req.userId;
-
-//   let user = await User.findOne({ where: { id: id } })
-//    if (user)  {
-//       return res.status(200).json({
-//         user: {
-//           id: user.id,
-//           firstName: user.firstName,
-//           lastName: user.lastName,
-//           email: user.email,
-//           username: user.username,
-//         }
-//       });
-//     } else {
-//       return res.status(200).json({
-//         user: null,
-//       });
-//     }
-//   })
-
 
 //NEW ROUTE - GET THE CURRENT USER
   router.get('/', restoreUser, async (req, res) => {
-    const id = req.params.userId;
+    const id = req.userId;
     let user = await User.findOne({ where: { id: id } })
      if (user) {
       const safeUser = {
@@ -134,7 +85,7 @@ router.post('/login', async (req, res) => {
   user.token = token;
 
   //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++this should be my user ^");
-  if (!user || !bcrypt.compareSync(password, user.hashedPassword)) {
+  if (!user || !bcrypt.compare(password, user.hashedPassword)) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
   console.log({ user: resObj }, "+++++++++++++++++++++++++++++++++++++++++++++++++++++this is my user")
@@ -186,7 +137,7 @@ router.post('/signup', async (req, res) => {
   }
 
   // Hash the password b4 storing
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  const hashedPassword = bcrypt.hash(password, 10);
 
   const newUser = await User.create({
     firstName,

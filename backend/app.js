@@ -47,13 +47,14 @@ app.use(
   })
 );
 
-app.use(routes); // Connect all the routes
+
 app.use('/api/users', userRoutes);
 app.use('/api/spots', spotRoutes);
 app.use('/api/spotimages', spotImagesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/reviewimages', reviewImagesRouter);
+app.use(routes); // Connect all the routes
 
 
 //root route handler
