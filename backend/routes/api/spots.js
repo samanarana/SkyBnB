@@ -2,7 +2,7 @@ const express = require('express');
 const { Spot, SpotImage, Review, User, Booking } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
-const { handleValidationErrors } = require('../../utils/validation');
+//const { handleValidationErrors } = require('../../utils/validation');
 
 const router = express.Router();
 
@@ -298,8 +298,6 @@ router.post('/', requireAuth, async (req, res) => {
     const { user } = req.user;
     //const user = req.user;
 
-    //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++THIS SHOULD BE MY USER")
-
 
     if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
         return res.status(400).json({
@@ -316,9 +314,7 @@ router.post('/', requireAuth, async (req, res) => {
                 "price": "Price per day is required"
             }
         });
-    }
-
-    //console.log(req.user.id);
+    };
 
 
 
