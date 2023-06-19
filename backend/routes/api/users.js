@@ -82,16 +82,15 @@ router.post('/login', async (req, res) => {
 
   resObj.token = token;
 
+  resObj.firstName = user.firstName;
+  resObj.lastName = user.lastName;
+
   user.token = token;
 
-  //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++this should be my user ^");
   if (!user || !bcrypt.compare(password, user.hashedPassword)) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
-  console.log({ user: resObj }, "+++++++++++++++++++++++++++++++++++++++++++++++++++++this is my user")
-  //res.status(200)
   res.json(resObj);
-  //res.status(200).json({ user: { id, firstName, lastName, email, username } = user });
 });
 
 
