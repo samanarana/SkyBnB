@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const apiRouter = require('./api');
 
-const routes = require('./routes');
+//const routes = require('./routes');
 const userRoutes = require('./users');
 const spotRoutes = require('./spots');
 const spotImagesRouter = require('./spotimages');

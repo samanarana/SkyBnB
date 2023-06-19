@@ -47,7 +47,7 @@ app.use(
   })
 );
 
-
+const routes = require('./routes');
 // app.use('/api/users', userRoutes);
 // app.use('/api/spots', spotRoutes);
 // app.use('/api/spotimages', spotImagesRouter);
