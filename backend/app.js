@@ -55,6 +55,14 @@ app.use('/api/reviews', reviewsRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/reviewImages', reviewImagesRouter);
 
+
+//root route handler
+app.get('/', (req, res) => {
+  res.send('Welcome to the home page!');
+});
+
+
+
 // Catch unhandled requests and forward to error handler.
 app.use((_req, _res, next) => {
   const err = new Error("The requested resource couldn't be found.");
