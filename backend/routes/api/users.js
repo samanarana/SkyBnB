@@ -57,41 +57,41 @@ const validateSignup = [
 
 
 
-// ROUTE TO LOGIN
-router.post('/login', async (req, res) => {
-  const { credential, password } = req.body;
+// // ROUTE TO LOGIN
+// router.post('/login', async (req, res) => {
+//   const { credential, password } = req.body;
 
-  if (!credential || !password) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        credential: "Email or username is required",
-        password: "Password is required"
-      }
-    });
-  }
+//   if (!credential || !password) {
+//     return res.status(400).json({
+//       message: "Bad Request",
+//       errors: {
+//         credential: "Email or username is required",
+//         password: "Password is required"
+//       }
+//     });
+//   }
 
-  const user = await User.findOne({
-    where: { email: credential },
-    attributes: ['id', 'username', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
-  });
+//   const user = await User.findOne({
+//     where: { email: credential },
+//     attributes: ['id', 'username', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
+//   });
 
-  const token = await setTokenCookie (res, user)
+//   const token = await setTokenCookie (res, user)
 
-  let resObj = user.toSafeObject();
+//   let resObj = user.toSafeObject();
 
-  resObj.token = token;
+//   resObj.token = token;
 
-  resObj.firstName = user.firstName;
-  resObj.lastName = user.lastName;
+//   resObj.firstName = user.firstName;
+//   resObj.lastName = user.lastName;
 
-  user.token = token;
+//   user.token = token;
 
-  if (!user || !bcrypt.compare(password, user.hashedPassword)) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-  res.json(resObj);
-});
+//   if (!user || !bcrypt.compare(password, user.hashedPassword)) {
+//     return res.status(401).json({ message: "Invalid credentials" });
+//   }
+//   res.json(resObj);
+// });
 
 
 
