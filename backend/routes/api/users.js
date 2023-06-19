@@ -57,7 +57,7 @@ const validateSignup = [
 
 
 
-// // ROUTE TO LOGIN
+// ROUTE TO LOGIN
 // router.post('/login', async (req, res) => {
 //   const { credential, password } = req.body;
 
