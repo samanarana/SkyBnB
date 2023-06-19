@@ -59,7 +59,7 @@ const validateSignup = [
 
 
 
-//NEW ROUTE - GET THE CURRENT USER
+
 // router.get('./user/:userId', async (req, res) => {
 //   const id = req.userId;
 
@@ -81,7 +81,9 @@ const validateSignup = [
 //     }
 //   })
 
-  router.get('/user/:userId', restoreUser, async (req, res) => {
+
+//NEW ROUTE - GET THE CURRENT USER
+  router.get('/session', restoreUser, async (req, res) => {
     const id = req.params.userId;
     let user = await User.findOne({ where: { id: id } })
      if (user) {
@@ -105,7 +107,7 @@ const validateSignup = [
 
 
 // ROUTE TO LOGIN
-router.post('/login', async (req, res) => {
+router.post('/session', async (req, res) => {
   const { credential, password } = req.body;
 
   if (!credential || !password) {
@@ -145,7 +147,7 @@ router.post('/login', async (req, res) => {
 
 
 // NEW ROUTE SIGNUP ENDPOINT
-router.post('/signup', async (req, res) => {
+router.post('/users', async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
 
   // Check if all fields are filled
