@@ -47,6 +47,7 @@ app.use(
   })
 );
 
+app.use(routes);
 app.use('/session', userRoutes); // Mount the users router at /api/session
 app.use('/users', userRoutes); // Mount the users router at /api/users
 app.use('/spots', spotRoutes); // Mount the spots router at /api/spots
