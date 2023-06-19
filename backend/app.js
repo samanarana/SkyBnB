@@ -47,14 +47,13 @@ app.use(
   })
 );
 
-app.use(routes);
-app.use('/session', userRoutes); // Mount the users router at /api/session
-app.use('/users', userRoutes); // Mount the users router at /api/users
-app.use('/spots', spotRoutes); // Mount the spots router at /api/spots
-app.use('/spotImages', spotImagesRouter);
-app.use('/reviews', reviewsRouter);
-app.use('/bookings', bookingsRouter);
-app.use('/reviewImages', reviewImagesRouter);
+app.use(routes); // Connect all the routes
+app.use(userRoutes); // Mount the users router at /api/users
+app.use(spotRoutes); // Mount the spots router at /api/spots
+app.use(spotImagesRouter);
+app.use(reviewsRouter);
+app.use(bookingsRouter);
+app.use(reviewImagesRouter);
 
 
 //root route handler
