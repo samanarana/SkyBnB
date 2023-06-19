@@ -147,7 +147,7 @@ router.post('/api/session', async (req, res) => {
 
 
 // NEW ROUTE SIGNUP ENDPOINT
-router.post('/api/users', async (req, res) => {
+router.post('/users', async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
 
   // Check if all fields are filled
