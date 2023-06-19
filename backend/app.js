@@ -11,12 +11,12 @@ const { environment } = require('./config');
 const isProduction = environment === 'production';
 
 const routes = require('./routes');
-const userRoutes = require('./routes/users'); // Import the users router
-const spotRoutes = require('./routes/spots'); // Import the spots router
-const spotImagesRouter = require('./routes/spotimages');
-const reviewsRouter = require('./routes/reviews');
-const bookingsRouter = require('./routes/bookings');
-const reviewImagesRouter = require('./routes/reviewimages');
+const userRoutes = require('./routes/api/users'); // Import the users router
+const spotRoutes = require('./routes/api/spots'); // Import the spots router
+const spotImagesRouter = require('./routes/api/spotimages');
+const reviewsRouter = require('./routes/api/reviews');
+const bookingsRouter = require('./routes/api/bookings');
+const reviewImagesRouter = require('./routes/api/reviewimages');
 
 const app = express();
 
@@ -48,12 +48,12 @@ app.use(
 );
 
 app.use(routes); // Connect all the routes
-app.use('/api/users', userRoutes); // Mount the users router at /api/users
-app.use('/api/spots', spotRoutes); // Mount the spots router at /api/spots
-app.use('/api/spotImages', spotImagesRouter);
-app.use('/api/reviews', reviewsRouter);
-app.use('/api/bookings', bookingsRouter);
-app.use('/api/reviewImages', reviewImagesRouter);
+app.use('/users', userRoutes); // Mount the users router at /api/users
+app.use('/spots', spotRoutes); // Mount the spots router at /api/spots
+app.use('/spotImages', spotImagesRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/bookings', bookingsRouter);
+app.use('/reviewImages', reviewImagesRouter);
 
 
 //root route handler
