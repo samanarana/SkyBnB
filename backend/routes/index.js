@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const apiRouter = require('./api');
 
-
+const routes = require('./routes');
 const userRoutes = require('./users');
 const spotRoutes = require('./spots');
 const spotImagesRouter = require('./spotimages');
@@ -20,6 +20,7 @@ router.use('/spotimages', spotImagesRouter);
 router.use('/reviews', reviewsRouter);
 router.use('/bookings', bookingsRouter);
 router.use('/reviewimages', reviewImagesRouter);
+app.use(routes);
 
 
 
