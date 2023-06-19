@@ -48,12 +48,12 @@ app.use(
 );
 
 app.use(routes); // Connect all the routes
-app.use(userRoutes); // Mount the users router at /api/users
-app.use(spotRoutes); // Mount the spots router at /api/spots
-app.use(spotImagesRouter);
-app.use(reviewsRouter);
-app.use(bookingsRouter);
-app.use(reviewImagesRouter);
+app.use('/api/users', userRoutes);
+app.use('/api/spots', spotRoutes);
+app.use('/api/spotimages', spotImagesRouter);
+app.use('/api/reviews', reviewsRouter);
+app.use('/api/bookings', bookingsRouter);
+app.use('/api/reviewimages', reviewImagesRouter);
 
 
 //root route handler
