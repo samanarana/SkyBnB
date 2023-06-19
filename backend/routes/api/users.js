@@ -34,7 +34,7 @@ const validateSignup = [
 
 
 //NEW ROUTE - GET THE CURRENT USER
-  router.get('/', restoreUser, async (req, res) => {
+  router.get('/current', restoreUser, async (req, res) => {
     const id = req.userId;
     let user = await User.findOne({ where: { id: id } })
      if (user) {
@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
 
 
 // NEW ROUTE SIGNUP ENDPOINT
-router.post('/signup', async (req, res) => {
+router.post('/', async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
 
   // Check if all fields are filled
@@ -136,8 +136,8 @@ router.post('/signup', async (req, res) => {
     });
   }
 
-  // Hash the password b4 storing
-  const hashedPassword = bcrypt.hash(password, 10);
+  // Hash the password before storing
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
     firstName,
