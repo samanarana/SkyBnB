@@ -11,10 +11,10 @@ module.exports = {
     options.tableName = "Users";
     return queryInterface.createTable("Users", {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
+
       },
       firstName: {
         type: Sequelize.STRING,
