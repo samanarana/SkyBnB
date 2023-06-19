@@ -11,12 +11,12 @@ const { environment } = require('./config');
 const isProduction = environment === 'production';
 
 const routes = require('./routes');
-const userRoutes = require('./routes/api/users'); // Import the users router
-const spotRoutes = require('./routes/api/spots'); // Import the spots router
-const spotImagesRouter = require('./routes/api/spotimages');
-const reviewsRouter = require('./routes/api/reviews');
-const bookingsRouter = require('./routes/api/bookings');
-const reviewImagesRouter = require('./routes/api/reviewimages');
+const userRoutes = require('./routes/users'); // Import the users router
+const spotRoutes = require('./routes/spots'); // Import the spots router
+const spotImagesRouter = require('./routes/spotimages');
+const reviewsRouter = require('./routes/reviews');
+const bookingsRouter = require('./routes/bookings');
+const reviewImagesRouter = require('./routes/reviewimages');
 
 const app = express();
 
