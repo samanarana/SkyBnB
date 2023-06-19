@@ -247,13 +247,13 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 router.get('/', async (req, res, next) => {
 
     let spots = await Spot.findAll();
-        return res.status(200).json({ Spots: spots });
+    return res.status(200).json(spots);
 });
 
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/api/spots', requireAuth, async (req, res) => {
+router.get('/search', requireAuth, async (req, res) => {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
     // Defaults
@@ -295,7 +295,7 @@ router.get('/api/spots', requireAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
     const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
 
-    const { user } = req.user;
+    //const { user } = req.user;
     //const user = req.user;
 
     //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++THIS SHOULD BE MY USER")
@@ -324,7 +324,7 @@ router.post('/', requireAuth, async (req, res) => {
 
 
     const newSpot = await Spot.create({
-        owner_id: user.id,
+        owner_id: req.user.id,
         address,
         city,
         state,
