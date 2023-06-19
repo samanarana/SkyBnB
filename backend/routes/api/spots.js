@@ -295,8 +295,7 @@ router.get('/search', requireAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
     const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
 
-    const { user } = req.user;
-    //const user = req.user;
+    const user = req.user;
 
 
     if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
