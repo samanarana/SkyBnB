@@ -146,6 +146,17 @@ router.post('/', async (req, res) => {
     hashedPassword: hashedPassword
   });
 
+ // Set cookie for newly registered user to log them in
+ const safeUser = {
+  id: newUser.id,
+  email: newUser.email,
+  username: newUser.username,
+};
+
+await setTokenCookie(res, safeUser);
+
+
+
   // return user info
   const { id, firstName: fName, lastName: lName, email: eMail, username: uName } = newUser;
   res.status(200).json({
