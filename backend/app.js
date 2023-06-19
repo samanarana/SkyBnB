@@ -54,7 +54,7 @@ app.use(
 // app.use('/api/reviews', reviewsRouter);
 // app.use('/api/bookings', bookingsRouter);
 // app.use('/api/reviewimages', reviewImagesRouter);
-// app.use(routes); // Connect all the routes
+app.use(routes); // Connect all the routes
 
 
 //root route handler
