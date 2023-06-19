@@ -295,8 +295,8 @@ router.get('/api/spots', requireAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
     const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
 
-    //const { user } = req;
-    const user = req.user;
+    const { user } = req.user;
+    //const user = req.user;
 
     //console.log(user, "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++THIS SHOULD BE MY USER")
 
@@ -320,7 +320,7 @@ router.post('/', requireAuth, async (req, res) => {
 
     //console.log(req.user.id);
 
-    const owner_id = req.user.id;
+
 
 
     const newSpot = await Spot.create({

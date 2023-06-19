@@ -30,6 +30,13 @@ const setTokenCookie = (res, user) => {
       sameSite: isProduction && "Lax"
     });
 
+
+    // Attach user information to req.user
+    const decodedToken = jwt.verify(token, secret);
+    res.user = decodedToken.data;
+
+
+
     return token;
   };
 
