@@ -125,7 +125,7 @@ router.get('/:spotId', async (req, res) => {
 
 
 // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/:userId', requireAuth, async (req, res, next) => {
+router.get('/current', requireAuth, async (req, res, next) => {
     const userId = req.user.id;  // Get the user ID from the authenticated user
 
         let spots = await Spot.findAll({
