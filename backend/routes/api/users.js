@@ -33,54 +33,33 @@ const validateSignup = [
 
 
 // Sign up
-router.post(
-  '',
-  validateSignup,
-  async (req, res) => {
-    const { firstName, lastName, email, password, username } = req.body;
-    const hashedPassword = bcrypt.hashSync(password);
-    const user = await User.create({ firstName, lastName, email, username, hashedPassword });
+// router.post(
+//   '',
+//   validateSignup,
+//   async (req, res) => {
+//     const { firstName, lastName, email, password, username } = req.body;
+//     const hashedPassword = bcrypt.hashSync(password);
+//     const user = await User.create({ firstName, lastName, email, username, hashedPassword });
 
-    const safeUser = {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      username: user.username,
-    };
+//     const safeUser = {
+//       id: user.id,
+//       firstName: user.firstName,
+//       lastName: user.lastName,
+//       email: user.email,
+//       username: user.username,
+//     };
 
-    await setTokenCookie(res, safeUser);
+//     await setTokenCookie(res, safeUser);
 
-    return res.json({
-      user: safeUser
-    });
-  }
-);
+//     return res.json({
+//       user: safeUser
+//     });
+//   }
+// );
 
 
 
-//NEW ROUTE - GET THE CURRENT USER
-// router.get('./user/:userId', async (req, res) => {
-//   const id = req.userId;
-
-//   let user = await User.findOne({ where: { id: id } })
-//    if (user)  {
-//       return res.status(200).json({
-//         user: {
-//           id: user.id,
-//           firstName: user.firstName,
-//           lastName: user.lastName,
-//           email: user.email,
-//           username: user.username,
-//         }
-//       });
-//     } else {
-//       return res.status(200).json({
-//         user: null,
-//       });
-//     }
-//   })
-
+  //router.get('/user/:userId', restoreUser, async (req, res) => {
   router.get('/user/:userId', restoreUser, async (req, res) => {
     const id = req.params.userId;
     let user = await User.findOne({ where: { id: id } })
@@ -145,7 +124,7 @@ router.post('/login', async (req, res) => {
 
 
 // NEW ROUTE SIGNUP ENDPOINT
-router.post('/signup', async (req, res) => {
+router.post('/signup', validateSignup, async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
 
   // Check if all fields are filled
