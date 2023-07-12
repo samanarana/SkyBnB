@@ -57,17 +57,13 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
     // Get the review
     const review = await Review.findByPk(reviewId);
 
-    console.log(typeof req.user.id, typeof review.user_id);
-    console.log(req.user.id, review.user_id);
+    //console.log(typeof req.user.id, typeof review.user_id);
+    //console.log(req.user.id, review.user_id);
 
     if (!review) {
         return res.status(404).json({ message: "Review couldn't be found" });
     }
 
-    // Check if review belongs to the current user
-    if (String(req.user.id) !== String(review.user_id)) {
-        return res.status(403).json({ message: "Not authorized" });
-    }
 
     // Check if number of images for the review is not more than the maximum allowed
     const reviewImages = await review.getImages();
@@ -80,6 +76,9 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
         reviewId: review.id,
         url: url
     });
+
+    delete newImage.dataValues.createdAt;
+    delete newImage.dataValues.updatedAt;
 
     // Respond with the new image
     res.status(200).json(newImage);

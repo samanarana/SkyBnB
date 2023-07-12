@@ -1,10 +1,12 @@
 'use strict';
-const { Model } = require('sequelize');
+const { Model, Validator } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     toSafeObject() {
       const { id, firstName, lastName, email, username } = this; // context will be the User instance
+      // console.log('firstName:', firstName);
+      // console.log('lastName:', lastName);
       return { id, firstName, lastName, email, username };
     }
     static associate(models) {
@@ -62,10 +64,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "User",
+      modelName: 'User',
       defaultScope: {
         attributes: {
-          exclude: ["hashedPassword", "createdAt", "updatedAt"]
+          exclude: ['hashedPassword', 'createdAt', 'updatedAt']
+        }
+      },
+      scopes: {
+        withFullName: {
+          attributes: ['id', 'firstName', 'lastName', 'email', 'username']
         }
       }
     }
