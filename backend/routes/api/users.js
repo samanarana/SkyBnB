@@ -93,7 +93,7 @@ router.post('/login', requireAuth, async (req, res) => {
 
   user.token = token;
 
-  if (!user || !(await bcrypt.compare(password, user.hashedPassword))) {
+  if (!user || !(await bcrypt.compare(password, user.hashedPassword.toString()))) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 

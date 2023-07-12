@@ -11,7 +11,6 @@ const { environment } = require('./config');
 const isProduction = environment === 'production';
 
 const routes = require('./routes');
-//const userRoutes = require('./routes/api/users'); // Import the users router
 const spotRoutes = require('./routes/api/spots'); // Import the spots router
 const spotImagesRouter = require('./routes/api/spotimages');
 const reviewsRouter = require('./routes/api/reviews');
