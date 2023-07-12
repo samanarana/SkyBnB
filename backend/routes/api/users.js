@@ -1,7 +1,7 @@
 //backend/routes/api/users.js
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { check } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
@@ -33,9 +33,15 @@ const validateSignup = [
 
 
 
+//   //router.get('/user/:userId', restoreUser, async (req, res) => {
+//   router.get('/user/:userId', restoreUser, async (req, res) => {
+//     const id = req.params.userId;
+
+
 //NEW ROUTE - GET THE CURRENT USER
   router.get('/current', restoreUser, async (req, res) => {
     const id = req.userId;
+
     let user = await User.findOne({ where: { id: id } })
      if (user) {
       const safeUser = {
@@ -71,12 +77,12 @@ router.post('/login', async (req, res) => {
     });
   }
 
-  const user = await User.findOne({
+  const user = await User.scope('withFullName').findOne({
     where: { email: credential },
-    attributes: ['id', 'username', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
+    attributes: ['id', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
   });
 
-  const token = await setTokenCookie (res, user)
+  const token = await setTokenCookie(res, user);
 
   let resObj = user.toSafeObject();
 
@@ -90,6 +96,7 @@ router.post('/login', async (req, res) => {
   if (!user || !(await bcrypt.compare(password, user.hashedPassword))) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
+
   res.json(resObj);
 });
 
@@ -97,7 +104,9 @@ router.post('/login', async (req, res) => {
 
 
 // NEW ROUTE SIGNUP ENDPOINT
-router.post('/', async (req, res) => {
+
+router.post('', validateSignup, async (req, res) => {
+
   const { firstName, lastName, email, username, password } = req.body;
 
   // Check if all fields are filled

@@ -1,11 +1,10 @@
 const express = require('express');
-const { Spot, SpotImage, Review, User, Booking } = require('../../db/models');
+const { Spot, SpotImage, Review, User, Booking, ReviewImage } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 //const { handleValidationErrors } = require('../../utils/validation');
 
 const router = express.Router();
-
 
 
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
@@ -38,6 +37,33 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
     const newImage = await SpotImage.create({ spot_id: spotId, url, preview });
 
     res.json(newImage);
+});
+
+
+
+
+//ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
+router.get('/current', requireAuth, async (req, res, next) => {
+    const userId = req.user.id;  // Get the user ID from the authenticated user
+
+        let spots = await Spot.findAll({
+            where: {
+                owner_id: userId
+            },
+            include: [
+                { model: SpotImage, as: 'images' },
+                { model: User, as: 'owner' }
+            ]
+        });
+
+        if (!spots) {
+            return res.status(404).json({
+                message: "No spots found for the current user"
+            });
+        }
+
+        res.status(200).json(spots)
+
 });
 
 
@@ -89,7 +115,6 @@ router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
   });
 
 
-
 // ROUTE TO GET DETAILS OF A SPOT FROM AN ID
 router.get('/:spotId', async (req, res) => {
     const spotId = req.params.spotId;
@@ -122,6 +147,7 @@ router.get('/:spotId', async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 
 // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
@@ -178,6 +204,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
         return res.status(200).json({ message: "Successfully deleted" });
 
 });
+
 
 
 
@@ -243,13 +270,13 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 
 
 
+
 // ROUTE TO GET ALL SPOTS
 router.get('/', async (req, res, next) => {
 
     let spots = await Spot.findAll();
     return res.status(200).json(spots);
 });
-
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
@@ -333,8 +360,125 @@ router.post('/', requireAuth, async (req, res) => {
         updatedAt
     });
 
+    // Remove the numReviews property
+delete newSpot.dataValues.numReviews;
+
+
     res.json(newSpot);
 });
+
+
+
+
+// ROUTE FOR GETTING ALL REVIEWS BY A SPOTS ID
+router.get('/:spotId/reviews', async (req, res, next) => {
+    const spotId = req.params.spotId; // Extract spotId from the request parameters
+
+    // Check if the spot exists
+    const spot = await Spot.findByPk(spotId);
+
+    if(!spot) {
+        res.status(404).json({ message: "Spot couldn't be found" });
+        return;
+    }
+
+    // Find all reviews for this spot
+    const reviews = await Review.findAll ({
+        where: {
+            spot_id: spotId,
+        },
+        include: [{ model: User, as: 'user'}, { model: ReviewImage, as: 'images'}]
+    });
+
+    // Respond with the reviews
+    res.json({ Reviews: reviews });
+});
+
+
+
+// ROUTE TO GET ALL BOOKINGS FOR A SPOT BASED ON THE SPOTS ID
+router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+
+    const spotId = req.params.spotId;
+
+    // Check if the spot exists
+    const spot = await Spot.findByPk(spotId);
+
+    if(!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    // Find all bookings for this spot
+    const bookings = await Booking.findAll({
+        where: { spot_id: spotId },
+        include: [
+            { model: User, as: 'user' }
+        ]
+    });
+
+    const transformedBookings = [];
+    const isOwner = req.user.id === spot.owner_id;
+    for(let booking of bookings) {
+        if (isOwner) {
+            transformedBookings.push({
+                User: {
+                    id: booking.user.id,
+                    firstName: booking.user.firstName,
+                    lastName: booking.user.lastName
+                },
+                id: booking.id,
+                spotId: booking.spot_id,
+                userId: booking.user_id,
+                startDate: booking.start_date,
+                endDate: booking.end_date,
+                createdAt: booking.created_at,
+                updatedAt: booking.updated_at
+            });
+        } else {
+            transformedBookings.push({
+                spotId: booking.spot_id,
+                startDate: booking.start_date,
+                endDate: booking.end_date
+            });
+        }
+    }
+
+    // Respond w the bookings
+    res.json({ Bookings: transformedBookings });
+
+});
+
+
+
+// ROUTE TO DELETE A SPOT
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
+    const spotId = req.params.spotId;
+
+        // Find the spot
+        const spot = await Spot.findOne({
+            where: {
+                id: spotId,
+                owner_id: req.user.id // Check ownership
+            },
+            include: [
+                { model: SpotImage, as: 'images' },
+                { model: Review, as: 'reviews' },
+                { model: Booking, as: 'bookings' }
+            ]
+        });
+
+        // If spot not found or does not belong to the user, throw an error
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+
+
+        // Delete the spot
+        await spot.destroy();
+        return res.status(200).json({ message: "Successfully deleted" });
+
+});
+
 
 
 

@@ -7,7 +7,7 @@ const { Op } = require('sequelize');
 
 
 // ROUTE TO GET ALL OF THE CURRENT USERS BOOKINGS
-router.get('/user/:userId', requireAuth, async (req, res, next) => {
+router.get('/:userId', requireAuth, async (req, res, next) => {
 
     const userId = req.params.userId;
 
@@ -25,60 +25,10 @@ router.get('/user/:userId', requireAuth, async (req, res, next) => {
 });
 
 
-// ROUTE TO GET ALL BOOKINGS FOR A SPOT BASED ON THE SPOTS ID
-router.get('/spot/:spotId', requireAuth, async (req, res, next) => {
 
-    const spotId = req.params.spotId;
-
-    // Check if the spot exists
-    const spot = await Spot.findByPk(spotId);
-
-    if(!spot) {
-        return res.status(404).json({ message: "Spot couldn't be found" });
-    }
-
-    // Find all bookings for this spot
-    const bookings = await Booking.findAll({
-        where: { spot_id: spotId },
-        include: [
-            { model: User, as: 'user' }
-        ]
-    });
-
-    const transformedBookings = [];
-    const isOwner = req.user.id === spot.owner_id;
-    for(let booking of bookings) {
-        if (isOwner) {
-            transformedBookings.push({
-                User: {
-                    id: booking.user.id,
-                    firstName: booking.user.firstName,
-                    lastName: booking.user.lastName
-                },
-                id: booking.id,
-                spotId: booking.spot_id,
-                userId: booking.user_id,
-                startDate: booking.start_date,
-                endDate: booking.end_date,
-                createdAt: booking.created_at,
-                updatedAt: booking.updated_at
-            });
-        } else {
-            transformedBookings.push({
-                spotId: booking.spot_id,
-                startDate: booking.start_date,
-                endDate: booking.end_date
-            });
-        }
-    }
-
-    // Respond w the bookings
-    res.json({ Bookings: transformedBookings });
-
-});
 
 // CREATE A BOOKING FROM A SPOT BASED ON THE SPOTS ID
-router.post('/spots/:spotId', requireAuth, async (req, res) => {
+router.post('/spot/:spotId', requireAuth, async (req, res) => {
 
     const spotId = req.params.spotId;
     const userId = req.user.id;
