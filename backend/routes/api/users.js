@@ -64,7 +64,7 @@ const validateSignup = [
 
 
 // ROUTE TO LOGIN
-router.post('/login', async (req, res) => {
+router.post('/login', requireAuth, async (req, res) => {
   const { credential, password } = req.body;
 
   if (!credential || !password) {
