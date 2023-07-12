@@ -50,10 +50,10 @@ app.use(
 app.use(routes); // Connect all the routes
 //app.use('/api/users', userRoutes); // Mount the users router at /api/users
 app.use('/api/spots', spotRoutes); // Mount the spots router at /api/spots
-app.use('/api/spotImages', spotImagesRouter);
+app.use('/api/spot-images', spotImagesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/bookings', bookingsRouter);
-app.use('/api/reviewImages', reviewImagesRouter);
+app.use('/api/review-images', reviewImagesRouter);
 
 // Catch unhandled requests and forward to error handler.
 app.use((_req, _res, next) => {

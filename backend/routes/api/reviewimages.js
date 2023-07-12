@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { Review, ReviewImage } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
+const { Op } = require('sequelize');
 
-router.delete('/:reviewId/images/:imageId', requireAuth, async (req, res) => {
-    const { reviewId, imageId } = req.params;
+router.delete('/:imageId', requireAuth, async (req, res) => {
+    const imageId  = req.params.imageId;
 
     // Find the image
     const image = await ReviewImage.findOne({
         where: {
             id: imageId,
-            review_id: reviewId
         }
     });
 
