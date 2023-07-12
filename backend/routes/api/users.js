@@ -65,8 +65,8 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({
       message: "Bad Request",
       errors: {
-        credential: "Email or username is required",
-        password: "Password is required"
+        "credential": "Email or username is required",
+        "password": "Password is required"
       }
     });
   }
@@ -80,7 +80,7 @@ router.post('/login', async (req, res) => {
 
   let resObj = user.toSafeObject();
 
-  resObj.token = token;
+  //resObj.token = token;
 
   resObj.firstName = user.firstName;
   resObj.lastName = user.lastName;
