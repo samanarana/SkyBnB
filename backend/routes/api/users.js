@@ -32,9 +32,16 @@ const validateSignup = [
 
 
 
-  //router.get('/user/:userId', restoreUser, async (req, res) => {
-  router.get('/user/:userId', restoreUser, async (req, res) => {
-    const id = req.params.userId;
+
+//   //router.get('/user/:userId', restoreUser, async (req, res) => {
+//   router.get('/user/:userId', restoreUser, async (req, res) => {
+//     const id = req.params.userId;
+
+
+//NEW ROUTE - GET THE CURRENT USER
+  router.get('/current', restoreUser, async (req, res) => {
+    const id = req.userId;
+
     let user = await User.findOne({ where: { id: id } })
      if (user) {
       const safeUser = {
@@ -81,9 +88,12 @@ router.post('/login', async (req, res) => {
 
   //resObj.token = token;
 
+  resObj.firstName = user.firstName;
+  resObj.lastName = user.lastName;
+
   user.token = token;
 
-  if (!user || !bcrypt.compareSync(password, user.hashedPassword)) {
+  if (!user || !(await bcrypt.compare(password, user.hashedPassword))) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
@@ -94,7 +104,9 @@ router.post('/login', async (req, res) => {
 
 
 // NEW ROUTE SIGNUP ENDPOINT
+
 router.post('', validateSignup, async (req, res) => {
+
   const { firstName, lastName, email, username, password } = req.body;
 
   // Check if all fields are filled
@@ -132,8 +144,8 @@ router.post('', validateSignup, async (req, res) => {
     });
   }
 
-  // Hash the password b4 storing
-  const hashedPassword = bcrypt.hashSync(password, 10);
+  // Hash the password before storing
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
     firstName,
@@ -142,6 +154,17 @@ router.post('', validateSignup, async (req, res) => {
     username,
     hashedPassword: hashedPassword
   });
+
+ // Set cookie for newly registered user to log them in
+ const safeUser = {
+  id: newUser.id,
+  email: newUser.email,
+  username: newUser.username,
+};
+
+await setTokenCookie(res, safeUser);
+
+
 
   // return user info
   const { id, firstName: fName, lastName: lName, email: eMail, username: uName } = newUser;

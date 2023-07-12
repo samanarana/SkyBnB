@@ -48,7 +48,7 @@ module.exports = {
       updatedAt: {
         type: Sequelize.DATE
       }
-    });
+    }, options);
 
 
 

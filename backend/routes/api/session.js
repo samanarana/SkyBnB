@@ -52,13 +52,19 @@ router.post(
         id: user.id,
         email: user.email,
         username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName
       };
+
+      req.user = safeUser;
+      console.log(req.user);
 
       await setTokenCookie(res, safeUser);
 
       return res.json({
         user: safeUser
       });
+
     }
   );
 

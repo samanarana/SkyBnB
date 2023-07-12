@@ -1,5 +1,5 @@
 "use strict";
-const { DataTypes } = require("sequelize");
+//const { DataTypes } = require("sequelize");
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
@@ -11,20 +11,20 @@ module.exports = {
     options.tableName = "Users";
     return queryInterface.createTable("Users", {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
+
       },
       firstName: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
         validate: {
           len: [60, 60]
         }
       },
       lastName: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       username: {
