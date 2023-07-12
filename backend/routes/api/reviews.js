@@ -6,9 +6,8 @@ const { handleValidationErrors } = require('../../utils/validation');
 const { requireAuth } = require('../../utils/auth');
 
 
-
 // ROUTE FOR GETTING ALL REVIEWS BY A CURRENT USER
-router.get('/user/:userId', async (req, res) => {
+router.get('/:userId', async (req, res) => {
     const userId = req.params.userId; // Extract userId from the request parameters
 
     // Find all reviews by this user
@@ -23,30 +22,6 @@ router.get('/user/:userId', async (req, res) => {
     res.json({ Reviews: reviews });
 });
 
-
-// ROUTE FOR GETTING ALL REVIEWS BY A SPOTS ID
-router.get('/spot/:spotId', async (req, res, next) => {
-    const spotId = req.params.spotId; // Extract spotId from the request parameters
-
-    // Check if the spot exists
-    const spot = await Spot.findByPk(spotId);
-
-    if(!spot) {
-        res.status(404).json({ message: "Spot couldn't be found" });
-        return;
-    }
-
-    // Find all reviews for this spot
-    const reviews = await Review.findAll ({
-        where: {
-            spotId: spotId,
-        },
-        include: [{ model: User, as: 'user'}, { model: ReviewImage, as: 'images'}]
-    });
-
-    // Respond with the reviews
-    res.json({ Reviews: reviews });
-});
 
 
 // ROUTE TO ADD AN IMAGE TO A REVIEW BASED ON THE REVIEW'S ID
