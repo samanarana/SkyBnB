@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { Review, ReviewImage } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 
-router.delete('/:imageId', requireAuth, async (req, res) => {
+router.delete('/:imageId', restoreUser, requireAuth, async (req, res) => {
     const imageId  = req.params.imageId;
 
     // Find the image

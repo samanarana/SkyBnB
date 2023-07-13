@@ -49,10 +49,10 @@ app.use(
 //const routes = require('./routes');
 //app.use('/api/users', userRoutes);
 app.use('/api/spots', spotRoutes);
-app.use('/api/spotimages', spotImagesRouter);
+app.use('/api/spot-images', spotImagesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/bookings', bookingsRouter);
-app.use('/api/reviewimages', reviewImagesRouter);
+app.use('/api/review-images', reviewImagesRouter);
 app.use(routes); // Connect all the routes
 
 
