@@ -69,7 +69,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO CREATE A REVIEW FOR A SPOT BASED ON THE SPOTS ID
-router.post('/:spotId/reviews', restoreUser, async (req, res, next) => {
+router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next) => {
     try {
       const spotId = parseInt(req.params.spotId, 10); // Extract spotId from the request parameters
       const { review, stars } = req.body; // Extract review and stars from the request body
