@@ -94,7 +94,7 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         return;
       }
 
-      console.log(req.user.id);
+    //   console.log(req.user.id);
 
       // Create the new review
       const newReview = await Review.create({
@@ -199,7 +199,7 @@ router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
         const spot = await Spot.findOne({
             where: {
                 id: spotId,
-                owner_id: req.user.id // Check ownership
+                ownerId: req.user.id // Check ownership
             },
             include: [
                 { model: SpotImage, as: 'images' },
@@ -260,7 +260,7 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
     const spot = await Spot.findOne({
         where: {
             id: spotId,
-            owner_id: userId
+            ownerId: userId
         }
     });
 
@@ -353,7 +353,7 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
 
 
     const newSpot = await Spot.create({
-        owner_id: user.id,
+        ownerId: user.id,
         address,
         city,
         state,
@@ -392,7 +392,7 @@ router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
     // Find all reviews for this spot
     const reviews = await Review.findAll ({
         where: {
-            spot_id: spotId,
+            spotId: spotId,
         },
         include: [{ model: User, as: 'user'}, { model: ReviewImage, as: 'images'}]
     });
@@ -417,14 +417,14 @@ router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next)
 
     // Find all bookings for this spot
     const bookings = await Booking.findAll({
-        where: { spot_id: spotId },
+        where: { spotId: spotId },
         include: [
             { model: User, as: 'user' }
         ]
     });
 
     const transformedBookings = [];
-    const isOwner = req.user.id === spot.owner_id;
+    const isOwner = req.user.id === spot.ownerId;
     for(let booking of bookings) {
         if (isOwner) {
             transformedBookings.push({
@@ -434,18 +434,18 @@ router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next)
                     lastName: booking.user.lastName
                 },
                 id: booking.id,
-                spotId: booking.spot_id,
-                userId: booking.user_id,
-                startDate: booking.start_date,
-                endDate: booking.end_date,
-                createdAt: booking.created_at,
-                updatedAt: booking.updated_at
+                spotId: booking.spotId,
+                userId: booking.userId,
+                startDate: booking.startDate,
+                endDate: booking.endDate,
+                createdAt: booking.createdAt,
+                updatedAt: booking.updatedAt
             });
         } else {
             transformedBookings.push({
-                spotId: booking.spot_id,
-                startDate: booking.start_date,
-                endDate: booking.end_date
+                spotId: booking.spotId,
+                startDate: booking.startDate,
+                endDate: booking.endDate
             });
         }
     }

@@ -11,7 +11,7 @@ module.exports = {
     options.tableName = "Spots";
     return queryInterface.bulkInsert(options, [
       {
-        owner_id: 1,
+        ownerId: 1,
         address: '123 Main St',
         city: 'Example City',
         state: 'Example State',
@@ -25,7 +25,7 @@ module.exports = {
         //preview_image: 'https://www.google.com/'
       },
       {
-        owner_id: 2,
+        ownerId: 2,
         address: '456 Elm St',
         city: 'Another City',
         state: 'Another State',
@@ -39,7 +39,7 @@ module.exports = {
         //preview_image: 'http://placekitten.com/200/300'
       },
       {
-        owner_id: 1,
+        ownerId: 1,
         address: '789 Oak St',
         city: 'Third City',
         state: 'Third State',

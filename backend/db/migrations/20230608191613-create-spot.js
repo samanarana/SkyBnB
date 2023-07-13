@@ -16,7 +16,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      owner_id: {
+      ownerId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
@@ -60,10 +60,10 @@ module.exports = {
         allowNull: false,
         defaultValue: 0
       },
-      avgStarRating: {
+      avgRating: {
         type: Sequelize.DECIMAL,
       },
-      preview_image: {
+      previewImage: {
         type: Sequelize.STRING
       },
       createdAt: {

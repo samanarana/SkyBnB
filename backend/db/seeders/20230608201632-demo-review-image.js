@@ -14,19 +14,19 @@ module.exports = {
     options.tableName = "ReviewImages";
     return queryInterface.bulkInsert(options, [
       {
-        review_id: 1,
+        reviewId: 1,
         url: 'http://placekitten.com/200/300'
       },
       {
-        review_id: 2,
+        reviewId: 2,
         url: 'http://placekitten.com/200/300'
       },
       {
-        review_id: 3,
+        reviewId: 3,
         url: 'http://placekitten.com/200/300'
       },
       {
-        review_id: 4,
+        reviewId: 4,
         url: 'http://placekitten.com/200/300'
       }
     ], {});
