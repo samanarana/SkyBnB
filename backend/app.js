@@ -10,13 +10,15 @@ const { ValidationError } = require('sequelize');
 const { environment } = require('./config');
 const isProduction = environment === 'production';
 
-// const routes = require('./routes');
-// const userRoutes = require('./routes/api/users'); // Import the users router
-// const spotRoutes = require('./routes/api/spots'); // Import the spots router
-// const spotImagesRouter = require('./routes/api/spotimages');
-// const reviewsRouter = require('./routes/api/reviews');
-// const bookingsRouter = require('./routes/api/bookings');
-// const reviewImagesRouter = require('./routes/api/reviewimages');
+
+const routes = require('./routes');
+//const userRoutes = require('./routes/api/users'); // Import the users router
+const spotRoutes = require('./routes/api/spots'); // Import the spots router
+const spotImagesRouter = require('./routes/api/spotimages');
+const reviewsRouter = require('./routes/api/reviews');
+const bookingsRouter = require('./routes/api/bookings');
+const reviewImagesRouter = require('./routes/api/reviewimages');
+
 
 const app = express();
 
@@ -55,6 +57,14 @@ const routes = require('./routes');
 // app.use('/api/bookings', bookingsRouter);
 // app.use('/api/reviewimages', reviewImagesRouter);
 app.use(routes); // Connect all the routes
+
+//app.use('/api/users', userRoutes); // Mount the users router at /api/users
+app.use('/api/spots', spotRoutes); // Mount the spots router at /api/spots
+app.use('/api/spot-images', spotImagesRouter);
+app.use('/api/reviews', reviewsRouter);
+app.use('/api/bookings', bookingsRouter);
+app.use('/api/review-images', reviewImagesRouter);
+
 
 
 //root route handler

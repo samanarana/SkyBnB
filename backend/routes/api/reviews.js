@@ -6,9 +6,8 @@ const { handleValidationErrors } = require('../../utils/validation');
 const { requireAuth } = require('../../utils/auth');
 
 
-
 // ROUTE FOR GETTING ALL REVIEWS BY A CURRENT USER
-router.get('/user/:userId', async (req, res) => {
+router.get('/:userId', async (req, res) => {
     const userId = req.params.userId; // Extract userId from the request parameters
 
     // Find all reviews by this user
@@ -24,30 +23,6 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 
-// ROUTE FOR GETTING ALL REVIEWS BY A SPOTS ID
-router.get('/spot/:spotId', async (req, res, next) => {
-    const spotId = req.params.spotId; // Extract spotId from the request parameters
-
-    // Check if the spot exists
-    const spot = await Spot.findByPk(spotId);
-
-    if(!spot) {
-        res.status(404).json({ message: "Spot couldn't be found" });
-        return;
-    }
-
-    // Find all reviews for this spot
-    const reviews = await Review.findAll ({
-        where: {
-            spotId: spotId,
-        },
-        include: [{ model: User, as: 'user'}, { model: ReviewImage, as: 'images'}]
-    });
-
-    // Respond with the reviews
-    res.json({ Reviews: reviews });
-});
-
 
 // ROUTE TO ADD AN IMAGE TO A REVIEW BASED ON THE REVIEW'S ID
 router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
@@ -57,17 +32,13 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
     // Get the review
     const review = await Review.findByPk(reviewId);
 
-    console.log(typeof req.user.id, typeof review.user_id);
-    console.log(req.user.id, review.user_id);
+    //console.log(typeof req.user.id, typeof review.user_id);
+    //console.log(req.user.id, review.user_id);
 
     if (!review) {
         return res.status(404).json({ message: "Review couldn't be found" });
     }
 
-    // Check if review belongs to the current user
-    if (String(req.user.id) !== String(review.user_id)) {
-        return res.status(403).json({ message: "Not authorized" });
-    }
 
     // Check if number of images for the review is not more than the maximum allowed
     const reviewImages = await review.getImages();
@@ -80,6 +51,9 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
         reviewId: review.id,
         url: url
     });
+
+    delete newImage.dataValues.createdAt;
+    delete newImage.dataValues.updatedAt;
 
     // Respond with the new image
     res.status(200).json(newImage);

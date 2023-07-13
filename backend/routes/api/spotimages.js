@@ -1,23 +1,27 @@
 const express = require('express');
-const router = express.Router();
 const { Spot, SpotImage } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-
-
+const { Op } = require('sequelize');
+const router = express.Router();
 
 
 
 // ROUTE TO DELETE A SPOT IMAGE
-router.delete('/:spotId/:imageId', requireAuth, async (req, res, next) => {
-    const { spotId, imageId } = req.params;
+router.delete('/:imageId', requireAuth, async (req, res, next) => {
+    const imageId = req.params.imageId;
+
+
+    //console.log('Request Parameters:', req.params);
+
 
     // Find the image
     const image = await SpotImage.findOne({
         where: {
-            id: imageId,
-            spot_id: spotId
+            id: imageId
         }
     });
+
+    //console.log('Image Found:', image);
 
     // If image not found, throw an error
     if (!image) {

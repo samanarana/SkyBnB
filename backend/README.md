@@ -287,7 +287,7 @@ Returns all the spots owned (created) by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: `/spots/:userId`
+  * URL: `/current`
   * Body: none
 
 * Successful Response
@@ -634,7 +634,7 @@ Returns all the reviews written by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * URL: `/reviews/user/{userId}`
+  * URL: `/reviews/{userId}`
   * Body: none
 
 * Successful Response
@@ -690,7 +690,7 @@ Returns all the reviews that belong to a spot specified by id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: `/reviews/spot/{spotId}`
+  * URL: `/{spotId}`
   * Body: none
 
 * Successful Response
