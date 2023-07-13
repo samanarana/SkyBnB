@@ -127,6 +127,10 @@ router.post('/login', async (req, res) => {
 
   const token = await setTokenCookie(res, user);
 
+  console.log('Token:', token); // log the token for debugging
+  console.log('User:', user); // log the user for debugging
+
+
   let resObj = user.toSafeObject();
 
   //resObj.token = token;

@@ -1,6 +1,6 @@
 const express = require('express');
 const { Spot, SpotImage, Review, User, Booking, ReviewImage } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 //const { handleValidationErrors } = require('../../utils/validation');
 
@@ -319,7 +319,7 @@ router.get('/search', requireAuth, async (req, res) => {
 
 
 // ROUTE TO CREATE A NEW SPOT
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', restoreUser, requireAuth, async (req, res) => {
     const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
 
     const user = req.user;
