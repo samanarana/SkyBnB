@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
-router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) => {
     const { url, preview } = req.body;
     const spotId = req.params.spotId;  // It should be spotId
     const userId = req.user.id;
@@ -43,7 +43,7 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
 
 
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/current', requireAuth, async (req, res, next) => {
+router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
     const userId = req.user.id;  // Get the user ID from the authenticated user
 
         let spots = await Spot.findAll({
@@ -69,7 +69,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO CREATE A REVIEW FOR A SPOT BASED ON THE SPOTS ID
-router.post('/:spotId/reviews', requireAuth, async (req, res, next) => {
+router.post('/:spotId/reviews', async (req, res, next) => {
     try {
       const spotId = parseInt(req.params.spotId, 10); // Extract spotId from the request parameters
       const { review, stars } = req.body; // Extract review and stars from the request body
@@ -148,10 +148,16 @@ router.get('/:spotId', async (req, res) => {
     }
 });
 
+// ROUTE TO GET ALL SPOTS
+router.get('/', async (req, res, next) => {
+
+    let spots = await Spot.findAll();
+    return res.status(200).json(spots);
+});
 
 
 // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/current', requireAuth, async (req, res, next) => {
+router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
     const userId = req.user.id;  // Get the user ID from the authenticated user
 
         let spots = await Spot.findAll({
@@ -175,9 +181,8 @@ router.get('/current', requireAuth, async (req, res, next) => {
 });
 
 
-
 // ROUTE TO DELETE A SPOT
-router.delete('/:spotId', requireAuth, async (req, res, next) => {
+router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
     const spotId = req.params.spotId;
 
         // Find the spot
@@ -209,7 +214,7 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 
 
 // ROUTE TO UPDATE AN EXISTING SPOT
-router.put('/:spotId', requireAuth, async (req, res) => {
+router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
     const spotId = req.params.spotId;
     const userId = req.user.id;
 
@@ -269,14 +274,6 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 });
 
 
-
-
-// ROUTE TO GET ALL SPOTS
-router.get('/', async (req, res, next) => {
-
-    let spots = await Spot.findAll();
-    return res.status(200).json(spots);
-});
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
@@ -371,7 +368,7 @@ delete newSpot.dataValues.numReviews;
 
 
 // ROUTE FOR GETTING ALL REVIEWS BY A SPOTS ID
-router.get('/:spotId/reviews', async (req, res, next) => {
+router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
     const spotId = req.params.spotId; // Extract spotId from the request parameters
 
     // Check if the spot exists
@@ -397,7 +394,7 @@ router.get('/:spotId/reviews', async (req, res, next) => {
 
 
 // ROUTE TO GET ALL BOOKINGS FOR A SPOT BASED ON THE SPOTS ID
-router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next) => {
 
     const spotId = req.params.spotId;
 
@@ -445,37 +442,6 @@ router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
 
     // Respond w the bookings
     res.json({ Bookings: transformedBookings });
-
-});
-
-
-
-// ROUTE TO DELETE A SPOT
-router.delete('/:spotId', requireAuth, async (req, res, next) => {
-    const spotId = req.params.spotId;
-
-        // Find the spot
-        const spot = await Spot.findOne({
-            where: {
-                id: spotId,
-                owner_id: req.user.id // Check ownership
-            },
-            include: [
-                { model: SpotImage, as: 'images' },
-                { model: Review, as: 'reviews' },
-                { model: Booking, as: 'bookings' }
-            ]
-        });
-
-        // If spot not found or does not belong to the user, throw an error
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
-
-
-        // Delete the spot
-        await spot.destroy();
-        return res.status(200).json({ message: "Successfully deleted" });
 
 });
 
