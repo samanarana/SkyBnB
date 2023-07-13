@@ -84,7 +84,7 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
         userId: userId,
         spotId: spotId,
     },
-      { fields: ['review', 'stars', 'user_id', 'spot_id', 'createdAt'] }
+      { fields: ['review', 'stars', 'userId', 'spotId', 'createdAt'] }
     );
 
       // Fetch the updated review
