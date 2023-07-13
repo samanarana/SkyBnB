@@ -3,7 +3,7 @@ const { Spot, SpotImage, Review, User, Booking, ReviewImage } = require('../../d
 const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 //const { handleValidationErrors } = require('../../utils/validation');
-
+const Sequelize = require('sequelize');
 const router = express.Router();
 
 
@@ -42,29 +42,6 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
 
 
 
-//ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-    const userId = req.user.id;  // Get the user ID from the authenticated user
-
-        let spots = await Spot.findAll({
-            where: {
-                ownerId: userId
-            },
-            include: [
-                { model: SpotImage, as: 'images' },
-                { model: User, as: 'owner' }
-            ]
-        });
-
-        if (!spots) {
-            return res.status(404).json({
-                message: "No spots found for the current user"
-            });
-        }
-
-        res.status(200).json(spots)
-
-});
 
 
 
@@ -151,9 +128,74 @@ router.get('/:spotId', async (req, res) => {
 // ROUTE TO GET ALL SPOTS
 router.get('/', async (req, res, next) => {
 
-    let spots = await Spot.findAll();
+    let spots = await Spot.findAll({
+        attributes: [
+            'id',
+            'ownerId',
+            'address',
+            'city',
+            'state',
+            'country',
+            'lat',
+            'lng',
+            'name',
+            'description',
+            'price',
+            [Sequelize.fn('AVG', Sequelize.col('reviews.stars')), 'avgRating']
+        ],
+        include: [{
+            model: Review,
+            as: 'reviews',
+            attributes: [],
+            include: [{
+                model: ReviewImage,
+                as: 'images',
+                attributes: ['url']
+            }]
+        }],
+        group: ['Spot.id'],
+        raw: true,
+    });
+
+    spots = spots.map(spot => {
+        spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
+        spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
+        spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
+        spot.previewImage = spot['reviews.images.url'];
+        delete spot['reviews.images.id'];
+        delete spot['reviews.images.url'];
+        return spot;
+    });
+
+
     return res.status(200).json(spots);
 });
+
+
+
+// //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
+// router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
+//     const userId = req.user.id;  // Get the user ID from the authenticated user
+
+//         let spots = await Spot.findAll({
+//             where: {
+//                 ownerId: userId
+//             },
+//             include: [
+//                 { model: SpotImage, as: 'images' },
+//                 { model: User, as: 'owner' }
+//             ]
+//         });
+
+//         if (!spots) {
+//             return res.status(404).json({
+//                 message: "No spots found for the current user"
+//             });
+//         }
+
+//         res.status(200).json(spots)
+
+// });
 
 
 // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER

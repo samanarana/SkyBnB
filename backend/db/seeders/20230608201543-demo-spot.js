@@ -22,7 +22,7 @@ module.exports = {
         description: 'This is the first spot',
         price: 100.0,
         //avgStarRating: 4.5,
-        //preview_image: 'https://www.google.com/'
+        previewImage: 'https://www.google.com/'
       },
       {
         ownerId: 2,
@@ -36,7 +36,7 @@ module.exports = {
         description: 'This is the second spot',
         price: 150.0,
         //avgStarRating: 4.0,
-        //preview_image: 'http://placekitten.com/200/300'
+        previewImage: 'http://placekitten.com/200/300'
       },
       {
         ownerId: 1,
@@ -50,7 +50,7 @@ module.exports = {
         description: 'This is the third spot',
         price: 200.0,
         //avgStarRating: 4.8,
-        //preview_image: 'https://www.twitter.com/'
+        previewImage: 'https://www.twitter.com/'
       }
     ], {});
   },
