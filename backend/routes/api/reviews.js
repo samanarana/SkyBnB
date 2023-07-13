@@ -48,12 +48,13 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
 
     // Create new image
     const newImage = await ReviewImage.create ({
-        reviewId: review.id,
+        review_id: review.id,
         url: url
     });
 
     delete newImage.dataValues.createdAt;
     delete newImage.dataValues.updatedAt;
+    delete newImage.dataValues.review_id;
 
     // Respond with the new image
     res.status(200).json(newImage);
