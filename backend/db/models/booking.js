@@ -1,4 +1,7 @@
 'use strict';
+
+const moment = require('moment');
+
 const {
   Model
 } = require('sequelize');
@@ -10,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Spot, { foreignKey: 'spot_id', as: 'spot' });
-      this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+      this.belongsTo(models.Spot, { foreignKey: 'spotId', as: 'spot' });
+      this.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
     }
   }
   Booking.init({
@@ -20,17 +23,23 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    spot_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER,
-    start_date: DataTypes.STRING,
-    end_date: DataTypes.STRING,
+    spotId: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
+    startDate: DataTypes.STRING,
+    endDate: DataTypes.STRING,
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+      get() {
+        return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+      get() {
+        return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
   }, {
     sequelize,

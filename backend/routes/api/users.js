@@ -102,47 +102,6 @@ const validateSignup = [
 
 
 
-// ROUTE TO LOGIN
-router.post('/login', async (req, res) => {
-  const { credential, password } = req.body;
-
-  if (!credential || !password) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "credential": "Email or username is required",
-        "password": "Password is required"
-      }
-    });
-  }
-
-  const user = await User.scope('withFullName').findOne({
-    where: { email: credential },
-    attributes: ['id', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
-  });
-
-  if (!user || !(await bcrypt.compare(password, user.hashedPassword.toString()))) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-
-  const token = await setTokenCookie(res, user);
-
-  console.log('Token:', token); // log the token for debugging
-  console.log('User:', user); // log the user for debugging
-
-
-  let resObj = user.toSafeObject();
-
-  //resObj.token = token;
-
-  resObj.firstName = user.firstName;
-  resObj.lastName = user.lastName;
-
-  user.token = token;
-
-  res.json(resObj);
-});
-
 
 
 

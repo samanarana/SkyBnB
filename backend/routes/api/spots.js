@@ -26,7 +26,7 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
     const spot = await Spot.findOne({  // It should be Spot, not Review
         where: {
             id: spotId,
-            owner_id: userId
+            ownerId: userId
         }
     });
 
@@ -34,7 +34,7 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
         return res.status(404).json({ message: "Spot couldn't be found or user does not own the spot." });
     }
 
-    const newImage = await SpotImage.create({ spot_id: spotId, url, preview });
+    const newImage = await SpotImage.create({ spotId: spotId, url, preview });
 
     res.json(newImage);
 });
@@ -48,7 +48,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
         let spots = await Spot.findAll({
             where: {
-                owner_id: userId
+                ownerId: userId
             },
             include: [
                 { model: SpotImage, as: 'images' },
@@ -84,8 +84,8 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
       // Check if user already reviewed this spot
       const userReview = await Review.findOne({
         where: {
-          user_id: req.user.id, // Contains authenticated user
-          spot_id: spotId
+          userId: req.user.id, // Contains authenticated user
+          spotId: spotId
         }
       });
 
@@ -98,8 +98,8 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
 
       // Create the new review
       const newReview = await Review.create({
-        user_id: req.user.id, // Contains authenticated user
-        spot_id: spotId,
+        userId: req.user.id, // Contains authenticated user
+        spotId: spotId,
         review: review,
         stars: stars,
         createdAt: new Date(),
@@ -134,7 +134,7 @@ router.get('/:spotId', async (req, res) => {
                     attributes: ['id', 'firstName', 'lastName']
                 }
             ],
-            attributes: ['id', 'owner_id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgStarRating']
+            attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgStarRating']
         });
 
         if (!spot) {
@@ -162,7 +162,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
         let spots = await Spot.findAll({
             where: {
-                owner_id: userId
+                ownerId: userId
             },
             include: [
                 { model: SpotImage, as: 'images' },
@@ -176,7 +176,17 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             });
         }
 
-        res.status(200).json(spots)
+        spots = spots.map(spot => {
+            const newSpot = spot.toJSON();
+
+            // Assign default values if these are null
+            newSpot.avgRating = newSpot.avgRating || 0;
+            newSpot.previewImage = newSpot.previewImage || 'image url';
+
+            return newSpot;
+        });
+
+        res.status(200).json({ Spots: spots });
 
 });
 

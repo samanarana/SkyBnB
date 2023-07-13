@@ -1,4 +1,7 @@
 'use strict';
+
+const moment = require('moment');
+
 const {
   Model
 } = require('sequelize');
@@ -10,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Spot, { foreignKey: 'spot_id', as: 'spot' });
-      this.hasMany(models.ReviewImage, { foreignKey: 'review_id', as: 'images', onDelete: 'CASCADE' });
-      this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+      this.belongsTo(models.Spot, { foreignKey: 'spotId', as: 'spot' });
+      this.hasMany(models.ReviewImage, { foreignKey: 'reviewId', as: 'images', onDelete: 'CASCADE' });
+      this.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
     }
   }
   Review.init({
@@ -21,11 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    spot_id: {
+    spotId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -37,9 +40,18 @@ module.exports = (sequelize, DataTypes) => {
     stars: DataTypes.INTEGER,
     createdAt: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW, // Set the default value to the current timestamp
+      defaultValue: DataTypes.NOW,
+      get() {
+        return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
-    updatedAt: DataTypes.DATE,
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      get() {
+        return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD HH:mm:ss')
+      },
+    },
   },
   {
     sequelize,

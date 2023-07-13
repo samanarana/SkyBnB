@@ -14,7 +14,7 @@ router.get('/:userId', restoreUser, requireAuth, async (req, res, next) => {
     // Find all bookings by this user
     const bookings = await Booking.findAll({
         where: {
-            user_id: userId,
+            userId: userId,
         },
         include: [{ model: Spot, as: 'spot' }]
     });
@@ -56,15 +56,15 @@ router.post('/spot/:spotId', restoreUser, requireAuth, async (req, res) => {
     // Check if there's a booking conflict
     const conflict = await Booking.findOne({
         where: {
-            spot_id: spotId,
+            spotId: spotId,
             [Op.or]: [
                 {
-                    start_date: {
+                    startDate: {
                         [Op.between]: [startDate, endDate],
                     },
                 },
                 {
-                    end_date: {
+                    endDate: {
                         [Op.between]: [startDate, endDate],
                     },
                 },
@@ -84,10 +84,10 @@ router.post('/spot/:spotId', restoreUser, requireAuth, async (req, res) => {
 
      // Create the booking
      const booking = await Booking.create({
-        spot_id: spotId,
-        user_id: userId,
-        start_date: startDate,
-        end_date: endDate,
+        spotId: spotId,
+        userId: userId,
+        startDate: startDate,
+        endDate: endDate,
     });
 
     res.status(200).json(booking);
@@ -106,7 +106,7 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
     const booking = await Booking.findOne({
         where: {
             id: bookingId,
-            user_id: userId,
+            userId: userId,
         },
     });
 
@@ -115,7 +115,7 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
     }
 
     // The user can't edit a booking that's past the end date
-    if (new Date(booking.end_date) < new Date()) {
+    if (new Date(booking.endDate) < new Date()) {
         return res.status(403).json({ message: "Past bookings can't be modified" });
     }
 
@@ -135,15 +135,15 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
             id: {
                 [Op.ne]: bookingId,
             },
-            spot_id: booking.spot_id,
+            spotId: booking.spotId,
             [Op.or]: [
                 {
-                    start_date: {
+                    startDate: {
                         [Op.between]: [startDate, endDate],
                     },
                 },
                 {
-                    end_date: {
+                    endDate: {
                         [Op.between]: [startDate, endDate],
                     },
                 },
@@ -162,8 +162,8 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
     }
 
      // Update the booking
-     booking.start_date = startDate;
-     booking.end_date = endDate;
+     booking.startDate = startDate;
+     booking.endDate = endDate;
      await booking.save();
 
      res.status(200).json(booking);
@@ -180,7 +180,7 @@ router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) =>
         where: {
             id: bookingId,
             [Op.or]: [
-                {user_id: req.user.id}, // Booking belongs to the user
+                {userId: req.user.id}, // Booking belongs to the user
                 { '$spot.owner_id$': req.user.id } // Spot of the booking belongs to the user
             ]
         },

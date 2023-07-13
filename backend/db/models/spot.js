@@ -1,14 +1,17 @@
 'use strict';
+
+const moment = require('moment');
+
 const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     static associate(models) {
-      this.belongsTo(models.User, { foreignKey: 'owner_id', as: 'owner' });
-      this.hasMany(models.SpotImage, { foreignKey: 'spot_id', as: 'images', onDelete: 'CASCADE', hooks: true });
-      this.hasMany(models.Review, { foreignKey: 'spot_id', as: 'reviews', onDelete: 'CASCADE', hooks: true });
-      this.hasMany(models.Booking, { foreignKey: 'spot_id', as: 'bookings', onDelete: 'CASCADE', hooks: true });
+      this.belongsTo(models.User, { foreignKey: 'ownerId', as: 'owner' });
+      this.hasMany(models.SpotImage, { foreignKey: 'spotId', as: 'images', onDelete: 'CASCADE', hooks: true });
+      this.hasMany(models.Review, { foreignKey: 'spotId', as: 'reviews', onDelete: 'CASCADE', hooks: true });
+      this.hasMany(models.Booking, { foreignKey: 'spotId', as: 'bookings', onDelete: 'CASCADE', hooks: true });
     }
   }
   Spot.init({
@@ -17,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    owner_id: {
+    ownerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -51,24 +54,30 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+      get() {
+        return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+      get() {
+        return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
-    numReviews: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    },
-    avgStarRating: {
+    // numReviews: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    //   defaultValue: 0
+    // },
+    avgRating: {
       type: DataTypes.DECIMAL,
       validate: {
         min: 0,
         max: 5,
       },
     },
-    preview_image: DataTypes.STRING,
+    previewImage: DataTypes.STRING,
   },
   {
     sequelize,

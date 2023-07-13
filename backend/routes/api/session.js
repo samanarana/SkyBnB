@@ -24,49 +24,97 @@ const validateLogin = [
 ];
 
 
-// Log in
-router.post(
-    '/',
-    validateLogin,
-    async (req, res, next) => {
-      const { credential, password } = req.body;
+// // Log in
+// router.post(
+//     '/',
+//     validateLogin,
+//     async (req, res, next) => {
+//       const { credential, password } = req.body;
 
-      const user = await User.unscoped().findOne({
-        where: {
-          [Op.or]: {
-            username: credential,
-            email: credential
-          }
-        }
-      });
+//       const user = await User.unscoped().findOne({
+//         where: {
+//           [Op.or]: {
+//             username: credential,
+//             email: credential
+//           }
+//         }
+//       });
 
-      if (!user || !bcrypt.compareSync(password, user.hashedPassword.toString())) {
-        const err = new Error('Login failed');
-        err.status = 401;
-        err.title = 'Login failed';
-        err.errors = { credential: 'The provided credentials were invalid.' };
-        return next(err);
+//       if (!user || !bcrypt.compareSync(password, user.hashedPassword.toString())) {
+//         const err = new Error('Login failed');
+//         err.status = 401;
+//         err.title = 'Login failed';
+//         err.errors = { credential: 'The provided credentials were invalid.' };
+//         return next(err);
+//       }
+
+//       const safeUser = {
+//         id: user.id,
+//         email: user.email,
+//         username: user.username,
+//         firstName: user.firstName,
+//         lastName: user.lastName
+//       };
+
+//       req.user = safeUser;
+//       console.log(req.user);
+
+//       await setTokenCookie(res, safeUser);
+
+//       return res.json({
+//         user: safeUser
+//       });
+
+//     }
+//   );
+
+
+
+// ROUTE TO LOGIN
+router.post('', validateLogin, async (req, res) => {
+  const { credential, password } = req.body;
+
+  if (!credential || !password) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "credential": "Email or username is required",
+        "password": "Password is required"
       }
+    });
+  }
 
-      const safeUser = {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName
-      };
+  const user = await User.scope('withFullName').findOne({
+    where: { email: credential },
+    attributes: ['id', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
+  });
 
-      req.user = safeUser;
-      console.log(req.user);
+  if (!user || !(await bcrypt.compare(password, user.hashedPassword.toString()))) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
 
-      await setTokenCookie(res, safeUser);
+  const token = await setTokenCookie(res, user);
 
-      return res.json({
-        user: safeUser
-      });
+  console.log('Token:', token); // log the token for debugging
+  console.log('User:', user); // log the user for debugging
 
-    }
-  );
+
+  let resObj = user.toSafeObject();
+
+  //resObj.token = token;
+
+  resObj.firstName = user.firstName;
+  resObj.lastName = user.lastName;
+
+  user.token = token;
+
+  res.json(resObj);
+});
+
+
+
+
+
 
 
   // Log out

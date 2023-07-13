@@ -13,7 +13,7 @@ router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
     // Find all reviews by this user
     const reviews = await Review.findAll({
         where: {
-            user_id: userId,
+            userId: userId,
         },
         include: [{ model: Spot, as: 'spot' }, { model: ReviewImage, as: 'images' }]
     });
@@ -48,13 +48,13 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
 
     // Create new image
     const newImage = await ReviewImage.create ({
-        review_id: review.id,
+        reviewId: review.id,
         url: url
     });
 
     delete newImage.dataValues.createdAt;
     delete newImage.dataValues.updatedAt;
-    delete newImage.dataValues.review_id;
+    delete newImage.dataValues.reviewId;
 
     // Respond with the new image
     res.status(200).json(newImage);
@@ -81,8 +81,8 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
       await reviewToUpdate.update({
         review: review,
         stars: stars,
-        user_id: userId,
-        spot_id: spotId,
+        userId: userId,
+        spotId: spotId,
     },
       { fields: ['review', 'stars', 'user_id', 'spot_id', 'createdAt'] }
     );

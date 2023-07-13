@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       return { id, firstName, lastName, email, username };
     }
     static associate(models) {
-      this.hasMany(models.Spot, { foreignKey: 'owner_id', as: 'spots' });
-      this.hasMany(models.Booking, { foreignKey: 'user_id', as: 'bookings' });
-      this.hasMany(models.Review, { foreignKey: 'user_id', as: 'reviews' });
+      this.hasMany(models.Spot, { foreignKey: 'ownerId', as: 'spots' });
+      this.hasMany(models.Booking, { foreignKey: 'userId', as: 'bookings' });
+      this.hasMany(models.Review, { foreignKey: 'userId', as: 'reviews' });
     }
   };
 
@@ -39,12 +39,25 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [2, 60]
+          len: [2, 60],
+          is: ["^[a-z]+$",'i'], //only allows letters
+          notEmpty: {
+            args: true,
+            msg: 'First Name cannot be empty or contain only whitespace'
+          }
         }
       },
       lastName: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          len: [2, 60],
+          is: ["^[a-z]+$",'i'], //only allows letters
+          notEmpty: {
+            args: true,
+            msg: 'Last Name cannot be empty or contain only whitespace'
+          }
+        }
       },
       email: {
         type: DataTypes.STRING,
