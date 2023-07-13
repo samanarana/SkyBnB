@@ -3,11 +3,11 @@ const router = express.Router();
 const { Review, ReviewImage, Spot, User } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-const { requireAuth } = require('../../utils/auth');
+const { restoreUser, requireAuth } = require('../../utils/auth');
 
 
 // ROUTE FOR GETTING ALL REVIEWS BY A CURRENT USER
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
     const userId = req.params.userId; // Extract userId from the request parameters
 
     // Find all reviews by this user
@@ -25,7 +25,7 @@ router.get('/:userId', async (req, res) => {
 
 
 // ROUTE TO ADD AN IMAGE TO A REVIEW BASED ON THE REVIEW'S ID
-router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
+router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next) => {
     const { reviewId } = req.params;
     const { url } = req.body;
 
@@ -62,7 +62,7 @@ router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
 
 
 // ROUTE FOR EDITING A REVIEW
-router.put('/:reviewId', requireAuth, async (req, res, next) => {
+router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
     const { reviewId } = req.params;
     const { review, stars, spotId } = req.body;
     const userId = req.user.id; // Get the authenticated user's ID
@@ -99,7 +99,7 @@ router.put('/:reviewId', requireAuth, async (req, res, next) => {
 
 
 // ROUTE FOR DELETING A REVIEW
-router.delete('/:reviewId', requireAuth, async (req, res, next) => {
+router.delete('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
 
     const { reviewId } = req.params;
 

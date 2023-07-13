@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { Booking, Spot, User } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 
 
 
 // ROUTE TO GET ALL OF THE CURRENT USERS BOOKINGS
-router.get('/:userId', requireAuth, async (req, res, next) => {
+router.get('/:userId', restoreUser, requireAuth, async (req, res, next) => {
 
     const userId = req.params.userId;
 
@@ -28,7 +28,7 @@ router.get('/:userId', requireAuth, async (req, res, next) => {
 
 
 // CREATE A BOOKING FROM A SPOT BASED ON THE SPOTS ID
-router.post('/spot/:spotId', requireAuth, async (req, res) => {
+router.post('/spot/:spotId', restoreUser, requireAuth, async (req, res) => {
 
     const spotId = req.params.spotId;
     const userId = req.user.id;
@@ -97,7 +97,7 @@ router.post('/spot/:spotId', requireAuth, async (req, res) => {
 
 
 // ROUTE FOR EDITING A BOOKING
-router.put('/:bookingId', requireAuth, async (req, res) => {
+router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
     const bookingId = req.params.bookingId; // Extract bookingId from the request parameters
     const userId = req.user.id;
     const { startDate, endDate } = req.body;
@@ -172,7 +172,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
 
 
 // ROUTE TO DELETE A BOOKING
-router.delete('/:bookingId', requireAuth, async (req, res, next) => {
+router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) => {
     const bookingId = req.params.bookingId;
 
     // Find the booking

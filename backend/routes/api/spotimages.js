@@ -1,13 +1,13 @@
 const express = require('express');
 const { Spot, SpotImage } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 const router = express.Router();
 
 
 
 // ROUTE TO DELETE A SPOT IMAGE
-router.delete('/:imageId', requireAuth, async (req, res, next) => {
+router.delete('/:imageId', restoreUser, requireAuth, async (req, res, next) => {
     const imageId = req.params.imageId;
 
 
