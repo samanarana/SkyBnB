@@ -141,34 +141,33 @@ router.get('/', async (req, res, next) => {
             'name',
             'description',
             'price',
+            'createdAt',
+            'updatedAt',
             [Sequelize.fn('AVG', Sequelize.col('reviews.stars')), 'avgRating']
         ],
         include: [{
             model: Review,
             as: 'reviews',
             attributes: [],
-            include: [{
-                model: ReviewImage,
-                as: 'images',
-                attributes: ['url']
-            }]
         }],
         group: ['Spot.id'],
         raw: true,
     });
 
-    spots = spots.map(spot => {
+    // process spots
+    spots = await Promise.all(spots.map(async (spot) => {
+        const image = await ReviewImage.findOne({
+            where: { reviewId: spot.id },
+            attributes: ['url'],
+        });
+        spot.previewImage = image ? image.url : null;
         spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
         spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
         spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
-        spot.previewImage = spot['reviews.images.url'];
-        delete spot['reviews.images.id'];
-        delete spot['reviews.images.url'];
         return spot;
-    });
+    }));
 
-
-    return res.status(200).json(spots);
+    return res.status(200).json({ Spots: spots });
 });
 
 
