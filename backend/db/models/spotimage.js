@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     spotId: DataTypes.INTEGER,
     url: DataTypes.STRING,
     preview: DataTypes.BOOLEAN,
-    avgStarRating: {
+    avgRating: {
       type: DataTypes.DECIMAL,
       validate: {
         min: 0,

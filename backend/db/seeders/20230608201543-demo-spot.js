@@ -21,7 +21,6 @@ module.exports = {
         name: 'Spot 1',
         description: 'This is the first spot',
         price: 100.0,
-        //avgStarRating: 4.5,
         previewImage: 'https://www.google.com/'
       },
       {
@@ -35,7 +34,6 @@ module.exports = {
         name: 'Spot 2',
         description: 'This is the second spot',
         price: 150.0,
-        //avgStarRating: 4.0,
         previewImage: 'http://placekitten.com/200/300'
       },
       {
@@ -49,7 +47,6 @@ module.exports = {
         name: 'Spot 3',
         description: 'This is the third spot',
         price: 200.0,
-        //avgStarRating: 4.8,
         previewImage: 'https://www.twitter.com/'
       }
     ], {});
