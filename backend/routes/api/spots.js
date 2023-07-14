@@ -119,7 +119,7 @@ router.get('/:spotId', async (req, res) => {
                     attributes: ['id', 'firstName', 'lastName']
                 }
             ],
-            attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgStarRating']
+            attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgRating']
         });
 
         if (!spot) {
