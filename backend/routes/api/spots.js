@@ -5,7 +5,7 @@ const { Op } = require('sequelize');
 //const { handleValidationErrors } = require('../../utils/validation');
 const Sequelize = require('sequelize');
 const router = express.Router();
-
+const moment = require('moment');
 
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
 router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) => {
