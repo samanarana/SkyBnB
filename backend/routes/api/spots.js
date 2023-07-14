@@ -439,7 +439,7 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
 // Remove the numReviews, previewImage, and avgRating properties
 delete newSpot.dataValues.numReviews;
 delete newSpot.dataValues.previewImage;
-delete spotObj.avgRating;
+delete newSpot.dataValues.avgRating;
 
 
     res.json(newSpot);
