@@ -164,6 +164,12 @@ router.get('/', async (req, res, next) => {
         spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
         spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
         spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
+
+        spot.createdAt = moment(spot.createdAt).format('YYYY-MM-DD HH:mm:ss');
+        spot.updatedAt = moment(spot.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+
+        spot.avgRating = parseFloat(spot.avgRating.toFixed(1));
+
         return spot;
     }));
 
