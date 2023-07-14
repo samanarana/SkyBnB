@@ -29,7 +29,7 @@ module.exports = {
       preview: {
         type: Sequelize.BOOLEAN
       },
-      avgStarRating: {
+      avgRating: {
         type: Sequelize.DECIMAL,
       },
       createdAt: {

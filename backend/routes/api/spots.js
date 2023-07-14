@@ -111,7 +111,7 @@ router.get('/:spotId', async (req, res) => {
                 {
                     model: SpotImage,
                     as: 'images', // change this from 'SpotImages' to 'images'
-                    attributes: ['id', 'url', 'preview', 'avgStarRating']
+                    attributes: ['id', 'url', 'preview', 'avgRating']
                 },
                 {
                     model: User,
@@ -411,9 +411,6 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
         });
     };
 
-
-
-
     const newSpot = await Spot.create({
         ownerId: user.id,
         address,
@@ -427,6 +424,10 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
         price,
         createdAt,
         updatedAt
+    }, {
+        attributes: {
+            exclude: ['avgRating']
+        }
     });
 
 // Remove the numReviews, previewImage, and avgRating properties
