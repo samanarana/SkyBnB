@@ -168,6 +168,8 @@ router.get('/', async (req, res, next) => {
         spot.createdAt = moment(spot.createdAt).format('YYYY-MM-DD HH:mm:ss');
         spot.updatedAt = moment(spot.updatedAt).format('YYYY-MM-DD HH:mm:ss');
 
+        spot.avgRating = parseFloat(parseFloat(spot.avgRating).toFixed(1));
+
         return spot;
     }));
 
