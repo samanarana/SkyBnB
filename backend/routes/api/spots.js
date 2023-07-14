@@ -194,22 +194,20 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             where: {
                 ownerId: userId
             },
-            include: {
-                model: Review,
-                as: 'reviews',
-                attributes: []
-            },
-            attributes: {
-                include: [
-                    [
-                        sequelize.fn('AVG', sequelize.col('reviews.rating')), 'avgRating'
-                    ]
-                ]
-            },
-            group: ['Spot.id'],
-            raw: true
+            attributes: ['id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage']
         });
 
+        for(let spot of spots) {
+            // Get all related reviews
+            const reviews = await Review.findAll({ where: { spotId: spot.id } });
+
+            // Calculate the average rating
+            let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+
+            // Handle cases when there are no reviews
+            spot.avgRating = reviews.length > 0 ? avgRating : null;
+
+        }
         res.status(200).json({ Spots: spots });
 });
 
