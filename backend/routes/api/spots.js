@@ -36,6 +36,14 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
 
     const newImage = await SpotImage.create({ spotId: spotId, url, preview });
 
+
+    // Remove the spotId, createdAt, updatedAt, and avgStarRating properties
+    delete newImage.dataValues.spotId;
+    delete newImage.dataValues.createdAt;
+    delete newImage.dataValues.updatedAt;
+    delete newImage.dataValues.avgStarRating;
+
+
     res.json(newImage);
 });
 
@@ -207,34 +215,41 @@ router.get('/', async (req, res, next) => {
 router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
     const userId = req.user.id;  // Get the user ID from the authenticated user
 
-        let spots = await Spot.findAll({
-            where: {
-                ownerId: userId
+    let spots = await Spot.findAll({
+        where: {
+            ownerId: userId
+        },
+        include: [
+            {
+                model: SpotImage,
+                as: 'images',
+                attributes: ['url'] // Fetching only 'url' attribute of the SpotImage
             },
-            include: [
-                { model: SpotImage, as: 'images' },
-                { model: User, as: 'owner' }
-            ]
+            {
+                model: User,
+                as: 'owner'
+            }
+        ]
+    });
+
+    if (!spots) {
+        return res.status(404).json({
+            message: "No spots found for the current user"
         });
+    }
 
-        if (!spots) {
-            return res.status(404).json({
-                message: "No spots found for the current user"
-            });
-        }
+    spots = spots.map(spot => {
+        const newSpot = spot.toJSON();
 
-        spots = spots.map(spot => {
-            const newSpot = spot.toJSON();
+        const defaultImageUrl = "image url";
 
-            // Assign default values if these are null
-            newSpot.avgRating = newSpot.avgRating || 0;
-            newSpot.previewImage = newSpot.previewImage || 'image url';
+        newSpot.previewImage = newSpot.images && newSpot.images.length > 0 ? newSpot.images[0].url : defaultImageUrl;
+        newSpot.avgRating = spot.avgRating ? parseFloat(parseFloat(spot.avgRating).toFixed(1)) : 0;
 
-            return newSpot;
-        });
+        return newSpot;
+    });
 
-        res.status(200).json({ Spots: spots });
-
+    res.status(200).json({ Spots: spots });
 });
 
 
@@ -414,8 +429,10 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
         updatedAt
     });
 
-    // Remove the numReviews property
+// Remove the numReviews, previewImage, and avgRating properties
 delete newSpot.dataValues.numReviews;
+delete newSpot.dataValues.previewImage;
+delete newSpot.dataValues.avgRating;
 
 
     res.json(newSpot);
