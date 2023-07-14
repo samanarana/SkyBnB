@@ -37,11 +37,11 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
     const newImage = await SpotImage.create({ spotId: spotId, url, preview });
 
 
-    // Remove the spotId, createdAt, updatedAt, and avgStarRating properties
+    // Remove the spotId, createdAt, updatedAt, and avgRating properties
     delete newImage.dataValues.spotId;
     delete newImage.dataValues.createdAt;
     delete newImage.dataValues.updatedAt;
-    delete newImage.dataValues.avgStarRating;
+    delete newImage.dataValues.avgRating;
 
 
     res.json(newImage);
@@ -223,12 +223,8 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             {
                 model: SpotImage,
                 as: 'images',
-                attributes: ['url'] // Fetching only 'url' attribute of the SpotImage
+                attributes: ['url', 'preview']
             },
-            {
-                model: User,
-                as: 'owner'
-            }
         ]
     });
 
@@ -243,8 +239,18 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
         const defaultImageUrl = "image url";
 
-        newSpot.previewImage = newSpot.images && newSpot.images.length > 0 ? newSpot.images[0].url : defaultImageUrl;
+        // Select the preview image from the images array
+        const previewImage = newSpot.images.find(image => image.preview);
+        newSpot.previewImage = previewImage ? previewImage.url : defaultImageUrl;
+
+        delete newSpot.images;
+        delete newSpot.owner;
+
         newSpot.avgRating = spot.avgRating ? parseFloat(parseFloat(spot.avgRating).toFixed(1)) : 0;
+
+        newSpot.lat = parseFloat(newSpot.lat);
+        newSpot.lng = parseFloat(newSpot.lng);
+        newSpot.price = parseFloat(newSpot.price);
 
         return newSpot;
     });
@@ -433,7 +439,7 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
 // Remove the numReviews, previewImage, and avgRating properties
 delete newSpot.dataValues.numReviews;
 delete newSpot.dataValues.previewImage;
-delete newSpot.dataValues.avgRating;
+delete spotObj.avgRating;
 
 
     res.json(newSpot);
