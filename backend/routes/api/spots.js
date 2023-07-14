@@ -188,32 +188,29 @@ router.get('/', async (req, res, next) => {
 
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
 router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-    const userId = req.user.id;  // Get the user ID from the authenticated user
+        const userId = req.user.id;
 
-    let spots = await Spot.findAll({
-        where: {
-            ownerId: userId
-        },
-        attributes: {
-            include: [
-                [
-                    sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0),
-                    'avgRating'
-                ]
-            ]
-        },
-        include: [
-            {
+        const spots = await Spot.findAll({
+            where: {
+                ownerId: userId
+            },
+            include: {
                 model: Review,
                 as: 'reviews',
                 attributes: []
-            }
-        ],
-        group: ['Spot.id']
-    });
+            },
+            attributes: {
+                include: [
+                    [
+                        sequelize.fn('AVG', sequelize.col('reviews.rating')), 'avgRating'
+                    ]
+                ]
+            },
+            group: ['Spot.id'],
+            raw: true
+        });
 
-        res.status(200).json(spots)
-
+        res.status(200).json({ Spots: spots });
 });
 
 
