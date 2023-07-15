@@ -99,6 +99,31 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
     }
   });
 
+//ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
+router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
+    console.log ("current.user", req.user);
+            const userId = req.user.id;
+
+            const spots = await Spot.findAll({
+                where: {
+                    ownerId: userId
+                },
+                attributes: ['id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage']
+            });
+
+            for(let spot of spots) {
+                // Get all related reviews
+                const reviews = await Review.findAll({ where: { spotId: spot.id } });
+
+                // Calculate the average rating
+                let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+
+                // Handle cases when there are no reviews
+                spot.avgRating = reviews.length > 0 ? avgRating : null;
+
+            }
+            res.status(200).json({ Spots: spots });
+    });
 
 // ROUTE TO GET DETAILS OF A SPOT FROM AN ID
 router.get('/:spotId', async (req, res) => {
@@ -110,12 +135,12 @@ router.get('/:spotId', async (req, res) => {
             include: [
                 {
                     model: SpotImage,
-                    as: 'images', // change this from 'SpotImages' to 'images'
+                    as: 'SpotImages', // change this from 'SpotImages' to 'images'
                     attributes: ['id', 'url', 'preview', 'avgRating']
                 },
                 {
                     model: User,
-                    as: 'owner', // 'owner' is correct if you have used this alias in your association
+                    as: 'Owner', // 'owner' is correct if you have used this alias in your association
                     attributes: ['id', 'firstName', 'lastName']
                 }
             ],
@@ -186,30 +211,6 @@ router.get('/', async (req, res, next) => {
 
 
 
-//ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-        const userId = req.user.id;
-
-        const spots = await Spot.findAll({
-            where: {
-                ownerId: userId
-            },
-            attributes: ['id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage']
-        });
-
-        for(let spot of spots) {
-            // Get all related reviews
-            const reviews = await Review.findAll({ where: { spotId: spot.id } });
-
-            // Calculate the average rating
-            let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-
-            // Handle cases when there are no reviews
-            spot.avgRating = reviews.length > 0 ? avgRating : null;
-
-        }
-        res.status(200).json({ Spots: spots });
-});
 
 
 // // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
@@ -275,7 +276,7 @@ router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
                 ownerId: req.user.id // Check ownership
             },
             include: [
-                { model: SpotImage, as: 'images' },
+                { model: SpotImage, as: 'SpotImages' },
                 { model: Review, as: 'reviews' },
                 { model: Booking, as: 'bookings' }
             ]
@@ -356,6 +357,72 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
     res.json(updatedSpot);
 });
 
+
+// CREATE A BOOKING FROM A SPOT BASED ON THE SPOTS ID
+router.post('/:spotId/bookings', restoreUser, requireAuth, async (req, res) => {
+
+    const spotId = req.params.spotId;
+    const userId = req.user.id;
+    const { startDate, endDate } = req.body;
+
+    // Check if the spot exists
+    const spot = await Spot.findByPk(spotId);
+
+    if(!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+
+    // Check if the start date is before the end date
+    if (new Date(startDate) >= new Date(endDate)) {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: {
+                endDate: "endDate cannot be on or before startDate"
+            }
+        });
+
+    }
+
+    // Check if there's a booking conflict
+    const conflict = await Booking.findOne({
+        where: {
+            spotId: spotId,
+            [Op.or]: [
+                {
+                    startDate: {
+                        [Op.between]: [startDate, endDate],
+                    },
+                },
+                {
+                    endDate: {
+                        [Op.between]: [startDate, endDate],
+                    },
+                },
+            ],
+        },
+    });
+
+    if (conflict) {
+        return res.status(403).json({
+            message: "Sorry, this spot is already booked for the specified dates",
+            errors: {
+                startDate: "Start date conflicts with an existing booking",
+                endDate: "End date conflicts with an existing booking"
+            }
+        });
+    }
+
+     // Create the booking
+     const booking = await Booking.create({
+        spotId: spotId,
+        userId: userId,
+        startDate: startDate,
+        endDate: endDate,
+    });
+
+    res.status(200).json(booking);
+});
 
 
 
@@ -445,7 +512,7 @@ delete newSpot.dataValues.previewImage;
 delete spotData.avgRating;
 
 
-    res.json(newSpot);
+    res.json(spotData);
 });
 
 
@@ -468,8 +535,21 @@ router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
         where: {
             spotId: spotId,
         },
-        include: [{ model: User, as: 'user'}, { model: ReviewImage, as: 'images'}]
+        include: [{ model: User, as: 'User'}, { model: ReviewImage, as: 'ReviewImages'}]
     });
+    console.log ("REVIeWS:", reviews);
+
+    for (let i in reviews)
+    {
+        for (let y in reviews[i].ReviewImages)
+        {
+            console.log ("ReviewImages:",y, reviews[i].dataValues.ReviewImages[y].dataValues);
+            delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
+            delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
+            delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
+        }
+
+    }
 
     // Respond with the reviews
     res.json({ Reviews: reviews });
@@ -493,7 +573,7 @@ router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next)
     const bookings = await Booking.findAll({
         where: { spotId: spotId },
         include: [
-            { model: User, as: 'user' }
+            { model: User, as: 'User' }
         ]
     });
 

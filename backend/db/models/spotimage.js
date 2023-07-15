@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     preview: DataTypes.BOOLEAN,
     avgRating: {
       type: DataTypes.DECIMAL,
+      get() {
+        const value = this.getDataValue('avgRating');
+        return value ? parseFloat(value.toFixed(1)) : 0;
+      },
       validate: {
         min: 0,
         max: 5,

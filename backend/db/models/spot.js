@@ -8,8 +8,8 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     static associate(models) {
-      this.belongsTo(models.User, { foreignKey: 'ownerId', as: 'owner' });
-      this.hasMany(models.SpotImage, { foreignKey: 'spotId', as: 'images', onDelete: 'CASCADE', hooks: true });
+      this.belongsTo(models.User, { foreignKey: 'ownerId', as: 'Owner' });
+      this.hasMany(models.SpotImage, { foreignKey: 'spotId', as: 'SpotImages', onDelete: 'CASCADE', hooks: true });
       this.hasMany(models.Review, { foreignKey: 'spotId', as: 'reviews', onDelete: 'CASCADE', hooks: true });
       this.hasMany(models.Booking, { foreignKey: 'spotId', as: 'bookings', onDelete: 'CASCADE', hooks: true });
     }
@@ -74,15 +74,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       get() {
         const value = this.getDataValue('avgRating');
-        return value ? parseFloat(value.toFixed(1)) : null;
+        return value ? parseFloat(value.toFixed(1)) : 0;
       },
       validate: {
         min: 0,
         max: 5,
       },
     },
-    previewImage: DataTypes.STRING,
-  },
+    previewImage:{
+      type: DataTypes.STRING,
+    get() {
+      const value = this.getDataValue('previewImage');
+      return value?value:"image url";
+    },
+  }
+},
   {
     sequelize,
     modelName: 'Spot',

@@ -7,6 +7,34 @@ const { restoreUser, requireAuth } = require('../../utils/auth');
 
 
 // ROUTE FOR GETTING ALL REVIEWS BY A CURRENT USER
+router.get('/current', restoreUser, requireAuth, async (req, res) => {
+    const userId = req.user.id; // Extract userId from the request parameters
+
+    // Find all reviews by this user
+    const reviews = await Review.findAll({
+        where: {
+            userId: userId,
+        },
+        include: [{ model: Spot, as: 'Spot' }, { model: ReviewImage, as: 'ReviewImages' }, {model: User, as: 'User'}]
+    });
+    for (let i in reviews)
+    {
+        for (let y in reviews[i].ReviewImages)
+        {
+            console.log ("ReviewImages:",y, reviews[i].dataValues.ReviewImages[y].dataValues);
+            delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
+            delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
+            delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
+        }
+
+    }
+    console.log ("REVIEWS:", reviews);
+    // Respond with the reviews
+    res.json({ Reviews: reviews });
+});
+
+
+// ROUTE FOR GETTING ALL REVIEWS BY A CURRENT USER
 router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
     const userId = req.params.userId; // Extract userId from the request parameters
 
@@ -31,7 +59,7 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
 
     // Get the review
     const review = await Review.findByPk(reviewId);
-
+console.log ("REVIEW IMAGES", review);
     //console.log(typeof req.user.id, typeof review.user_id);
     //console.log(req.user.id, review.user_id);
 
@@ -41,7 +69,7 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
 
 
     // Check if number of images for the review is not more than the maximum allowed
-    const reviewImages = await review.getImages();
+    const reviewImages = await ReviewImage.findAll({reviewId:reviewId});
     if (reviewImages.length >= 10) {
         return res.status(403).json({ message: "Maximum number of images for this resource was reached" })
     }

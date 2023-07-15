@@ -5,6 +5,31 @@ const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 
 
+// ROUTE TO GET ALL OF THE CURRENT USERS BOOKINGS
+router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
+
+    const userId = req.user.id;
+
+    // Find all bookings by this user
+    const bookings = await Booking.findAll({
+        where: {
+            userId: userId,
+        },
+        include: [{ model: Spot, as: 'Spot' }]
+    });
+
+    for (let i in bookings)
+    {
+        console.log ("DELETE:",  bookings[i].dataValues.Spot.createdAt);
+        delete bookings[i].dataValues.Spot.dataValues.createdAt;
+        delete bookings[i].dataValues.Spot.dataValues.updatedAt;
+        delete bookings[i].dataValues.Spot.dataValues.avgRating;
+    }
+    console.log ("bookings after delete SPOT datavalues:", bookings[0].Spot.dataValues, "len", bookings.length);
+    // Respond with the bookings
+    res.json({ Bookings: bookings });
+
+});
 
 // ROUTE TO GET ALL OF THE CURRENT USERS BOOKINGS
 router.get('/:userId', restoreUser, requireAuth, async (req, res, next) => {
@@ -181,10 +206,10 @@ router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) =>
             id: bookingId,
             [Op.or]: [
                 {userId: req.user.id}, // Booking belongs to the user
-                { '$spot.owner_id$': req.user.id } // Spot of the booking belongs to the user
+                { '$spot.OwnerId$': req.user.id } // Spot of the booking belongs to the user
             ]
         },
-        include: { model: Spot, as: 'spot' }
+        include: { model: Spot, as: 'Spot' }
     });
 
     // If booking not found or does not belong to the user or the spot does not belong to the user, throw an error
