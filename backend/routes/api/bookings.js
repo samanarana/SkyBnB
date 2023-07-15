@@ -206,7 +206,7 @@ router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) =>
             id: bookingId,
             [Op.or]: [
                 {userId: req.user.id}, // Booking belongs to the user
-                { '$Spot.OwnerId$': req.user.id } // Spot of the booking belongs to the user
+                { '$Spot.ownerId$': req.user.id } // Spot of the booking belongs to the user
             ]
         },
         include: { model: Spot, as: 'Spot' }
