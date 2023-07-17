@@ -18,38 +18,26 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
         include: [{ model: Spot, as: 'Spot' }]
     });
 
-    for (let i in bookings)
-    {
-        console.log ("DELETE:",  bookings[i].dataValues.Spot.createdAt);
-        delete bookings[i].dataValues.Spot.dataValues.createdAt;
-        delete bookings[i].dataValues.Spot.dataValues.updatedAt;
-        delete bookings[i].dataValues.Spot.dataValues.avgRating;
-    }
+    for (let i in bookings) {
+        // Convert the Sequelize instances to plain JavaScript objects
+        let bookingDataValues = bookings[i].toJSON();
+
+        if (bookingDataValues.Spot) {
+            delete bookingDataValues.Spot.createdAt;
+            delete bookingDataValues.Spot.updatedAt;
+            delete bookingDataValues.Spot.avgRating;
+        }
+
+        // Replace the original booking with the modified booking
+        bookings[i] = bookingDataValues;
+    };
+
+
     console.log ("bookings after delete SPOT datavalues:", bookings[0].Spot.dataValues, "len", bookings.length);
     // Respond with the bookings
     res.json({ Bookings: bookings });
 
 });
-
-// ROUTE TO GET ALL OF THE CURRENT USERS BOOKINGS
-router.get('/:userId', restoreUser, requireAuth, async (req, res, next) => {
-
-    const userId = req.params.userId;
-
-    // Find all bookings by this user
-    const bookings = await Booking.findAll({
-        where: {
-            userId: userId,
-        },
-        include: [{ model: Spot, as: 'spot' }]
-    });
-
-    // Respond with the bookings
-    res.json({ Bookings: bookings });
-
-});
-
-
 
 
 // CREATE A BOOKING FROM A SPOT BASED ON THE SPOTS ID

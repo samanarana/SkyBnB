@@ -17,18 +17,6 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
         },
         include: [{ model: Spot, as: 'Spot' }, { model: ReviewImage, as: 'ReviewImages' }, {model: User, as: 'User'}]
     });
-    // for (let i in reviews)
-    // {
-    //     for (let y in reviews[i].ReviewImages)
-    //     {
-    //         console.log ("ReviewImages:",y, reviews[i].dataValues.ReviewImages[y].dataValues);
-    //         delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
-    //         delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
-    //         delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
-    //     }
-
-    // }
-
 
     for (let i in reviews) {
         // Convert the Sequelize instances to plain JavaScript objects

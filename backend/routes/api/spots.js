@@ -212,59 +212,6 @@ router.get('/', async (req, res, next) => {
 
 
 
-
-// // ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
-// router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-//     const userId = req.user.id;  // Get the user ID from the authenticated user
-
-//     let spots = await Spot.findAll({
-//         where: {
-//             ownerId: userId
-//         },
-//         include: [
-//             {
-//                 model: SpotImage,
-//                 as: 'images',
-//                 attributes: ['url', 'preview']
-//             },
-//         ]
-//     });
-
-//     if (!spots) {
-//         return res.status(404).json({
-//             message: "No spots found for the current user"
-//         });
-//     }
-
-//     spots = spots.map(spot => {
-//         const newSpot = spot.toJSON();
-//         const previewImage = newSpot.images.find(image => image.preview);
-//         const avgRating = spot.avgRating ? parseFloat(parseFloat(spot.avgRating).toFixed(1)) : 0;
-
-//         return {
-//             id: newSpot.id,
-//             ownerId: newSpot.ownerId,
-//             address: newSpot.address,
-//             city: newSpot.city,
-//             state: newSpot.state,
-//             country: newSpot.country,
-//             lat: parseFloat(newSpot.lat),
-//             lng: parseFloat(newSpot.lng),
-//             name: newSpot.name,
-//             description: newSpot.description,
-//             price: parseFloat(newSpot.price),
-//             numReviews: newSpot.numReviews,
-//             previewImage: previewImage ? previewImage.url : "image url",
-//             avgRating: avgRating,
-//             createdAt: newSpot.createdAt,
-//             updatedAt: newSpot.updatedAt
-//         };
-//     });
-
-//     res.status(200).json({ Spots: spots });
-// });
-
-
 // ROUTE TO DELETE A SPOT
 router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
     const spotId = req.params.spotId;
