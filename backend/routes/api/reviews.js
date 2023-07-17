@@ -71,17 +71,19 @@ router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
 router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next) => {
     const { reviewId } = req.params;
     const { url } = req.body;
+    const userId = req.user.id;
 
     // Get the review
     const review = await Review.findByPk(reviewId);
-console.log ("REVIEW IMAGES", review);
-    //console.log(typeof req.user.id, typeof review.user_id);
-    //console.log(req.user.id, review.user_id);
 
     if (!review) {
         return res.status(404).json({ message: "Review couldn't be found" });
     }
 
+    // Check if the review belongs to the currently authenticated user
+    if (review.userId !== userId) {
+        return res.status(403).json({ message: "You are not authorized to add images to this review" });
+    }
 
     // Check if number of images for the review is not more than the maximum allowed
     const reviewImages = await ReviewImage.findAll({reviewId:reviewId});
@@ -109,19 +111,23 @@ console.log ("REVIEW IMAGES", review);
 router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
     const { reviewId } = req.params;
     const { review, stars, spotId } = req.body;
-    const userId = req.user.id; // Get the authenticated user's ID
+    const userId = req.user.id;
 
-      // Get the review
-      const reviewToUpdate = await Review.findByPk(reviewId);
+    // Get the review
+    const reviewToUpdate = await Review.findByPk(reviewId);
 
-      // Check if the review couldn't be found
-      if (!reviewToUpdate) {
+    // Check if the review couldn't be found
+    if (!reviewToUpdate) {
         return res.status(404).json({ message: "Review couldn't be found" });
-      }
+    }
 
+    // Check if the review belongs to the currently authenticated user
+    if (reviewToUpdate.userId !== userId) {
+       return res.status(403).json({ message: "You are not authorized to edit this review" });
+    }
 
-      // Update the review
-      await reviewToUpdate.update({
+    // Update the review
+    await reviewToUpdate.update({
         review: review,
         stars: stars,
         userId: userId,
@@ -132,8 +138,6 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
 
       // Fetch the updated review
       const updatedReview = await Review.findByPk(reviewId);
-
-
 
       // Respond with the updated review
       res.status(200).json(updatedReview);
