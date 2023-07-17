@@ -30,21 +30,26 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
     // }
 
 
-
     for (let i in reviews) {
-        for (let y in reviews[i].ReviewImages) {
-            console.log ("ReviewImages:",y, reviews[i].dataValues.ReviewImages[y].dataValues);
-            delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
-            delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
-            delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
+        // Convert the Sequelize instances to plain JavaScript objects
+        let reviewDataValues = reviews[i].toJSON();
+
+        for (let y in reviewDataValues.ReviewImages) {
+            console.log ("ReviewImages:",y, reviewDataValues.ReviewImages[y]);
+            delete reviewDataValues.ReviewImages[y].createdAt;
+            delete reviewDataValues.ReviewImages[y].reviewId;
+            delete reviewDataValues.ReviewImages[y].updatedAt;
         }
 
-        if (reviews[i].dataValues.Spot) { // Ensure Spot object exists
-            delete reviews[i].dataValues.Spot.createdAt;
-            delete reviews[i].dataValues.Spot.updatedAt;
-            delete reviews[i].dataValues.Spot.avgRating;
+        if (reviewDataValues.Spot) {
+            delete reviewDataValues.Spot.createdAt;
+            delete reviewDataValues.Spot.updatedAt;
+            delete reviewDataValues.Spot.avgRating;
         }
-    };
+
+        // Replace the original review with the modified review
+        reviews[i] = reviewDataValues;
+    }
 
 
 
