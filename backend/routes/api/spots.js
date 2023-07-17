@@ -511,19 +511,22 @@ router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
         include: [{ model: User, as: 'User'}, { model: ReviewImage, as: 'ReviewImages'}]
     });
 
-
     for (let i in reviews)
     {
-        delete reviews[i].dataValues.User.username;
-        delete reviews[i].dataValues.User.email;
+        let reviewDataValues = reviews[i].toJSON();
 
-        for (let y in reviews[i].ReviewImages)
-        {
-            delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
-            delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
-            delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
+        if (reviewDataValues.User) {
+            delete reviewDataValues.User.username;
+            delete reviewDataValues.User.email;
         }
 
+        for (let y in reviewDataValues.ReviewImages) {
+            delete reviewDataValues.ReviewImages[y].createdAt;
+            delete reviewDataValues.ReviewImages[y].reviewId;
+            delete reviewDataValues.ReviewImages[y].updatedAt;
+        }
+
+        reviews[i] = reviewDataValues;
     }
 
     // Respond with the reviews
