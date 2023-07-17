@@ -126,6 +126,7 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
        return res.status(403).json({ message: "You are not authorized to edit this review" });
     }
 
+
     // Update the review
     await reviewToUpdate.update({
         review: review,
@@ -133,7 +134,7 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
         userId: userId,
         spotId: spotId,
     },
-      { fields: ['review', 'stars', 'userId', 'spotId', 'createdAt'] }
+      { fields: ['review', 'stars', 'userId', 'spotId', 'createdAt' ] }
     );
 
       // Fetch the updated review
