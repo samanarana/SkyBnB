@@ -58,7 +58,7 @@ router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
         where: {
             userId: userId,
         },
-        include: [{ model: Spot, as: 'spot' }, { model: ReviewImage, as: 'images' }]
+        include: [{ model: Spot, as: 'spot' }, { model: ReviewImage, as: 'ReviewImages' }]
     });
 
     // Respond with the reviews
