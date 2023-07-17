@@ -31,13 +31,6 @@ const validateSignup = [
 ];
 
 
-
-
-//   //router.get('/user/:userId', restoreUser, async (req, res) => {
-//   router.get('/user/:userId', restoreUser, async (req, res) => {
-//     const id = req.params.userId;
-
-
 //NEW ROUTE - GET THE CURRENT USER
   router.get('/current', restoreUser, async (req, res) => {
     const id = req.userId;
@@ -63,50 +56,7 @@ const validateSignup = [
 
 
 
-// // ROUTE TO LOGIN
-// router.post('/login', requireAuth, async (req, res) => {
-//   const { credential, password } = req.body;
-
-//   if (!credential || !password) {
-//     return res.status(400).json({
-//       message: "Bad Request",
-//       errors: {
-//         "credential": "Email or username is required",
-//         "password": "Password is required"
-//       }
-//     });
-//   }
-
-//   const user = await User.scope('withFullName').findOne({
-//     where: { email: credential },
-//     attributes: ['id', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
-//   });
-
-//   const token = await setTokenCookie(res, user);
-
-//   let resObj = user.toSafeObject();
-
-//   //resObj.token = token;
-
-//   resObj.firstName = user.firstName;
-//   resObj.lastName = user.lastName;
-
-//   user.token = token;
-
-//   if (!user || !(await bcrypt.compare(password, user.hashedPassword.toString()))) {
-//     return res.status(401).json({ message: "Invalid credentials" });
-//   }
-
-//   res.json(resObj);
-// });
-
-
-
-
-
-
 // NEW ROUTE SIGNUP ENDPOINT
-
 router.post('', validateSignup, async (req, res) => {
 
   const { firstName, lastName, email, username, password } = req.body;
@@ -166,18 +116,14 @@ router.post('', validateSignup, async (req, res) => {
 
 await setTokenCookie(res, safeUser);
 
-
-
   // return user info
   const { id, firstName: fName, lastName: lName, email: eMail, username: uName } = newUser;
   res.status(200).json({
-    user: {
-      id,
-      firstName: fName,
-      lastName: lName,
-      email: eMail,
-      username: uName
-    }
+    id,
+    firstName: fName,
+    lastName: lName,
+    email: eMail,
+    username: uName
   });
 });
 

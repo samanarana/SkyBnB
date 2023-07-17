@@ -35,13 +35,15 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
             delete reviewDataValues.Spot.avgRating;
         }
 
+        if (reviewDataValues.User) {
+            delete reviewDataValues.User.username;
+            delete reviewDataValues.User.email;
+        }
+
         // Replace the original review with the modified review
         reviews[i] = reviewDataValues;
     }
 
-
-
-    console.log ("REVIEWS:", reviews);
     // Respond with the reviews
     res.json({ Reviews: reviews });
 });

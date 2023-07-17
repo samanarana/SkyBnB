@@ -92,13 +92,23 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         updatedAt: new Date()
       });
 
-      // Respond with the new review
-      res.status(201).json(newReview);
+      let reviewData = newReview.get({ plain: true });
+
+      if (reviewData.User) {
+        delete reviewData.User.username;
+        delete reviewData.User.email;
+      }
+
+      res.status(201).json(reviewData);
+
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error" });
     }
   });
+
+
+
 
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
 router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
@@ -136,8 +146,8 @@ router.get('/:spotId', async (req, res) => {
             include: [
                 {
                     model: SpotImage,
-                    as: 'SpotImages', // change this from 'SpotImages' to 'images'
-                    attributes: ['id', 'url', 'preview', 'avgRating']
+                    as: 'SpotImages',
+                    attributes: ['id', 'url', 'preview']
                 },
                 {
                     model: User,
@@ -152,12 +162,22 @@ router.get('/:spotId', async (req, res) => {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
+
+        let spotDataValues = spot.toJSON();
+
+        for (let i in spotDataValues.SpotImages) {
+            delete spotDataValues.SpotImages[i].avgRating;
+        }
+
+
         res.status(200).json(spot);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
+
+
 
 // ROUTE TO GET ALL SPOTS
 router.get('/', async (req, res, next) => {
@@ -302,7 +322,13 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
         price
     });
 
-    res.json(updatedSpot);
+    let spotData = updatedSpot.get({ plain: true });
+
+    delete spotData.avgRating;
+    delete spotData.previewImage;
+
+    res.json(spotData);
+
 });
 
 
@@ -454,10 +480,9 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
 
     let spotData = newSpot.get({ plain: true });
 
-// Remove the numReviews, previewImage, and avgRating properties
-delete newSpot.dataValues.numReviews;
-delete newSpot.dataValues.previewImage;
-delete spotData.avgRating;
+    delete spotData.numReviews;
+    delete spotData.previewImage;
+    delete spotData.avgRating;
 
 
     res.json(spotData);
@@ -531,9 +556,9 @@ router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next)
         if (isOwner) {
             transformedBookings.push({
                 User: {
-                    id: booking.user.id,
-                    firstName: booking.user.firstName,
-                    lastName: booking.user.lastName
+                    id: booking.User.id,
+                    firstName: booking.User.firstName,
+                    lastName: booking.User.lastName
                 },
                 id: booking.id,
                 spotId: booking.spotId,
