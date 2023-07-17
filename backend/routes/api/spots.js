@@ -36,15 +36,16 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
 
     const newImage = await SpotImage.create({ spotId: spotId, url, preview });
 
+    // Convert the Sequelize instance to plain JavaScript object
+    let newImageDataValues = newImage.toJSON();
 
     // Remove the spotId, createdAt, updatedAt, and avgRating properties
-    delete newImage.dataValues.spotId;
-    delete newImage.dataValues.createdAt;
-    delete newImage.dataValues.updatedAt;
-    delete newImage.dataValues.avgRating;
+    delete newImageDataValues.spotId;
+    delete newImageDataValues.createdAt;
+    delete newImageDataValues.updatedAt;
+    delete newImageDataValues.avgRating;
 
-
-    res.json(newImage);
+    res.json(newImageDataValues);
 });
 
 
