@@ -17,17 +17,37 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
         },
         include: [{ model: Spot, as: 'Spot' }, { model: ReviewImage, as: 'ReviewImages' }, {model: User, as: 'User'}]
     });
-    for (let i in reviews)
-    {
-        for (let y in reviews[i].ReviewImages)
-        {
+    // for (let i in reviews)
+    // {
+    //     for (let y in reviews[i].ReviewImages)
+    //     {
+    //         console.log ("ReviewImages:",y, reviews[i].dataValues.ReviewImages[y].dataValues);
+    //         delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
+    //         delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
+    //         delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
+    //     }
+
+    // }
+
+
+
+    for (let i in reviews) {
+        for (let y in reviews[i].ReviewImages) {
             console.log ("ReviewImages:",y, reviews[i].dataValues.ReviewImages[y].dataValues);
             delete reviews[i].dataValues.ReviewImages[y].dataValues.createdAt;
             delete reviews[i].dataValues.ReviewImages[y].dataValues.reviewId;
             delete reviews[i].dataValues.ReviewImages[y].dataValues.updatedAt;
         }
 
-    }
+        if (reviews[i].dataValues.Spot) { // Ensure Spot object exists
+            delete reviews[i].dataValues.Spot.createdAt;
+            delete reviews[i].dataValues.Spot.updatedAt;
+            delete reviews[i].dataValues.Spot.avgRating;
+        }
+    };
+
+
+
     console.log ("REVIEWS:", reviews);
     // Respond with the reviews
     res.json({ Reviews: reviews });
