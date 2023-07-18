@@ -26,6 +26,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             delete bookingDataValues.Spot.createdAt;
             delete bookingDataValues.Spot.updatedAt;
             delete bookingDataValues.Spot.avgRating;
+            delete bookingDataValues.Spot.description;
         }
 
         // Replace the original booking with the modified booking

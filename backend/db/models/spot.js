@@ -31,8 +31,22 @@ module.exports = (sequelize, DataTypes) => {
     city: DataTypes.STRING,
     state: DataTypes.STRING,
     country: DataTypes.STRING,
-    lat: DataTypes.DECIMAL,
-    lng: DataTypes.DECIMAL,
+    lat: {
+      type: DataTypes.DECIMAL,
+      validate: {
+        isDecimal: true,
+        min: -90,
+        max: 90
+      }
+    },
+    lng: {
+      type: DataTypes.DECIMAL,
+      validate: {
+        isDecimal: true,
+        min: -180,
+        max: 180
+      }
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -72,6 +86,7 @@ module.exports = (sequelize, DataTypes) => {
     // },
     avgRating: {
       type: DataTypes.DECIMAL,
+      defaultValue: 0,
       get() {
         const value = this.getDataValue('avgRating');
         return value ? parseFloat(value.toFixed(1)) : 0;

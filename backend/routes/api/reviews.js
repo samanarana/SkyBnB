@@ -33,6 +33,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
             delete reviewDataValues.Spot.createdAt;
             delete reviewDataValues.Spot.updatedAt;
             delete reviewDataValues.Spot.avgRating;
+            delete reviewDataValues.Spot.description;
         }
 
         if (reviewDataValues.User) {

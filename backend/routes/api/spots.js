@@ -3,7 +3,7 @@ const { Spot, SpotImage, Review, User, Booking, ReviewImage } = require('../../d
 const { restoreUser, requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 //const { handleValidationErrors } = require('../../utils/validation');
-const Sequelize = require('sequelize');
+const { Sequelize } = require('sequelize');
 const router = express.Router();
 const moment = require('moment');
 
@@ -80,7 +80,6 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         return;
       }
 
-    //   console.log(req.user.id);
 
       // Create the new review
       const newReview = await Review.create({
@@ -119,7 +118,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
                 where: {
                     ownerId: userId
                 },
-                attributes: ['id', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage']
+                attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage']
             });
 
             for(let spot of spots) {
@@ -155,7 +154,12 @@ router.get('/:spotId', async (req, res) => {
                     attributes: ['id', 'firstName', 'lastName']
                 }
             ],
-            attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'numReviews', 'avgRating']
+            attributes: [
+                'id', 'ownerId', 'address', 'city', 'state', 'country',
+                'lat', 'lng', 'name', 'description', 'price', 'createdAt',
+                'updatedAt', 'numReviews',
+                ['avgRating', 'avgStarRating']
+            ]
         });
 
         if (!spot) {
