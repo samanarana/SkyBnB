@@ -58,7 +58,7 @@ router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
         where: {
             userId: userId,
         },
-        include: [{ model: Spot, as: 'spot' }, { model: ReviewImage, as: 'ReviewImages' }]
+        include: [{ model: Spot, as: 'Spot' }, { model: ReviewImage, as: 'ReviewImages' }]
     });
 
     // Respond with the reviews
@@ -87,7 +87,8 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
 
     // Check if number of images for the review is not more than the maximum allowed
     const reviewImages = await ReviewImage.findAll({reviewId:reviewId});
-    if (reviewImages.length >= 10) {
+    console.log (reviewId, "reviewImages", reviewImages)
+    if (reviewImages.length >= 14) {
         return res.status(403).json({ message: "Maximum number of images for this resource was reached" })
     }
 

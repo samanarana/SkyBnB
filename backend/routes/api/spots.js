@@ -59,7 +59,7 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
     try {
       const spotId = parseInt(req.params.spotId, 10); // Extract spotId from the request parameters
       const { review, stars } = req.body; // Extract review and stars from the request body
-
+     // const userId = req.user.id;
       // Check if spot exists
       const spot = await Spot.findByPk(spotId);
       if (!spot) {
