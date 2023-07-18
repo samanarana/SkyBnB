@@ -250,16 +250,20 @@ router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
             ]
         });
 
-        // If spot not found or does not belong to the user, throw an error
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
 
+    // If spot not found, throw an error
+    if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
 
-        // Delete the spot
-        await spot.destroy();
-        return res.status(200).json({ message: "Successfully deleted" });
+    // Check if the spot belongs to the user
+    if (spot.ownerId !== req.user.id) {
+        return res.status(403).json({ message: "You don't have permission to delete this spot" });
+    }
 
+    // Delete the spot
+    await spot.destroy();
+    return res.status(200).json({ message: "Successfully deleted" });
 });
 
 

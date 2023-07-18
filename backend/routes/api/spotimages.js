@@ -10,22 +10,25 @@ const router = express.Router();
 router.delete('/:imageId', restoreUser, requireAuth, async (req, res, next) => {
     const imageId = req.params.imageId;
 
-
-    //console.log('Request Parameters:', req.params);
-
-
     // Find the image
     const image = await SpotImage.findOne({
         where: {
             id: imageId
+        },
+        include: {
+            model: Spot,
+            as: 'spot'
         }
     });
-
-    //console.log('Image Found:', image);
 
     // If image not found, throw an error
     if (!image) {
         return res.status(404).json({ message: "Spot Image couldn't be found" });
+    }
+
+    // Check if the spot image belongs to the user
+    if (image.spot.ownerId !== req.user.id) {
+        return res.status(403).json({ message: "You don't have permission to delete this spot image" });
     }
 
     // Delete the image

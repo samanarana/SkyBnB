@@ -127,6 +127,12 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
         return res.status(404).json({ message: "Booking couldn't be found" });
     }
 
+    // Check if the booking belongs to the current user
+    if (booking.userId !== userId) {
+        return res.status(403).json({ message: "You do not have permission to edit this booking" });
+    }
+
+
     // The user can't edit a booking that's past the end date
     if (new Date(booking.endDate) < new Date()) {
         return res.status(403).json({ message: "Past bookings can't be modified" });
@@ -192,17 +198,18 @@ router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) =>
     const booking = await Booking.findOne({
         where: {
             id: bookingId,
-            [Op.or]: [
-                {userId: req.user.id}, // Booking belongs to the user
-                { '$Spot.ownerId$': req.user.id } // Spot of the booking belongs to the user
-            ]
         },
         include: { model: Spot, as: 'Spot' }
     });
 
-    // If booking not found or does not belong to the user or the spot does not belong to the user, throw an error
+    // If booking not found, throw an error
     if (!booking) {
         return res.status(404).json({ message: "Booking couldn't be found" });
+    }
+
+    // Check if the booking belongs to the user or if the spot of the booking belongs to the user
+    if (booking.userId !== req.user.id && booking.Spot.ownerId !== req.user.id) {
+        return res.status(403).json({ message: "You don't have permission to delete this booking" });
     }
 
     // Delete the booking

@@ -49,23 +49,6 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
 });
 
 
-// ROUTE FOR GETTING ALL REVIEWS BY A CURRENT USER
-router.get('/:userId', restoreUser, requireAuth, async (req, res) => {
-    const userId = req.params.userId; // Extract userId from the request parameters
-
-    // Find all reviews by this user
-    const reviews = await Review.findAll({
-        where: {
-            userId: userId,
-        },
-        include: [{ model: Spot, as: 'Spot' }, { model: ReviewImage, as: 'ReviewImages' }]
-    });
-
-    // Respond with the reviews
-    res.json({ Reviews: reviews });
-});
-
-
 
 // ROUTE TO ADD AN IMAGE TO A REVIEW BASED ON THE REVIEW'S ID
 router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next) => {
@@ -86,10 +69,9 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
     }
 
     // Check if number of images for the review is not more than the maximum allowed
-    const reviewImages = await ReviewImage.findAll({reviewId:reviewId});
-    console.log (reviewId, "reviewImages", reviewImages)
-    if (reviewImages.length >= 14) {
-        return res.status(403).json({ message: "Maximum number of images for this resource was reached" })
+    const reviewImages = await ReviewImage.findAll({where: {reviewId: reviewId}});
+    if (reviewImages.length >= 10) {
+        return res.status(403).json({ message: "Maximum number of images for this review was reached" })
     }
 
     // Create new image
@@ -152,6 +134,7 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
 router.delete('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
 
     const { reviewId } = req.params;
+    const currentUserId = req.user.id;
 
     // Get the review
     const reviewToDelete = await Review.findByPk(reviewId);
@@ -160,6 +143,10 @@ router.delete('/:reviewId', restoreUser, requireAuth, async (req, res, next) => 
         return res.status(404).json({ message: "Review couldn't be found" });
     }
 
+    // Check if the review belongs to the current user
+    if (reviewToDelete.userId !== currentUserId) {
+        return res.status(403).json({ message: "You don't have permission to delete this review" });
+    }
 
     // Delete the review
     await reviewToDelete.destroy();
