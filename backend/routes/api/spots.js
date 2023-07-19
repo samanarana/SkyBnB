@@ -453,15 +453,6 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
 
     const user = req.user;
 
-        // Validate avgRating
-        if (typeof avgRating !== 'number') {
-            return res.status(400).json({
-                message: "Bad Request",
-                errors: {
-                    "avgRating": "Average rating must be a number"
-                }
-            });
-        }
 
     if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
         return res.status(400).json({
