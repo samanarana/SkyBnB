@@ -25,8 +25,7 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
 
     const spot = await Spot.findOne({  // It should be Spot, not Review
         where: {
-            id: spotId,
-            ownerId: userId
+            id: spotId
         }
     });
 
@@ -57,62 +56,60 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
 
 
 
-
 // ROUTE TO CREATE A REVIEW FOR A SPOT BASED ON THE SPOTS ID
 router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next) => {
     try {
-      const spotId = parseInt(req.params.spotId, 10); // Extract spotId from the request parameters
-      const { review, stars } = req.body; // Extract review and stars from the request body
-     // const userId = req.user.id;
-      // Check if spot exists
-      const spot = await Spot.findByPk(spotId);
-      if (!spot) {
-        return res.status(404).json({ message: "Spot couldn't be found" });
-    }
+        const spotId = parseInt(req.params.spotId, 10); // Extract spotId from the request parameters
+        const { review, stars } = req.body; // Extract review and stars from the request body
+        const userId = req.user.id; // Authenticated user's id
 
-    if (spot.ownerId !== userId) {
-        return res.status(403).json({ message: "Forbidden" });
-    }
-
-      // Check if user already reviewed this spot
-      const userReview = await Review.findOne({
-        where: {
-          userId: req.user.id, // Contains authenticated user
-          spotId: spotId
+        // Check if spot exists
+        const spot = await Spot.findByPk(spotId);
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
         }
-      });
 
-      if (userReview) {
-        res.status(500).json({ message: "User already has a review for this spot" });
-        return;
-      }
+        // Check if user is the owner of the spot
+        if (spot.ownerId !== userId) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
 
+        // Check if user already reviewed this spot
+        const userReview = await Review.findOne({
+            where: {
+                userId: userId,
+                spotId: spotId
+            }
+        });
 
-      // Create the new review
-      const newReview = await Review.create({
-        userId: req.user.id, // Contains authenticated user
-        spotId: spotId,
-        review: review,
-        stars: stars,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
+        if (userReview) {
+            return res.status(400).json({ message: "User already has a review for this spot" });
+        }
 
-      let reviewData = newReview.get({ plain: true });
+        // Create the new review
+        const newReview = await Review.create({
+            userId: userId,
+            spotId: spotId,
+            review: review,
+            stars: stars,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
 
-      if (reviewData.User) {
-        delete reviewData.User.username;
-        delete reviewData.User.email;
-      }
+        let reviewData = newReview.get({ plain: true });
 
-      res.status(201).json(reviewData);
+        if (reviewData.User) {
+            delete reviewData.User.username;
+            delete reviewData.User.email;
+        }
+
+        return res.status(201).json(reviewData);
 
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
+        console.error(error);
+        next(error);
     }
-  });
-
+});
 
 
 
@@ -316,8 +313,7 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
 
     const spot = await Spot.findOne({
         where: {
-            id: spotId,
-            ownerId: userId
+            id: spotId
         }
     });
 
