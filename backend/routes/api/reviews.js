@@ -66,7 +66,7 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
 
     // Check if the review belongs to the currently authenticated user
     if (review.userId !== userId) {
-        return res.status(403).json({ message: "You are not authorized to add images to this review" });
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     // Check if number of images for the review is not more than the maximum allowed
@@ -107,7 +107,7 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
 
     // Check if the review belongs to the currently authenticated user
     if (reviewToUpdate.userId !== userId) {
-       return res.status(403).json({ message: "You are not authorized to edit this review" });
+       return res.status(403).json({ message: "Forbidden" });
     }
 
 
@@ -146,7 +146,7 @@ router.delete('/:reviewId', restoreUser, requireAuth, async (req, res, next) => 
 
     // Check if the review belongs to the current user
     if (reviewToDelete.userId !== currentUserId) {
-        return res.status(403).json({ message: "You don't have permission to delete this review" });
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     // Delete the review

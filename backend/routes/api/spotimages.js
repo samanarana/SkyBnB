@@ -28,7 +28,7 @@ router.delete('/:imageId', restoreUser, requireAuth, async (req, res, next) => {
 
     // Check if the spot image belongs to the user
     if (image.spot.ownerId !== req.user.id) {
-        return res.status(403).json({ message: "You don't have permission to delete this spot image" });
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     // Delete the image

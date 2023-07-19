@@ -20,7 +20,13 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
     },
     spotId: DataTypes.INTEGER,
-    url: DataTypes.STRING,
+    url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      },
+    },
     preview: DataTypes.BOOLEAN,
     avgRating: {
       type: DataTypes.DECIMAL,

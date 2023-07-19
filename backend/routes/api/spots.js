@@ -30,8 +30,12 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) 
         }
     });
 
-    if (!spot) {  // If the spot doesn't exist
-        return res.status(404).json({ message: "Spot couldn't be found or user does not own the spot." });
+    if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    if (spot.ownerId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     const newImage = await SpotImage.create({ spotId: spotId, url, preview });
@@ -63,9 +67,12 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
       // Check if spot exists
       const spot = await Spot.findByPk(spotId);
       if (!spot) {
-        res.status(404).json({ message: "Spot couldn't be found" });
-        return;
-      }
+        return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    if (spot.ownerId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
+    }
 
       // Check if user already reviewed this spot
       const userReview = await Review.findOne({
@@ -262,7 +269,7 @@ router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
 
     // Check if the spot belongs to the user
     if (spot.ownerId !== req.user.id) {
-        return res.status(403).json({ message: "You don't have permission to delete this spot" });
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     // Delete the spot
@@ -316,6 +323,10 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
 
     if (!spot) {
         return res.status(404).json({ message: "Spot couldn't be found" });
+    }
+
+    if (spot.ownerId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     const updatedSpot = await spot.update({

@@ -130,7 +130,7 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
 
     // Check if the booking belongs to the current user
     if (booking.userId !== userId) {
-        return res.status(403).json({ message: "You do not have permission to edit this booking" });
+        return res.status(403).json({ message: "Forbidden" });
     }
 
 
@@ -210,7 +210,7 @@ router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) =>
 
     // Check if the booking belongs to the user or if the spot of the booking belongs to the user
     if (booking.userId !== req.user.id && booking.Spot.ownerId !== req.user.id) {
-        return res.status(403).json({ message: "You don't have permission to delete this booking" });
+        return res.status(403).json({ message: "Forbidden" });
     }
 
     // Delete the booking
