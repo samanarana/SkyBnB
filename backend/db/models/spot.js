@@ -87,6 +87,13 @@ module.exports = (sequelize, DataTypes) => {
     avgRating: {
       type: DataTypes.DECIMAL,
       defaultValue: 0,
+      get() {
+        const value = this.getDataValue('avgRating');
+        if (typeof value !== 'number' || isNaN(value)) {
+          return 0;
+        }
+        return parseFloat(value.toFixed(1));
+      },
       validate: {
         min: 0,
         max: 5,
