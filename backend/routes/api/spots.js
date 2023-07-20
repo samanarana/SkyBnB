@@ -151,7 +151,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
                 let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 
                 // Handle cases when there are no reviews
-                spotData.avgRating = reviews.length > 0 ? avgRating : 0;
+                spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
 
                 // Replace the spot in the array with the modified data
                 spots[spots.indexOf(spot)] = spotData;
@@ -461,24 +461,35 @@ router.get('/', restoreUser, async (req, res) => {
     if(maxPrice) where.price = { ...where.price, [Op.lte]: parseFloat(maxPrice) };
 
     try {
-        const spots = await Spot.findAndCountAll({
+        const { count, rows } = await Spot.findAndCountAll({
             where,
             offset: (page - 1) * size,
             limit: size,
         });
 
-        // Delete unwanted fields from each spot
-            spots.rows.forEach(spot => {
-            delete spot.numReviews;
-            delete spot.SpotImages;
-            delete spot.Owner;
+        const spots = rows.map(async (spot) => {
+            const spotData = spot.toJSON();
+            const reviews = await Review.findAll({ where: { spotId: spotData.id } });
+            const avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+            spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
+
+            // Delete unwanted fields from each spot
+            delete spotData.numReviews;
+            delete spotData.SpotImages;
+            delete spotData.Owner;
+            delete spotData.avgStarRating;
+
+            return spotData;
         });
 
+        const resultSpots = await Promise.all(spots);
+
         res.json({
-            Spots: spots.rows,
-            page,
-            size,
+            Spots: resultSpots,
+            page: page,
+            size: size,
         });
+
     } catch (err) {
         res.status(400).json({
             message: "Bad Request",
