@@ -564,7 +564,7 @@ router.get('/:spotId', async (req, res) => {
                 'id', 'ownerId', 'address', 'city', 'state', 'country',
                 'lat', 'lng', 'name', 'description', 'price', 'createdAt',
                 'updatedAt', 'numReviews',
-                [Sequelize.cast(Sequelize.col('avgRating'), 'INTEGER'), 'avgStarRating']
+                ['avgRating', 'avgStarRating']
             ]
         });
 
