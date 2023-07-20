@@ -9,52 +9,6 @@ const moment = require('moment');
 
 
 
-// ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/search', restoreUser, async (req, res) => {
-    const { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
-
-    if (id) {
-        // Getting spot by ID logic
-        const spotId = parseInt(id);
-    }
-
-    page = parseInt(page) || 1;
-    size = parseInt(size) || 20;
-
-    if (page < 1 || page > 10) return res.status(400).json({ message: "Bad Request", errors: { page: "Page must be greater than or equal to 1" } });
-    if (size < 1 || size > 20) return res.status(400).json({ message: "Bad Request", errors: { size: "Size must be greater than or equal to 1" } });
-
-    const where = {};
-
-    if (minLat) where.lat = { [Op.gte]: minLat };
-    if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
-    if (minLng) where.lng = { [Op.gte]: minLng };
-    if (maxLng) where.lng = { ...where.lng, [Op.lte]: maxLng };
-    if (minPrice) where.price = { [Op.gte]: minPrice };
-    if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
-
-    const spots = await Spot.findAll({
-        attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
-        where,
-        limit: size,
-        offset: (page - 1) * size,
-        order: [['createdAt', 'DESC']],
-      });
-
-      const response = spots.map(spot => {
-        let spotData = spot.toJSON();
-        delete spotData.Owner;
-        delete spotData.SpotImages;
-        delete spotData.reviews;
-        delete spotData.bookings;
-        return spotData;
-      });
-
-      res.status(200).json({ "Spots": response, "page": page, "size": size });
-
-  });
-
-
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
 router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) => {
     const { url, preview } = req.body;
@@ -634,6 +588,52 @@ router.get('/:spotId', async (req, res) => {
     }
 });
 
+
+
+// ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
+router.get('/search', restoreUser, async (req, res) => {
+    const { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+
+    if (id) {
+        // Getting spot by ID logic
+        const spotId = parseInt(id);
+    }
+
+    page = parseInt(page) || 1;
+    size = parseInt(size) || 20;
+
+    if (page < 1 || page > 10) return res.status(400).json({ message: "Bad Request", errors: { page: "Page must be greater than or equal to 1" } });
+    if (size < 1 || size > 20) return res.status(400).json({ message: "Bad Request", errors: { size: "Size must be greater than or equal to 1" } });
+
+    const where = {};
+
+    if (minLat) where.lat = { [Op.gte]: minLat };
+    if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
+    if (minLng) where.lng = { [Op.gte]: minLng };
+    if (maxLng) where.lng = { ...where.lng, [Op.lte]: maxLng };
+    if (minPrice) where.price = { [Op.gte]: minPrice };
+    if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
+
+    const spots = await Spot.findAll({
+        attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
+        where,
+        limit: size,
+        offset: (page - 1) * size,
+        order: [['createdAt', 'DESC']],
+      });
+
+      const response = spots.map(spot => {
+        let spotData = spot.toJSON();
+        delete spotData.Owner;
+        delete spotData.SpotImages;
+        delete spotData.reviews;
+        delete spotData.bookings;
+        return spotData;
+      });
+
+      res.status(200).json({ "Spots": response, "page": page, "size": size });
+
+  });
 
 
 module.exports = router;
