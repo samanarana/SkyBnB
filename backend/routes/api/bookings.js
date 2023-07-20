@@ -124,7 +124,7 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
       where: {
         id: bookingId,
       },
-      include: [User]
+      include: { model: User, as: 'User' }
     });
 
     if (!booking) {

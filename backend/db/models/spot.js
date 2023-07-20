@@ -55,6 +55,9 @@ module.exports = (sequelize, DataTypes) => {
           min: -90,
           max: 90,
         },
+        get() {
+          return parseFloat(this.getDataValue('lat'));
+      }
       },
       lng: {
         type: DataTypes.DECIMAL,
@@ -63,6 +66,9 @@ module.exports = (sequelize, DataTypes) => {
           min: -180,
           max: 180,
         },
+        get() {
+          return parseFloat(this.getDataValue('lng'));
+      }
       },
       name: {
         type: DataTypes.STRING,
@@ -85,6 +91,9 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           min: 0,
         },
+        get() {
+          return parseFloat(this.getDataValue('price'));
+      }
       },
       createdAt: {
         type: DataTypes.DATE,
