@@ -592,18 +592,37 @@ router.get('/:spotId', async (req, res) => {
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
 router.get('/', restoreUser, async (req, res) => {
-    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query; // Changed from 'const' to 'let' for reassignment
+    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
-    if (id) {
-        // Getting spot by ID logic
-        const spotId = parseInt(id);
+    const errors = {};
+
+    page = parseInt(page);
+    size = parseInt(size);
+
+    if (Number.isNaN(page)) page = 1;
+    if (Number.isNaN(size)) size = 20
+
+    // Validating Latitudes and Longitudes
+    minLat = parseFloat(minLat);
+    maxLat = parseFloat(maxLat);
+    minLng = parseFloat(minLng);
+    maxLng = parseFloat(maxLng);
+    if (minLat && (isNaN(minLat) || minLat < -90 || minLat > 90)) errors.minLat = "Minimum latitude is invalid";
+    if (maxLat && (isNaN(maxLat) || maxLat < -90 || maxLat > 90)) errors.maxLat = "Maximum latitude is invalid";
+    if (minLng && (isNaN(minLng) || minLng < -180 || minLng > 180)) errors.minLng = "Minimum longitude is invalid";
+    if (maxLng && (isNaN(maxLng) || maxLng < -180 || maxLng > 180)) errors.maxLng = "Maximum longitude is invalid";
+
+    // Validating Prices
+    minPrice = parseFloat(minPrice);
+    maxPrice = parseFloat(maxPrice);
+    if (minPrice && (isNaN(minPrice) || minPrice < 0)) errors.minPrice = "Minimum price must be greater than or equal to 0";
+    if (maxPrice && (isNaN(maxPrice) || maxPrice < 0)) errors.maxPrice = "Maximum price must be greater than or equal to 0";
+
+    // If there are any errors, return them
+    if (Object.keys(errors).length > 0) {
+        res.status(400);
+        return res.json({ message: "Bad Request", errors });
     }
-
-    page = parseInt(page) || 1;
-    size = parseInt(size) || 20;
-
-    if (page < 1 || page > 10) return res.status(400).json({ message: "Bad Request", errors: { page: "Page must be greater than or equal to 1" } });
-    if (size < 1 || size > 20) return res.status(400).json({ message: "Bad Request", errors: { size: "Size must be greater than or equal to 1" } });
 
     const where = {};
 
@@ -614,25 +633,21 @@ router.get('/', restoreUser, async (req, res) => {
     if (minPrice) where.price = { [Op.gte]: minPrice };
     if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
 
-    const spots = await Spot.findAndCountAll({ // Use findAndCountAll to get total count of spots
-        attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
+    const spots = await Spot.findAndCountAll({
         where,
         limit: size,
-        offset: (page - 1) * size,
+        offset: size * (page - 1),
         order: [['createdAt', 'DESC']],
     });
 
-    const response = spots.rows.map(spot => { // Use spots.rows to get the actual spot data
+    const response = spots.rows.map(spot => {
         let spotData = spot.toJSON();
-        delete spotData.Owner;
-        delete spotData.SpotImages;
-        delete spotData.reviews;
-        delete spotData.bookings;
         return spotData;
     });
 
-    res.status(200).json({ "Spots": response, "page": page, "size": size, "total": spots.count }); // Include total count in the response
+    res.status(200).json({ "Spots": response, "page": page, "size": size, "total": spots.count });
 });
+
 
 
 module.exports = router;
