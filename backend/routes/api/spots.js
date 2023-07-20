@@ -69,11 +69,6 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
-        // Check if user is the owner of the spot
-        if (spot.ownerId !== userId) {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
         // Check if user already reviewed this spot
         const userReview = await Review.findOne({
             where: {
