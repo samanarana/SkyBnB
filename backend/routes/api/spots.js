@@ -592,7 +592,7 @@ router.get('/:spotId', async (req, res) => {
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
 router.get('/', restoreUser, async (req, res) => {
-    const { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query; // Changed from 'const' to 'let' for reassignment
 
     if (id) {
         // Getting spot by ID logic
@@ -614,26 +614,25 @@ router.get('/', restoreUser, async (req, res) => {
     if (minPrice) where.price = { [Op.gte]: minPrice };
     if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
 
-    const spots = await Spot.findAll({
+    const spots = await Spot.findAndCountAll({ // Use findAndCountAll to get total count of spots
         attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
         where,
         limit: size,
         offset: (page - 1) * size,
         order: [['createdAt', 'DESC']],
-      });
+    });
 
-      const response = spots.map(spot => {
+    const response = spots.rows.map(spot => { // Use spots.rows to get the actual spot data
         let spotData = spot.toJSON();
         delete spotData.Owner;
         delete spotData.SpotImages;
         delete spotData.reviews;
         delete spotData.bookings;
         return spotData;
-      });
+    });
 
-      res.status(200).json({ "Spots": response, "page": page, "size": size });
-
-  });
+    res.status(200).json({ "Spots": response, "page": page, "size": size, "total": spots.count }); // Include total count in the response
+});
 
 
 module.exports = router;
