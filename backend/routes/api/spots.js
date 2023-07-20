@@ -427,7 +427,7 @@ router.post('/:spotId/bookings', restoreUser, requireAuth, async (req, res) => {
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/search', requireAuth, async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
     // Defaults
