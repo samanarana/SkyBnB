@@ -461,7 +461,8 @@ router.get('/', restoreUser, async (req, res) => {
     if (minPrice) where.price = { [Op.gte]: minPrice };
     if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
 
-      const spots = await Spot.findAll({
+    const spots = await Spot.findAll({
+        attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
         where,
         limit: size,
         offset: (page - 1) * size,
