@@ -10,7 +10,7 @@ const moment = require('moment');
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/', restoreUser, async (req, res) => {
+router.get('/search', restoreUser, async (req, res) => {
     const { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
     if (id) {
@@ -610,7 +610,7 @@ router.get('/:spotId', async (req, res) => {
                 'id', 'ownerId', 'address', 'city', 'state', 'country',
                 'lat', 'lng', 'name', 'description', 'price', 'createdAt',
                 'updatedAt', 'numReviews',
-                ['avgRating', 'avgStarRating']
+                [Sequelize.fn('CAST', Sequelize.col('avgRating'), 'INTEGER'), 'avgStarRating']
             ]
         });
 
@@ -624,10 +624,8 @@ router.get('/:spotId', async (req, res) => {
             delete spotDataValues.SpotImages[i].avgRating;
         }
 
-        // Make sure lat, lng, and price are returned as decimals
-        spotDataValues.lat = parseFloat(spotDataValues.lat);
-        spotDataValues.lng = parseFloat(spotDataValues.lng);
-        spotDataValues.price = parseFloat(spotDataValues.price);
+        spotDataValues.avgStarRating = parseInt(spotDataValues.avgStarRating); // Parse avgStarRating to an integer
+
 
         res.status(200).json(spotDataValues);
     } catch (err) {
