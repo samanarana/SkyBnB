@@ -30,9 +30,9 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
         }
 
         // Convert lat, lng, and price to numbers
-        bookingDataValues.lat = parseFloat(bookingDataValues.lat);
-        bookingDataValues.lng = parseFloat(bookingDataValues.lng);
-        bookingDataValues.price = parseFloat(bookingDataValues.price);
+        bookingDataValues.Spot.lat = parseFloat(bookingDataValues.Spot.lat);
+        bookingDataValues.Spot.lng = parseFloat(bookingDataValues.Spot.lng);
+        bookingDataValues.Spot.price = parseFloat(bookingDataValues.Spot.price);
 
         // Replace the original booking with the modified booking
         bookings[i] = bookingDataValues;
