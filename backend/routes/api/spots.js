@@ -592,60 +592,40 @@ router.get('/:spotId', async (req, res) => {
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
 router.get('/', restoreUser, async (req, res) => {
-    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+  // Parse query parameters
+  const page = req.query.page ? Math.max(1, parseInt(req.query.page)) : 1;
+  const size = req.query.size ? Math.min(20, Math.max(1, parseInt(req.query.size))) : 20;
+  const { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
-    const errors = {};
+  // Construct query
+  let where = {};
 
-    page = parseInt(page);
-    size = parseInt(size);
+  if (minLat) where.lat = { $gte: parseFloat(minLat) };
+  if (maxLat) where.lat = { ...(where.lat || {}), $lte: parseFloat(maxLat) };
+  if (minLng) where.lng = { $gte: parseFloat(minLng) };
+  if (maxLng) where.lng = { ...(where.lng || {}), $lte: parseFloat(maxLng) };
+  if (minPrice) where.price = { $gte: parseFloat(minPrice) };
+  if (maxPrice) where.price = { ...(where.price || {}), $lte: parseFloat(maxPrice) };
 
-    if (Number.isNaN(page)) page = 1;
-    if (Number.isNaN(size)) size = 20
-
-    // Validating Latitudes and Longitudes
-    minLat = parseFloat(minLat);
-    maxLat = parseFloat(maxLat);
-    minLng = parseFloat(minLng);
-    maxLng = parseFloat(maxLng);
-    if (minLat && (isNaN(minLat) || minLat < -90 || minLat > 90)) errors.minLat = "Minimum latitude is invalid";
-    if (maxLat && (isNaN(maxLat) || maxLat < -90 || maxLat > 90)) errors.maxLat = "Maximum latitude is invalid";
-    if (minLng && (isNaN(minLng) || minLng < -180 || minLng > 180)) errors.minLng = "Minimum longitude is invalid";
-    if (maxLng && (isNaN(maxLng) || maxLng < -180 || maxLng > 180)) errors.maxLng = "Maximum longitude is invalid";
-
-    // Validating Prices
-    minPrice = parseFloat(minPrice);
-    maxPrice = parseFloat(maxPrice);
-    if (minPrice && (isNaN(minPrice) || minPrice < 0)) errors.minPrice = "Minimum price must be greater than or equal to 0";
-    if (maxPrice && (isNaN(maxPrice) || maxPrice < 0)) errors.maxPrice = "Maximum price must be greater than or equal to 0";
-
-    // If there are any errors, return them
-    if (Object.keys(errors).length > 0) {
-        res.status(400);
-        return res.json({ message: "Bad Request", errors });
-    }
-
-    const where = {};
-
-    if (minLat) where.lat = { [Op.gte]: minLat };
-    if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
-    if (minLng) where.lng = { [Op.gte]: minLng };
-    if (maxLng) where.lng = { ...where.lng, [Op.lte]: maxLng };
-    if (minPrice) where.price = { [Op.gte]: minPrice };
-    if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
-
-    const spots = await Spot.findAndCountAll({
-        where,
-        limit: size,
-        offset: size * (page - 1),
-        order: [['createdAt', 'DESC']],
+  try {
+    const spots = await Spot.findAll({
+      where,
+      limit: size,
+      offset: (page - 1) * size,
+      order: [['createdAt', 'DESC']]
     });
 
-    const response = spots.rows.map(spot => {
-        let spotData = spot.toJSON();
-        return spotData;
+    res.status(200).json({
+      Spots: spots,
+      page,
+      size
     });
-
-    res.status(200).json({ "Spots": response, "page": page, "size": size, "total": spots.count });
+  } catch (error) {
+    res.status(400).json({
+      message: "Bad Request",
+      errors: error.errors
+    });
+  }
 });
 
 
