@@ -92,13 +92,9 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
             });
         }
 
+        // Check if stars is an integer from 1 to 5
         if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
-            return res.status(400).json({
-                message: "Bad Request",
-                errors: {
-                    stars: "Stars must be an integer from 1 to 5",
-                }
-            });
+        return res.status(400).json({ message: "Stars must be an integer from 1 to 5" });
         }
 
         // Create the new review

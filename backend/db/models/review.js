@@ -46,7 +46,13 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-    stars: DataTypes.INTEGER,
+    stars: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: 1,
+        max: 5,
+      },
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

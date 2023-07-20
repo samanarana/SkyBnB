@@ -110,6 +110,20 @@ router.put('/:reviewId', restoreUser, requireAuth, async (req, res, next) => {
        return res.status(403).json({ message: "Forbidden" });
     }
 
+    // Check if review is empty or only contains whitespace
+        if (!review || review.trim() === "") {
+            return res.status(400).json({
+                message: "Bad Request",
+                errors: {
+                    review: "Review text is required",
+                }
+            });
+        }
+
+    // Check if stars is an integer from 1 to 5
+    if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
+        return res.status(400).json({ message: "Stars must be an integer from 1 to 5" });
+    }
 
     // Update the review
     await reviewToUpdate.update({

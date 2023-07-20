@@ -29,12 +29,15 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             delete bookingDataValues.Spot.description;
         }
 
+        // Convert lat, lng, and price to numbers
+        bookingDataValues.lat = parseFloat(bookingDataValues.lat);
+        bookingDataValues.lng = parseFloat(bookingDataValues.lng);
+        bookingDataValues.price = parseFloat(bookingDataValues.price);
+
         // Replace the original booking with the modified booking
         bookings[i] = bookingDataValues;
-    };
+        };
 
-
-    console.log ("bookings after delete SPOT datavalues:", bookings[0].Spot.dataValues, "len", bookings.length);
     // Respond with the bookings
     res.json({ Bookings: bookings });
 
