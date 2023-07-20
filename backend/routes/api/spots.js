@@ -591,7 +591,7 @@ router.get('/:spotId', async (req, res) => {
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/', restoreUser, async (req, res) => {
+router.get('/spots', restoreUser, async (req, res) => {
   // Parse query parameters
   const page = req.query.page ? Math.max(1, parseInt(req.query.page)) : 1;
   const size = req.query.size ? Math.min(20, Math.max(1, parseInt(req.query.size))) : 20;
