@@ -124,6 +124,7 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
       where: {
         id: bookingId,
       },
+      include: [User]
     });
 
     if (!booking) {
@@ -186,6 +187,8 @@ router.put('/:bookingId', restoreUser, requireAuth, async (req, res) => {
     booking.startDate = startDate;
     booking.endDate = endDate;
     await booking.save();
+
+    delete booking.dataValues.User;
 
     res.status(200).json(booking);
   });

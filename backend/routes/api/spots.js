@@ -151,7 +151,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
                 let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 
                 // Handle cases when there are no reviews
-                spotData.avgRating = reviews.length > 0 ? avgRating : null;
+                spotData.avgRating = reviews.length > 0 ? avgRating : 0;
 
                 // Replace the spot in the array with the modified data
                 spots[spots.indexOf(spot)] = spotData;
@@ -467,6 +467,13 @@ router.get('/', restoreUser, async (req, res) => {
             limit: size,
         });
 
+        // Delete unwanted fields from each spot
+            spots.rows.forEach(spot => {
+            delete spot.numReviews;
+            delete spot.SpotImages;
+            delete spot.Owner;
+        });
+
         res.json({
             Spots: spots.rows,
             page,
@@ -483,7 +490,12 @@ router.get('/', restoreUser, async (req, res) => {
 
 // ROUTE TO CREATE A NEW SPOT
 router.post('/', restoreUser, requireAuth, async (req, res) => {
-    const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
+    const { address, city, state, country, name, description, createdAt, updatedAt } = req.body;
+
+        // parse lat, lng, and price to float
+        let lat = parseFloat(req.body.lat);
+        let lng = parseFloat(req.body.lng);
+        let price = parseFloat(req.body.price);
 
     const user = req.user;
 
