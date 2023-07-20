@@ -20,7 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
     },
     reviewId: DataTypes.INTEGER,
-    url: DataTypes.STRING
+    url: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+      },
+    },
   }, {
     sequelize,
     modelName: 'ReviewImage',

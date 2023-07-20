@@ -81,6 +81,26 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
             return res.status(400).json({ message: "User already has a review for this spot" });
         }
 
+
+        // Validate request body
+        if (!review || review.trim() === "") {
+            return res.status(400).json({
+                message: "Bad Request",
+                errors: {
+                    review: "Review text is required",
+                }
+            });
+        }
+
+        if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
+            return res.status(400).json({
+                message: "Bad Request",
+                errors: {
+                    stars: "Stars must be an integer from 1 to 5",
+                }
+            });
+        }
+
         // Create the new review
         const newReview = await Review.create({
             userId: userId,

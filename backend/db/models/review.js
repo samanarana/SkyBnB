@@ -40,9 +40,12 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       },
     },
-
-
-    review: DataTypes.TEXT,
+    review: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+      },
+    },
     stars: DataTypes.INTEGER,
     createdAt: {
       type: DataTypes.DATE,
