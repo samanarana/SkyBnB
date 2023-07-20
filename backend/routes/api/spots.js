@@ -446,57 +446,42 @@ router.post('/:spotId/bookings', restoreUser, requireAuth, async (req, res) => {
 router.get('/', restoreUser, async (req, res) => {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
-    // Defaults
     page = parseInt(page) || 1;
     size = parseInt(size) || 20;
 
-    let where = {};
+    if (page < 1 || page > 10) return res.status(400).json({ message: "Bad Request", errors: { page: "Page must be greater than or equal to 1" } });
+    if (size < 1 || size > 20) return res.status(400).json({ message: "Bad Request", errors: { size: "Size must be greater than or equal to 1" } });
 
-    // If filters exist, add them to the where clause
-    if(minLat) where.lat = { [Op.gte]: parseFloat(minLat) };
-    if(maxLat) where.lat = { ...where.lat, [Op.lte]: parseFloat(maxLat) };
-    if(minLng) where.lng = { [Op.gte]: parseFloat(minLng) };
-    if(maxLng) where.lng = { ...where.lng, [Op.lte]: parseFloat(maxLng) };
-    if(minPrice) where.price = { [Op.gte]: parseFloat(minPrice) };
-    if(maxPrice) where.price = { ...where.price, [Op.lte]: parseFloat(maxPrice) };
+    const where = {};
 
-    try {
-        const { count, rows } = await Spot.findAndCountAll({
-            where,
-            offset: (page - 1) * size,
-            limit: size,
-        });
+    if (minLat) where.lat = { [Op.gte]: minLat };
+    if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
+    if (minLng) where.lng = { [Op.gte]: minLng };
+    if (maxLng) where.lng = { ...where.lng, [Op.lte]: maxLng };
+    if (minPrice) where.price = { [Op.gte]: minPrice };
+    if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
 
-        const spots = rows.map(async (spot) => {
-            const spotData = spot.toJSON();
-            const reviews = await Review.findAll({ where: { spotId: spotData.id } });
-            const avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-            spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
+      const spots = await Spot.findAll({
+        where,
+        limit: size,
+        offset: (page - 1) * size,
+        order: [['createdAt', 'DESC']],
+      });
 
-            // Delete unwanted fields from each spot
-            delete spotData.numReviews;
-            delete spotData.SpotImages;
-            delete spotData.Owner;
-            delete spotData.avgStarRating;
+      const response = spots.map(spot => {
+        let spotData = spot.toJSON();
+        delete spotData.Owner;
+        delete spotData.SpotImages;
+        delete spotData.reviews;
+        delete spotData.bookings;
+        return spotData;
+      });
 
-            return spotData;
-        });
+      res.status(200).json({ "Spots": response, "page": page, "size": size });
 
-        const resultSpots = await Promise.all(spots);
+  });
 
-        res.json({
-            Spots: resultSpots,
-            page: page,
-            size: size,
-        });
 
-    } catch (err) {
-        res.status(400).json({
-            message: "Bad Request",
-            errors: err.errors
-        });
-    }
-});
 
 
 // ROUTE TO CREATE A NEW SPOT
