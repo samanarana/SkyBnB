@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 const { Sequelize } = require('sequelize');
 const router = express.Router();
 const moment = require('moment');
-router.use(spotIdCheckMiddleware);
+
 
 
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
@@ -541,71 +541,52 @@ router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next)
 });
 
 
-
-
-
-
-const spotIdCheckMiddleware = (req, res, next) => {
-    if (req.params.spotId) {
-      req.isSpotDetailsRequest = true;
-    }
-    next();
-  };
-
-
-
 // ROUTE TO GET DETAILS OF A SPOT FROM AN ID
-router.get('/:spotId', spotIdCheckMiddleware, async (req, res) => {
-    if (req.isSpotDetailsRequest) {
-      // Handle the request to get details of a specific spot by ID
-      const spotId = req.params.spotId;
+router.get('/:spotId', async (req, res) => {
+    const spotId = req.params.spotId;
 
-      try {
+    try {
         const spot = await Spot.findOne({
-          where: { id: spotId },
-          include: [
-            {
-              model: SpotImage,
-              as: 'SpotImages',
-              attributes: ['id', 'url', 'preview']
-            },
-            {
-              model: User,
-              as: 'Owner',
-              attributes: ['id', 'firstName', 'lastName']
-            }
-          ],
-          attributes: [
-            'id', 'ownerId', 'address', 'city', 'state', 'country',
-            'lat', 'lng', 'name', 'description', 'price', 'createdAt',
-            'updatedAt', 'numReviews',
-            ['avgRating', 'avgStarRating']
-          ]
+            where: { id: spotId },
+            include: [
+                {
+                    model: SpotImage,
+                    as: 'SpotImages',
+                    attributes: ['id', 'url', 'preview']
+                },
+                {
+                    model: User,
+                    as: 'Owner', // 'owner' is correct if you have used this alias in your association
+                    attributes: ['id', 'firstName', 'lastName']
+                }
+            ],
+            attributes: [
+                'id', 'ownerId', 'address', 'city', 'state', 'country',
+                'lat', 'lng', 'name', 'description', 'price', 'createdAt',
+                'updatedAt', 'numReviews',
+                ['avgRating', 'avgStarRating']
+            ]
         });
 
         if (!spot) {
-          return res.status(404).json({ message: "Spot couldn't be found" });
+            return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
         let spotDataValues = spot.toJSON();
 
         for (let i in spotDataValues.SpotImages) {
-          delete spotDataValues.SpotImages[i].avgRating;
+            delete spotDataValues.SpotImages[i].avgRating;
         }
 
         spotDataValues.avgStarRating = parseInt(spotDataValues.avgStarRating); // Parse avgStarRating to an integer
 
+
         res.status(200).json(spotDataValues);
-      } catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
-      }
-    } else {
-      // If spotId is not present, return a 400 Bad Request response
-      res.status(400).json({ message: "Bad Request", errors: { spotId: "Spot ID is required" } });
     }
-  });
-
+});
 
 
 
