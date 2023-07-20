@@ -23,7 +23,6 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
         let reviewDataValues = reviews[i].toJSON();
 
         for (let y in reviewDataValues.ReviewImages) {
-            console.log ("ReviewImages:",y, reviewDataValues.ReviewImages[y]);
             delete reviewDataValues.ReviewImages[y].createdAt;
             delete reviewDataValues.ReviewImages[y].reviewId;
             delete reviewDataValues.ReviewImages[y].updatedAt;
@@ -34,6 +33,11 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
             delete reviewDataValues.Spot.updatedAt;
             delete reviewDataValues.Spot.avgRating;
             delete reviewDataValues.Spot.description;
+
+             // Convert lat, lng, and price to numbers
+             reviewDataValues.Spot.lat = parseFloat(reviewDataValues.Spot.lat);
+             reviewDataValues.Spot.lng = parseFloat(reviewDataValues.Spot.lng);
+             reviewDataValues.Spot.price = parseFloat(reviewDataValues.Spot.price);
         }
 
         if (reviewDataValues.User) {

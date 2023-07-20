@@ -137,18 +137,31 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             });
 
             for(let spot of spots) {
+                let spotData = spot.toJSON();
+
+                // Convert lat, lng, and price to numbers
+                spotData.lat = parseFloat(spotData.lat);
+                spotData.lng = parseFloat(spotData.lng);
+                spotData.price = parseFloat(spotData.price);
+
                 // Get all related reviews
-                const reviews = await Review.findAll({ where: { spotId: spot.id } });
+                const reviews = await Review.findAll({ where: { spotId: spotData.id } });
 
                 // Calculate the average rating
                 let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 
                 // Handle cases when there are no reviews
-                spot.avgRating = reviews.length > 0 ? avgRating : null;
+                spotData.avgRating = reviews.length > 0 ? avgRating : null;
 
+                // Replace the spot in the array with the modified data
+                spots[spots.indexOf(spot)] = spotData;
             }
+
             res.status(200).json({ Spots: spots });
     });
+
+
+
 
 // ROUTE TO GET DETAILS OF A SPOT FROM AN ID
 router.get('/:spotId', async (req, res) => {
@@ -181,15 +194,18 @@ router.get('/:spotId', async (req, res) => {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
-
         let spotDataValues = spot.toJSON();
 
         for (let i in spotDataValues.SpotImages) {
             delete spotDataValues.SpotImages[i].avgRating;
         }
 
+        // Make sure lat, lng, and price are returned as decimals
+        spotDataValues.lat = parseFloat(spotDataValues.lat);
+        spotDataValues.lng = parseFloat(spotDataValues.lng);
+        spotDataValues.price = parseFloat(spotDataValues.price);
 
-        res.status(200).json(spot);
+        res.status(200).json(spotDataValues);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
@@ -427,7 +443,7 @@ router.post('/:spotId/bookings', restoreUser, requireAuth, async (req, res) => {
 
 
 // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', restoreUser, async (req, res) => {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
     // Defaults
