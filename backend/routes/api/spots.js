@@ -7,6 +7,54 @@ const { Sequelize } = require('sequelize');
 const router = express.Router();
 const moment = require('moment');
 
+
+
+// ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
+router.get('/', restoreUser, async (req, res) => {
+    const { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+
+    if (id) {
+        // Getting spot by ID logic
+        const spotId = parseInt(id);
+    }
+
+    page = parseInt(page) || 1;
+    size = parseInt(size) || 20;
+
+    if (page < 1 || page > 10) return res.status(400).json({ message: "Bad Request", errors: { page: "Page must be greater than or equal to 1" } });
+    if (size < 1 || size > 20) return res.status(400).json({ message: "Bad Request", errors: { size: "Size must be greater than or equal to 1" } });
+
+    const where = {};
+
+    if (minLat) where.lat = { [Op.gte]: minLat };
+    if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
+    if (minLng) where.lng = { [Op.gte]: minLng };
+    if (maxLng) where.lng = { ...where.lng, [Op.lte]: maxLng };
+    if (minPrice) where.price = { [Op.gte]: minPrice };
+    if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
+
+    const spots = await Spot.findAll({
+        attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
+        where,
+        limit: size,
+        offset: (page - 1) * size,
+        order: [['createdAt', 'DESC']],
+      });
+
+      const response = spots.map(spot => {
+        let spotData = spot.toJSON();
+        delete spotData.Owner;
+        delete spotData.SpotImages;
+        delete spotData.reviews;
+        delete spotData.bookings;
+        return spotData;
+      });
+
+      res.status(200).json({ "Spots": response, "page": page, "size": size });
+
+  });
+
+
 // ROUTE TO ADD AN IMAGE TO A SPOT BASED ON THE SPOT ID
 router.post('/:spotId/images', restoreUser, requireAuth, async (req, res, next) => {
     const { url, preview } = req.body;
@@ -162,58 +210,6 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
 
 
-
-// ROUTE TO GET DETAILS OF A SPOT FROM AN ID
-router.get('/:spotId', async (req, res) => {
-    const spotId = req.params.spotId;
-
-    try {
-        const spot = await Spot.findOne({
-            where: { id: spotId },
-            include: [
-                {
-                    model: SpotImage,
-                    as: 'SpotImages',
-                    attributes: ['id', 'url', 'preview']
-                },
-                {
-                    model: User,
-                    as: 'Owner', // 'owner' is correct if you have used this alias in your association
-                    attributes: ['id', 'firstName', 'lastName']
-                }
-            ],
-            attributes: [
-                'id', 'ownerId', 'address', 'city', 'state', 'country',
-                'lat', 'lng', 'name', 'description', 'price', 'createdAt',
-                'updatedAt', 'numReviews',
-                ['avgRating', 'avgStarRating']
-            ]
-        });
-
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
-
-        let spotDataValues = spot.toJSON();
-
-        for (let i in spotDataValues.SpotImages) {
-            delete spotDataValues.SpotImages[i].avgRating;
-        }
-
-        // Make sure lat, lng, and price are returned as decimals
-        spotDataValues.lat = parseFloat(spotDataValues.lat);
-        spotDataValues.lng = parseFloat(spotDataValues.lng);
-        spotDataValues.price = parseFloat(spotDataValues.price);
-
-        res.status(200).json(spotDataValues);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-
-
 // ROUTE TO GET ALL SPOTS
 router.get('/', async (req, res, next) => {
 
@@ -264,7 +260,6 @@ router.get('/', async (req, res, next) => {
 
     return res.status(200).json({ Spots: spots });
 });
-
 
 
 
@@ -442,48 +437,6 @@ router.post('/:spotId/bookings', restoreUser, requireAuth, async (req, res) => {
 
 
 
-// ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/', restoreUser, async (req, res) => {
-    let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
-
-    page = parseInt(page) || 1;
-    size = parseInt(size) || 20;
-
-    if (page < 1 || page > 10) return res.status(400).json({ message: "Bad Request", errors: { page: "Page must be greater than or equal to 1" } });
-    if (size < 1 || size > 20) return res.status(400).json({ message: "Bad Request", errors: { size: "Size must be greater than or equal to 1" } });
-
-    const where = {};
-
-    if (minLat) where.lat = { [Op.gte]: minLat };
-    if (maxLat) where.lat = { ...where.lat, [Op.lte]: maxLat };
-    if (minLng) where.lng = { [Op.gte]: minLng };
-    if (maxLng) where.lng = { ...where.lng, [Op.lte]: maxLng };
-    if (minPrice) where.price = { [Op.gte]: minPrice };
-    if (maxPrice) where.price = { ...where.price, [Op.lte]: maxPrice };
-
-    const spots = await Spot.findAll({
-        attributes: { exclude: ['SpotImages', 'Owner', 'avgStarRating', 'numReviews'] },
-        where,
-        limit: size,
-        offset: (page - 1) * size,
-        order: [['createdAt', 'DESC']],
-      });
-
-      const response = spots.map(spot => {
-        let spotData = spot.toJSON();
-        delete spotData.Owner;
-        delete spotData.SpotImages;
-        delete spotData.reviews;
-        delete spotData.bookings;
-        return spotData;
-      });
-
-      res.status(200).json({ "Spots": response, "page": page, "size": size });
-
-  });
-
-
-
 
 // ROUTE TO CREATE A NEW SPOT
 router.post('/', restoreUser, requireAuth, async (req, res) => {
@@ -634,7 +587,54 @@ router.get('/:spotId/bookings', restoreUser, requireAuth, async (req, res, next)
 });
 
 
+// ROUTE TO GET DETAILS OF A SPOT FROM AN ID
+router.get('/:spotId', async (req, res) => {
+    const spotId = req.params.spotId;
 
+    try {
+        const spot = await Spot.findOne({
+            where: { id: spotId },
+            include: [
+                {
+                    model: SpotImage,
+                    as: 'SpotImages',
+                    attributes: ['id', 'url', 'preview']
+                },
+                {
+                    model: User,
+                    as: 'Owner', // 'owner' is correct if you have used this alias in your association
+                    attributes: ['id', 'firstName', 'lastName']
+                }
+            ],
+            attributes: [
+                'id', 'ownerId', 'address', 'city', 'state', 'country',
+                'lat', 'lng', 'name', 'description', 'price', 'createdAt',
+                'updatedAt', 'numReviews',
+                ['avgRating', 'avgStarRating']
+            ]
+        });
+
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+
+        let spotDataValues = spot.toJSON();
+
+        for (let i in spotDataValues.SpotImages) {
+            delete spotDataValues.SpotImages[i].avgRating;
+        }
+
+        // Make sure lat, lng, and price are returned as decimals
+        spotDataValues.lat = parseFloat(spotDataValues.lat);
+        spotDataValues.lng = parseFloat(spotDataValues.lng);
+        spotDataValues.price = parseFloat(spotDataValues.price);
+
+        res.status(200).json(spotDataValues);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 
 
