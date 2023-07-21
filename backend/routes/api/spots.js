@@ -164,56 +164,57 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
 
 
-// ROUTE TO GET ALL SPOTS
-router.get('/', async (req, res, next) => {
+// // ROUTE TO GET ALL SPOTS
+// router.get('/', async (req, res, next) => {
 
-    let spots = await Spot.findAll({
-        attributes: [
-            'id',
-            'ownerId',
-            'address',
-            'city',
-            'state',
-            'country',
-            'lat',
-            'lng',
-            'name',
-            'description',
-            'price',
-            'createdAt',
-            'updatedAt',
-            [Sequelize.fn('AVG', Sequelize.col('reviews.stars')), 'avgRating']
-        ],
-        include: [{
-            model: Review,
-            as: 'reviews',
-            attributes: [],
-        }],
-        group: ['Spot.id'],
-        raw: true,
-    });
+//     // Check whether page and size params are present. If so, then use next() to skip
+//     // to the next matching route....
 
-    // process spots
-    spots = await Promise.all(spots.map(async (spot) => {
-        const image = await ReviewImage.findOne({
-            where: { reviewId: spot.id },
-            attributes: ['url'],
-        });
-        spot.previewImage = image ? image.url : null;
-        spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
-        spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
-        spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
+//     // Otherwise, return all spots.
+//     let spots = await Spot.findAll({
+//         attributes: [
+//             'id',
+//             'ownerId',
+//             'address',
+//             'city',
+//             'state',
+//             'country',
+//             'lat',
+//             'lng',
+//             'name',
+//             'description',
+//             'price',
+//             'createdAt',
+//             'updatedAt',
+//             [Sequelize.fn('AVG', Sequelize.col('reviews.stars')), 'avgRating']
+//         ],
+//         include: [{
+//             model: Review,
+//             as: 'reviews',
+//             attributes: [],
+//         }],
+//         group: ['Spot.id'],
+//         raw: true,
+//     });
 
-        spot.createdAt = moment(spot.createdAt).format('YYYY-MM-DD HH:mm:ss');
-        spot.updatedAt = moment(spot.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+//     // process spots
+//     spots = await Promise.all(spots.map(async (spot) => {
+//         const image = await ReviewImage.findOne({
+//             where: { reviewId: spot.id },
+//             attributes: ['url'],
+//         });
+//         spot.previewImage = image ? image.url : "image url";
+//         spot.createdAt = moment(spot.createdAt).format('YYYY-MM-DD HH:mm:ss');
+//         spot.updatedAt = moment(spot.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+//         spot.avgRating = parseFloat(parseFloat(spot.avgRating).toFixed(1));
 
-        spot.avgRating = parseFloat(parseFloat(spot.avgRating).toFixed(1));
+//         return spot;
+//     }));
 
-        return spot;
-    }));
+//     // Use page and size, if present, to create a slice from
 
-    return res.status(200).json({ Spots: spots });
-});
+//     return res.status(200).json({ Spots: spots });
+// });
 
 
 
@@ -590,44 +591,191 @@ router.get('/:spotId', async (req, res) => {
 
 
 
-// ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-router.get('/spots', restoreUser, async (req, res) => {
-  // Parse query parameters
-  const page = req.query.page ? Math.max(1, parseInt(req.query.page)) : 1;
-  const size = req.query.size ? Math.min(20, Math.max(1, parseInt(req.query.size))) : 20;
-  const { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+// // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
+// router.get('/', restoreUser, async (req, res) => {
+//   // Parse query parameters
+//   const page = req.query.page ? Math.max(1, parseInt(req.query.page)) : 1;
+//   const size = req.query.size ? Math.min(20, Math.max(1, parseInt(req.query.size))) : 20;
+//   const { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
-  // Construct query
-  let where = {};
+//     console.log("it worked")
 
-  if (minLat) where.lat = { $gte: parseFloat(minLat) };
-  if (maxLat) where.lat = { ...(where.lat || {}), $lte: parseFloat(maxLat) };
-  if (minLng) where.lng = { $gte: parseFloat(minLng) };
-  if (maxLng) where.lng = { ...(where.lng || {}), $lte: parseFloat(maxLng) };
-  if (minPrice) where.price = { $gte: parseFloat(minPrice) };
-  if (maxPrice) where.price = { ...(where.price || {}), $lte: parseFloat(maxPrice) };
+//   // Construct query
+//   let where = {};
 
-  try {
-    const spots = await Spot.findAll({
-      where,
-      limit: size,
-      offset: (page - 1) * size,
-      order: [['createdAt', 'DESC']]
-    });
+//   if (minLat) where.lat = { $gte: parseFloat(minLat) };
+//   if (maxLat) where.lat = { ...(where.lat || {}), $lte: parseFloat(maxLat) };
+//   if (minLng) where.lng = { $gte: parseFloat(minLng) };
+//   if (maxLng) where.lng = { ...(where.lng || {}), $lte: parseFloat(maxLng) };
+//   if (minPrice) where.price = { $gte: parseFloat(minPrice) };
+//   if (maxPrice) where.price = { ...(where.price || {}), $lte: parseFloat(maxPrice) };
 
-    res.status(200).json({
-      Spots: spots,
-      page,
-      size
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Bad Request",
-      errors: error.errors
-    });
-  }
+//   try {
+//     const spots = await Spot.findAll({
+//       where,
+//       limit: size,
+//       offset: (page - 1) * size,
+//       order: [['createdAt', 'DESC']]
+//     });
+
+//     res.status(200).json({
+//       Spots: spots,
+//       page,
+//       size
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       message: "Bad Request",
+//       errors: error.errors
+//     });
+//   }
+// });
+
+
+
+//ROUTE TO ADD QUERY FILTERS AND TO GET ALL SPOTS
+router.get('/', restoreUser, async (req, res) => {
+ // Parse and validate query parameters
+ let page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice;
+ const errors = {};
+
+ if (req.query.page) {
+   page = parseInt(req.query.page);
+   if (isNaN(page) || page < 1) errors.page = "Page must be greater than or equal to 1";
+ } else {
+   page = 1;
+ }
+
+ if (req.query.size) {
+   size = parseInt(req.query.size);
+   if (isNaN(size) || size < 1) errors.size = "Size must be greater than or equal to 1";
+ } else {
+   size = 20;
+ }
+
+ if (req.query.minLat) {
+   minLat = parseFloat(req.query.minLat);
+   if (isNaN(minLat)) errors.minLat = "Minimum latitude is invalid";
+ }
+
+ if (req.query.maxLat) {
+   maxLat = parseFloat(req.query.maxLat);
+   if (isNaN(maxLat)) errors.maxLat = "Maximum latitude is invalid";
+ }
+
+ if (req.query.minLng) {
+   minLng = parseFloat(req.query.minLng);
+   if (isNaN(minLng)) errors.minLng = "Minimum longitude is invalid";
+ }
+
+ if (req.query.maxLng) {
+   maxLng = parseFloat(req.query.maxLng);
+   if (isNaN(maxLng)) errors.maxLng = "Maximum longitude is invalid";
+ }
+
+ if (req.query.minPrice) {
+   minPrice = parseFloat(req.query.minPrice);
+   if (isNaN(minPrice) || minPrice < 0) errors.minPrice = "Minimum price must be greater than or equal to 0";
+ }
+
+ if (req.query.maxPrice) {
+   maxPrice = parseFloat(req.query.maxPrice);
+   if (isNaN(maxPrice) || maxPrice < 0) errors.maxPrice = "Maximum price must be greater than or equal to 0";
+ }
+
+ if (Object.keys(errors).length > 0) {
+   return res.status(400).json({
+     message: "Bad Request",
+     errors
+   });
+ }
+
+ // Construct query
+ let where = {};
+
+ if (minLat) where.lat = { [Sequelize.Op.gte]: minLat };
+ if (maxLat) where.lat = { ...(where.lat || {}), [Sequelize.Op.lte]: maxLat };
+ if (minLng) where.lng = { [Sequelize.Op.gte]: minLng };
+ if (maxLng) where.lng = { ...(where.lng || {}), [Sequelize.Op.lte]: maxLng };
+ if (minPrice) where.price = { [Sequelize.Op.gte]: minPrice };
+ if (maxPrice) where.price = { ...(where.price || {}), [Sequelize.Op.lte]: maxPrice };
+
+ try {
+   let spots;
+
+   const baseQuery = {
+     attributes: [
+       'id',
+       'ownerId',
+       'address',
+       'city',
+       'state',
+       'country',
+       'lat',
+       'lng',
+       'name',
+       'description',
+       'price',
+       'createdAt',
+       'updatedAt',
+       'avgRating'
+     ],
+     include: [{
+       model: Review,
+       as: 'reviews',
+       attributes: [],
+     }],
+     group: ['Spot.id'],
+     raw: true,
+   };
+
+   // Check if any of the relevant query parameters are present
+   if (req.query.minLat || req.query.maxLat || req.query.minLng || req.query.maxLng || req.query.minPrice || req.query.maxPrice) {
+     // If any of the parameters are present, apply filters and fetch paginated spots
+     spots = await Spot.findAll({
+       ...baseQuery,
+       where,
+       limit: size,
+       offset: (page - 1) * size,
+       order: [['createdAt', 'DESC']]
+     });
+   } else {
+     // Otherwise, get all spots without filters
+     spots = await Spot.findAll(baseQuery);
+   }
+
+   // Process spots
+   spots = await Promise.all(spots.map(async (spot) => {
+     const image = await ReviewImage.findOne({
+       where: { reviewId: spot.id },
+       attributes: ['url'],
+     });
+     spot.previewImage = image ? image.url : "image url";
+     spot.avgRating = parseFloat((spot.avgRating || 0).toFixed(1));
+
+     return spot;
+   }));
+
+   // Form response based on whether or not query parameters were provided
+   if (req.query.minLat || req.query.maxLat || req.query.minLng || req.query.maxLng || req.query.minPrice || req.query.maxPrice) {
+     res.status(200).json({
+       Spots: spots,
+       page,
+       size
+     });
+   } else {
+     res.status(200).json({
+       Spots: spots
+     });
+   }
+
+ } catch (error) {
+   console.log(error);
+   res.status(500).json({
+     message: "Internal Server Error",
+     errors: error.errors
+   });
+ }
 });
-
-
 
 module.exports = router;
