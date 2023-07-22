@@ -653,6 +653,8 @@ router.get('/', restoreUser, async (req, res) => {
    size = 20;
  }
 
+ console.log(`Page: ${page}, Size: ${size}`);
+
  if (req.query.minLat) {
    minLat = parseFloat(req.query.minLat);
    if (isNaN(minLat)) errors.minLat = "Minimum latitude is invalid";
@@ -726,7 +728,10 @@ router.get('/', restoreUser, async (req, res) => {
        attributes: [],
      }],
      group: ['Spot.id'],
-     raw: true,
+    raw: true,
+    limit: size,
+    offset: (page - 1) * size,
+    order: [['createdAt', 'DESC']],
    };
 
    // Check if any of the relevant query parameters are present
