@@ -545,11 +545,20 @@ router.get('/', restoreUser, async (req, res) => {
     if (req.query.page) {
         page = parseInt(req.query.page);
         if (isNaN(page) || page < 1 || page > 10) errors.page = "Page must be greater than or equal to 1, or less than or equal to 10";
+    } else {
+        page = 1;
     }
 
     if (req.query.size) {
         size = parseInt(req.query.size);
         if (isNaN(size) || size < 1 || size > 20) errors.size = "Size must be greater than or equal to 1, or less than or equal to 20";
+    } else {
+        size = 20;
+    }
+
+    if (req.query.minLat) {
+        minLat = parseFloat(req.query.minLat);
+        if (isNaN(minLat) || minLat < -90 || minLat > 90) errors.minLat = "Minimum latitude is invalid";
     }
 
     if (req.query.maxLat) {
@@ -559,17 +568,12 @@ router.get('/', restoreUser, async (req, res) => {
 
     if (req.query.minLng) {
         minLng = parseFloat(req.query.minLng);
-        if (isNaN(minLng) || minLng < -180 || minLng > 180) errors.minLng = "Minimum latitude is invalid";
-    }
-
-    if (req.query.minLng) {
-        minLng = parseFloat(req.query.minLng);
-        if (isNaN(minLng) || minLng < -180 || minLng > 180) errors.minLng = "Maximum longitude is invalid";
+        if (isNaN(minLng) || minLng < -180 || minLng > 180) errors.minLng = "Minimum longitude is invalid";
     }
 
     if (req.query.maxLng) {
         maxLng = parseFloat(req.query.maxLng);
-        if (isNaN(maxLng) || maxLng < -180 || maxLng > 180) errors.maxLng = "Minimum longitude is invalid";
+        if (isNaN(maxLng) || maxLng < -180 || maxLng > 180) errors.maxLng = "Maximum longitude is invalid";
     }
 
     if (req.query.minPrice) {
