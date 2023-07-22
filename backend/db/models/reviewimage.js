@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     url: {
       type: DataTypes.STRING,
       validate: {
+        is: "^[a-zA-Z]",
         notEmpty: true,
       },
     },

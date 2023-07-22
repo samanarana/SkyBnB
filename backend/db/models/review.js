@@ -57,14 +57,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       get() {
-        return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD HH:mm:ss')
+        const value = this.getDataValue('createdAt');
+        return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : moment().format('YYYY-MM-DD HH:mm:ss');
       },
     },
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       get() {
-        return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD HH:mm:ss')
+        const value = this.getDataValue('updatedAt');
+        return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : moment().format('YYYY-MM-DD HH:mm:ss');
       },
     },
   },

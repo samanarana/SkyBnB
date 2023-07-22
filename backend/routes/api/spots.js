@@ -105,8 +105,6 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
             spotId: spotId,
             review: review,
             stars: stars,
-            createdAt: new Date(),
-            updatedAt: new Date()
         });
 
         let reviewData = newReview.get({ plain: true });

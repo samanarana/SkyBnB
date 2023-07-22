@@ -217,6 +217,14 @@ router.delete('/:bookingId', restoreUser, requireAuth, async (req, res, next) =>
       return res.status(403).json({ message: "Forbidden: Booking does not belong to the current user or the spot owner" });
     }
 
+     // Convert startDate string to Date object
+     const startDate = new Date(booking.startDate);
+
+     // Check if the booking has started
+     if (startDate <= new Date()) {
+         return res.status(403).json({ message: "Bookings that have been started can't be deleted" });
+     }
+
     // Delete the booking
     await booking.destroy();
     return res.status(200).json({ message: "Successfully deleted" });

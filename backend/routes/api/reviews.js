@@ -68,6 +68,11 @@ router.post('/:reviewId/images', restoreUser, requireAuth, async (req, res, next
         return res.status(404).json({ message: "Review couldn't be found" });
     }
 
+    // Check if url is a string
+    if (typeof url !== 'string') {
+        return res.status(400).json({ message: "URL must be a string" });
+    }
+
     // Check if the review belongs to the currently authenticated user
     if (review.userId !== userId) {
         return res.status(403).json({ message: "Forbidden" });
