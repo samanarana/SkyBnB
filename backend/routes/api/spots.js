@@ -163,61 +163,6 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
     });
 
 
-
-// // ROUTE TO GET ALL SPOTS
-// router.get('/', async (req, res, next) => {
-
-//     // Check whether page and size params are present. If so, then use next() to skip
-//     // to the next matching route....
-
-//     // Otherwise, return all spots.
-//     let spots = await Spot.findAll({
-//         attributes: [
-//             'id',
-//             'ownerId',
-//             'address',
-//             'city',
-//             'state',
-//             'country',
-//             'lat',
-//             'lng',
-//             'name',
-//             'description',
-//             'price',
-//             'createdAt',
-//             'updatedAt',
-//             [Sequelize.fn('AVG', Sequelize.col('reviews.stars')), 'avgRating']
-//         ],
-//         include: [{
-//             model: Review,
-//             as: 'reviews',
-//             attributes: [],
-//         }],
-//         group: ['Spot.id'],
-//         raw: true,
-//     });
-
-//     // process spots
-//     spots = await Promise.all(spots.map(async (spot) => {
-//         const image = await ReviewImage.findOne({
-//             where: { reviewId: spot.id },
-//             attributes: ['url'],
-//         });
-//         spot.previewImage = image ? image.url : "image url";
-//         spot.createdAt = moment(spot.createdAt).format('YYYY-MM-DD HH:mm:ss');
-//         spot.updatedAt = moment(spot.updatedAt).format('YYYY-MM-DD HH:mm:ss');
-//         spot.avgRating = parseFloat(parseFloat(spot.avgRating).toFixed(1));
-
-//         return spot;
-//     }));
-
-//     // Use page and size, if present, to create a slice from
-
-//     return res.status(200).json({ Spots: spots });
-// });
-
-
-
 // ROUTE TO DELETE A SPOT
 router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
     const spotId = req.params.spotId;
@@ -591,121 +536,73 @@ router.get('/:spotId', async (req, res) => {
 
 
 
-// // ROUTE TO ADD QUERY FILTERS TO GET ALL SPOTS
-// router.get('/', restoreUser, async (req, res) => {
-//   // Parse query parameters
-//   const page = req.query.page ? Math.max(1, parseInt(req.query.page)) : 1;
-//   const size = req.query.size ? Math.min(20, Math.max(1, parseInt(req.query.size))) : 20;
-//   const { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
-
-//     console.log("it worked")
-
-//   // Construct query
-//   let where = {};
-
-//   if (minLat) where.lat = { $gte: parseFloat(minLat) };
-//   if (maxLat) where.lat = { ...(where.lat || {}), $lte: parseFloat(maxLat) };
-//   if (minLng) where.lng = { $gte: parseFloat(minLng) };
-//   if (maxLng) where.lng = { ...(where.lng || {}), $lte: parseFloat(maxLng) };
-//   if (minPrice) where.price = { $gte: parseFloat(minPrice) };
-//   if (maxPrice) where.price = { ...(where.price || {}), $lte: parseFloat(maxPrice) };
-
-//   try {
-//     const spots = await Spot.findAll({
-//       where,
-//       limit: size,
-//       offset: (page - 1) * size,
-//       order: [['createdAt', 'DESC']]
-//     });
-
-//     res.status(200).json({
-//       Spots: spots,
-//       page,
-//       size
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       message: "Bad Request",
-//       errors: error.errors
-//     });
-//   }
-// });
-
-
-
 //ROUTE TO ADD QUERY FILTERS AND TO GET ALL SPOTS
 router.get('/', restoreUser, async (req, res) => {
- // Parse and validate query parameters
- let page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice;
- const errors = {};
+    // Parse and validate query parameters
+    let page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice;
+    const errors = {};
 
- if (req.query.page) {
-   page = parseInt(req.query.page);
-   if (isNaN(page) || page < 1) errors.page = "Page must be greater than or equal to 1";
- } else {
-   page = 1;
- }
+    if (req.query.page) {
+        page = parseInt(req.query.page);
+        if (isNaN(page) || page < 1 || page > 10) errors.page = "Page must be greater than or equal to 1, or less than or equal to 10";
+    }
 
- if (req.query.size) {
-   size = parseInt(req.query.size);
-   if (isNaN(size) || size < 1) errors.size = "Size must be greater than or equal to 1";
- } else {
-   size = 20;
- }
+    if (req.query.size) {
+        size = parseInt(req.query.size);
+        if (isNaN(size) || size < 1 || size > 20) errors.size = "Size must be greater than or equal to 1, or less than or equal to 20";
+    }
 
- console.log(`Page: ${page}, Size: ${size}`);
+    if (req.query.maxLat) {
+        maxLat = parseFloat(req.query.maxLat);
+        if (isNaN(maxLat) || maxLat < -90 || maxLat > 90) errors.maxLat = "Maximum latitude is invalid";
+    }
 
- if (req.query.minLat) {
-   minLat = parseFloat(req.query.minLat);
-   if (isNaN(minLat)) errors.minLat = "Minimum latitude is invalid";
- }
+    if (req.query.minLng) {
+        minLng = parseFloat(req.query.minLng);
+        if (isNaN(minLng) || minLng < -180 || minLng > 180) errors.minLng = "Minimum latitude is invalid";
+    }
 
- if (req.query.maxLat) {
-   maxLat = parseFloat(req.query.maxLat);
-   if (isNaN(maxLat)) errors.maxLat = "Maximum latitude is invalid";
- }
+    if (req.query.minLng) {
+        minLng = parseFloat(req.query.minLng);
+        if (isNaN(minLng) || minLng < -180 || minLng > 180) errors.minLng = "Maximum longitude is invalid";
+    }
 
- if (req.query.minLng) {
-   minLng = parseFloat(req.query.minLng);
-   if (isNaN(minLng)) errors.minLng = "Minimum longitude is invalid";
- }
+    if (req.query.maxLng) {
+        maxLng = parseFloat(req.query.maxLng);
+        if (isNaN(maxLng) || maxLng < -180 || maxLng > 180) errors.maxLng = "Minimum longitude is invalid";
+    }
 
- if (req.query.maxLng) {
-   maxLng = parseFloat(req.query.maxLng);
-   if (isNaN(maxLng)) errors.maxLng = "Maximum longitude is invalid";
- }
+    if (req.query.minPrice) {
+    minPrice = parseFloat(req.query.minPrice);
+    if (isNaN(minPrice) || minPrice < 0) errors.minPrice = "Minimum price must be greater than or equal to 0";
+    }
 
- if (req.query.minPrice) {
-   minPrice = parseFloat(req.query.minPrice);
-   if (isNaN(minPrice) || minPrice < 0) errors.minPrice = "Minimum price must be greater than or equal to 0";
- }
+    if (req.query.maxPrice) {
+    maxPrice = parseFloat(req.query.maxPrice);
+    if (isNaN(maxPrice) || maxPrice < 0) errors.maxPrice = "Maximum price must be greater than or equal to 0";
+    }
 
- if (req.query.maxPrice) {
-   maxPrice = parseFloat(req.query.maxPrice);
-   if (isNaN(maxPrice) || maxPrice < 0) errors.maxPrice = "Maximum price must be greater than or equal to 0";
- }
+    if (Object.keys(errors).length > 0) {
+    return res.status(400).json({
+        message: "Bad Request",
+        errors
+    });
+    }
 
- if (Object.keys(errors).length > 0) {
-   return res.status(400).json({
-     message: "Bad Request",
-     errors
-   });
- }
+    // Construct query
+    let where = {};
 
- // Construct query
- let where = {};
+    if (minLat) where.lat = { [Sequelize.Op.gte]: minLat };
+    if (maxLat) where.lat = { ...(where.lat || {}), [Sequelize.Op.lte]: maxLat };
+    if (minLng) where.lng = { [Sequelize.Op.gte]: minLng };
+    if (maxLng) where.lng = { ...(where.lng || {}), [Sequelize.Op.lte]: maxLng };
+    if (minPrice) where.price = { [Sequelize.Op.gte]: minPrice };
+    if (maxPrice) where.price = { ...(where.price || {}), [Sequelize.Op.lte]: maxPrice };
 
- if (minLat) where.lat = { [Sequelize.Op.gte]: minLat };
- if (maxLat) where.lat = { ...(where.lat || {}), [Sequelize.Op.lte]: maxLat };
- if (minLng) where.lng = { [Sequelize.Op.gte]: minLng };
- if (maxLng) where.lng = { ...(where.lng || {}), [Sequelize.Op.lte]: maxLng };
- if (minPrice) where.price = { [Sequelize.Op.gte]: minPrice };
- if (maxPrice) where.price = { ...(where.price || {}), [Sequelize.Op.lte]: maxPrice };
+    try {
+    let spots;
 
- try {
-   let spots;
-
-   const baseQuery = {
+    const baseQuery = {
      attributes: [
        'id',
        'ownerId',
@@ -721,17 +618,12 @@ router.get('/', restoreUser, async (req, res) => {
        'createdAt',
        'updatedAt',
        'avgRating'
-     ],
-     include: [{
-       model: Review,
-       as: 'reviews',
-       attributes: [],
-     }],
-     group: ['Spot.id'],
+    ],
     raw: true,
     limit: size,
     offset: (page - 1) * size,
     order: [['createdAt', 'DESC']],
+    group: ['Spot.id']
    };
 
    // Check if any of the relevant query parameters are present
@@ -751,10 +643,24 @@ router.get('/', restoreUser, async (req, res) => {
 
    // Process spots
    spots = await Promise.all(spots.map(async (spot) => {
-     const image = await ReviewImage.findOne({
-       where: { reviewId: spot.id },
-       attributes: ['url'],
-     });
+
+    console.log("Processing spot with id:", spot.id);
+
+    const review = await Review.findOne({
+      where: { spotId: spot.id },
+    });
+
+    console.log("Found review for spot:", review);
+
+    let image;
+    if (review) {
+       image = await ReviewImage.findOne({
+          where: { reviewId: review.id },
+          attributes: ['url'],
+        })};
+
+    console.log("Found image for review:", image);
+
      spot.previewImage = image ? image.url : "image url";
      spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
      spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
@@ -764,34 +670,26 @@ router.get('/', restoreUser, async (req, res) => {
      return spot;
    }));
 
-// Form response
-let response = {
-    Spots: spots
-  };
+    // Form response based on whether or not query parameters were provided
+    if (req.query.page || req.query.size) {
+        res.status(200).json({
+        Spots: spots,
+        page,
+        size
+        });
+    } else {
+        res.status(200).json({
+        Spots: spots
+        });
+    }
 
-  // Add pagination info if provided
-  if (req.query.page || req.query.size) {
-    response.page = page;
-    response.size = size;
-  }
-
-  // Add filter parameters if provided
-  if (req.query.minLat) response.minLat = minLat;
-  if (req.query.maxLat) response.maxLat = maxLat;
-  if (req.query.minLng) response.minLng = minLng;
-  if (req.query.maxLng) response.maxLng = maxLng;
-  if (req.query.minPrice) response.minPrice = minPrice;
-  if (req.query.maxPrice) response.maxPrice = maxPrice;
-
-  res.status(200).json(response);
-
- } catch (error) {
-   console.log(error);
-   res.status(500).json({
-     message: "Internal Server Error",
-     errors: error.errors
-   });
- }
+    } catch (error) {
+    console.log(error);
+    res.status(500).json({
+        message: "Internal Server Error",
+        errors: error.errors
+    });
+    }
 });
 
 module.exports = router;
