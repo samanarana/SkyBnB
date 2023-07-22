@@ -751,23 +751,34 @@ router.get('/', restoreUser, async (req, res) => {
        attributes: ['url'],
      });
      spot.previewImage = image ? image.url : "image url";
-     spot.avgRating = parseFloat((spot.avgRating || 0).toFixed(1));
+     spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
+     spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
+     spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
+     spot.avgRating = parseFloat((parseFloat(spot.avgRating) || 0).toFixed(1));
 
      return spot;
    }));
 
-   // Form response based on whether or not query parameters were provided
-   if (req.query.minLat || req.query.maxLat || req.query.minLng || req.query.maxLng || req.query.minPrice || req.query.maxPrice) {
-     res.status(200).json({
-       Spots: spots,
-       page,
-       size
-     });
-   } else {
-     res.status(200).json({
-       Spots: spots
-     });
-   }
+// Form response
+let response = {
+    Spots: spots
+  };
+
+  // Add pagination info if provided
+  if (req.query.page || req.query.size) {
+    response.page = page;
+    response.size = size;
+  }
+
+  // Add filter parameters if provided
+  if (req.query.minLat) response.minLat = minLat;
+  if (req.query.maxLat) response.maxLat = maxLat;
+  if (req.query.minLng) response.minLng = minLng;
+  if (req.query.maxLng) response.maxLng = maxLng;
+  if (req.query.minPrice) response.minPrice = minPrice;
+  if (req.query.maxPrice) response.maxPrice = maxPrice;
+
+  res.status(200).json(response);
 
  } catch (error) {
    console.log(error);
