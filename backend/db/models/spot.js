@@ -131,6 +131,13 @@ module.exports = (sequelize, DataTypes) => {
           return value ? value : 'image url';
         },
       },
+      numReviews: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        validate: {
+          min: 0,
+        },
+      },
     },
     {
       sequelize,

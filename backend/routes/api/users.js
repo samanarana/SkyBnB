@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { check, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-
+const validator = require('validator');
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
 
@@ -61,15 +61,48 @@ router.post('', validateSignup, async (req, res) => {
 
   const { firstName, lastName, email, username, password } = req.body;
 
-  // Check if all fields are filled
-  if (!firstName || !lastName || !email || !username || !password) {
+  // Check each field individually
+  if (!firstName || !firstName.trim()) {
     return res.status(400).json({
       message: "Bad Request",
       errors: {
-        "firstName": "First Name is required",
-        "lastName": "Last Name is required",
-        "email": "Invalid email",
+        "firstName": "First Name is required"
+      }
+    });
+  }
+
+  if (!lastName || !lastName.trim()) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "lastName": "Last Name is required"
+      }
+    });
+  }
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "email": "Invalid email"
+      }
+    });
+  }
+
+  if (!username || !username.trim()) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
         "username": "Username is required"
+      }
+    });
+  }
+
+  if (!password || !password.trim()) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "password": "Password is required and cannot be only whitespace"
       }
     });
   }

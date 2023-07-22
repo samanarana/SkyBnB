@@ -99,12 +99,33 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         return res.status(400).json({ message: "Stars must be an integer from 1 to 5" });
         }
 
+
         // Create the new review
         const newReview = await Review.create({
             userId: userId,
             spotId: spotId,
             review: review,
             stars: stars,
+        });
+
+        // Get all reviews related to the spot
+        const reviews = await Review.findAll({
+            where: { spotId: spot.id }
+        });
+
+        // Calculate numReviews and avgStarRating
+        let totalStars = 0;
+        reviews.forEach(review => {
+            totalStars += review.stars;
+        });
+        const numReviews = reviews.length;
+        const avgStarRating = reviews.length ? totalStars / reviews.length : 0;
+
+        console.log(numReviews);
+        // Update the spot
+        await spot.update({
+            numReviews: numReviews,
+            avgRating: avgStarRating
         });
 
         let reviewData = newReview.get({ plain: true });
@@ -121,7 +142,6 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         next(error);
     }
 });
-
 
 
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
@@ -165,19 +185,15 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
     const spotId = req.params.spotId;
 
-        // Find the spot
-        const spot = await Spot.findOne({
-            where: {
-                id: spotId,
-                ownerId: req.user.id // Check ownership
-            },
-            include: [
-                { model: SpotImage, as: 'SpotImages' },
-                { model: Review, as: 'reviews' },
-                { model: Booking, as: 'bookings' }
-            ]
-        });
-
+    // Find the spot without checking the owner
+    const spot = await Spot.findOne({
+        where: { id: spotId },
+        include: [
+            { model: SpotImage, as: 'SpotImages' },
+            { model: Review, as: 'reviews' },
+            { model: Booking, as: 'bookings' }
+        ]
+    });
 
     // If spot not found, throw an error
     if (!spot) {
