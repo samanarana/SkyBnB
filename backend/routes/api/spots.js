@@ -544,16 +544,20 @@ router.get('/', restoreUser, async (req, res) => {
 
     if (req.query.page) {
         page = parseInt(req.query.page);
-        if (isNaN(page) || page < 1 || page > 10) errors.page = "Page must be greater than or equal to 1, or less than or equal to 10";
+        if (isNaN(page) || page < 1 || page > 10) {
+            page = 1; // if page is not valid, set it to default value
+        }
     } else {
-        page = 1;
+        page = 1; // if page is not provided, set it to default value
     }
 
     if (req.query.size) {
         size = parseInt(req.query.size);
-        if (isNaN(size) || size < 1 || size > 20) errors.size = "Size must be greater than or equal to 1, or less than or equal to 20";
+        if (isNaN(size) || size < 1 || size > 20) {
+            size = 20; // if size is not valid, set it to default value
+        }
     } else {
-        size = 20;
+        size = 20; // if size is not provided, set it to default value
     }
 
     if (req.query.minLat) {
