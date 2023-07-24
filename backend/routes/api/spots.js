@@ -127,8 +127,6 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
             avgRating: avgStarRating
         });
 
-        // Reload the spot to ensure Sequelize has latest data
-        await spot.reload();
 
         let reviewData = newReview.get({ plain: true });
 
@@ -518,7 +516,7 @@ router.get('/:spotId', async (req, res) => {
                 },
                 {
                     model: User,
-                    as: 'Owner', // 'owner' is correct if you have used this alias in your association
+                    as: 'Owner',
                     attributes: ['id', 'firstName', 'lastName']
                 }
             ],
@@ -533,6 +531,9 @@ router.get('/:spotId', async (req, res) => {
         if (!spot) {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
+
+        // Reload the spot instance
+        spot = await spot.reload();
 
         let spotDataValues = spot.toJSON();
 
