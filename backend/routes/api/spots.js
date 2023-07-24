@@ -538,7 +538,8 @@ router.get('/:spotId', async (req, res) => {
             delete spotDataValues.SpotImages[i].avgRating;
         }
 
-        spotDataValues.avgStarRating = parseInt(spotDataValues.avgStarRating); // Parse avgStarRating to an integer
+        spotDataValues.numReviews = spotDataValues.numReviews || 0; // Set default value to 0 if numReviews is null
+        spotDataValues.avgStarRating = parseInt(spotDataValues.avgStarRating || 0); // Parse avgStarRating to an integer, with a default value of 0 if it is null
 
 
         res.status(200).json(spotDataValues);
