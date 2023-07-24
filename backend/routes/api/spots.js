@@ -121,12 +121,14 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         const numReviews = reviews.length;
         const avgStarRating = reviews.length ? totalStars / reviews.length : 0;
 
-        console.log(numReviews);
         // Update the spot
         await spot.update({
             numReviews: numReviews,
             avgRating: avgStarRating
         });
+
+        // Reload the spot to ensure Sequelize has latest data
+        await spot.reload();
 
         let reviewData = newReview.get({ plain: true });
 
