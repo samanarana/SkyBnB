@@ -518,6 +518,11 @@ router.get('/:spotId', async (req, res) => {
                     model: User,
                     as: 'Owner',
                     attributes: ['id', 'firstName', 'lastName']
+                },
+                {
+                    model: Review,
+                    as: 'Reviews',
+                    attributes: ['rating']
                 }
             ],
             attributes: [
@@ -537,6 +542,8 @@ router.get('/:spotId', async (req, res) => {
         for (let i in spotDataValues.SpotImages) {
             delete spotDataValues.SpotImages[i].avgRating;
         }
+
+        delete spotDataValues.Reviews;
 
         spotDataValues.numReviews = spotDataValues.numReviews || 0; // Set default value to 0 if numReviews is null
         spotDataValues.avgStarRating = parseInt(spotDataValues.avgStarRating || 0); // Parse avgStarRating to an integer, with a default value of 0 if it is null
