@@ -532,9 +532,6 @@ router.get('/:spotId', async (req, res) => {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
-        // Reload the spot instance
-        spot = await spot.reload();
-
         let spotDataValues = spot.toJSON();
 
         for (let i in spotDataValues.SpotImages) {
