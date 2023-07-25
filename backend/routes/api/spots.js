@@ -537,8 +537,15 @@ router.get('/:spotId', async (req, res) => {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
-        // Reload the spot
-        await spot.reload();
+// Calculate avgRating and numReviews directly from the reviews
+        const reviews = await Review.findAll({ where: { spotId: spot.id } });
+        let totalStars = 0;
+        reviews.forEach(review => {
+            totalStars += review.stars;
+        });
+        const avgRating = totalStars / reviews.length;
+        const numReviews = reviews.length;
+
 
         let spotDataValues = spot.toJSON();
 
@@ -548,9 +555,8 @@ router.get('/:spotId', async (req, res) => {
 
         delete spotDataValues.Reviews;
 
-        spotDataValues.numReviews = spotDataValues.numReviews || 0; // Set default value to 0 if numReviews is null
-        spotDataValues.avgStarRating = parseInt(spotDataValues.avgStarRating || 0); // Parse avgStarRating to an integer, with a default value of 0 if it is null
-
+        spotDataValues.avgRating = avgRating || 0;
+        spotDataValues.numReviews = numReviews || 0;
 
         res.status(200).json(spotDataValues);
     } catch (err) {
