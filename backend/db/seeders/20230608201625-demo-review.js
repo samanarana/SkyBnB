@@ -66,8 +66,8 @@ module.exports = {
 
     // Reset the average rating for each spot in the Spots table
     await queryInterface.bulkUpdate(
-        "Spots",
-        { avgRating: null },  // Or set it to a default value
+      { tableName: "Spots", schema: options.schema },
+        { avgRating: 0 },  // Or set it to a default value
         {}
     );
   }
