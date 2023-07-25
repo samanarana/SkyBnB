@@ -722,6 +722,10 @@ router.get('/', restoreUser, async (req, res) => {
         spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
         spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
 
+        // Format createdAt and updatedAt using moment
+        spot.createdAt = moment(spot.createdAt).format('YYYY-MM-DD HH:mm:ss');
+        spot.updatedAt = moment(spot.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+
 
      return spot;
    }));
