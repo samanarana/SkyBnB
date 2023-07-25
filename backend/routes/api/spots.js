@@ -175,6 +175,13 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
         spotData.lng = parseFloat(spotData.lng);
         spotData.price = parseFloat(spotData.price);
 
+        // Format createdAt and updatedAt
+        spotData.createdAt = moment(spotData.createdAt).format('YYYY-MM-DD HH:mm:ss');
+        spotData.updatedAt = moment(spotData.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+
+        // Add the reviews to the spotData
+        spotData.reviews = reviews;
+
         // Add the calculated avgRating to the spotData
         spotData.avgRating = avgRating;
 
