@@ -558,8 +558,8 @@ router.get('/:spotId', async (req, res) => {
 
         delete spotDataValues.Reviews;
 
-        spotDataValues.avgRating = avgRating || 0;
-        spotDataValues.numReviews = numReviews || 0;
+        spotDataValues.avgRating = spotDataValues.avgRating || 0;
+        spotDataValues.numReviews = spotDataValues.numReviews || 0;
 
         res.status(200).json(spotDataValues);
     } catch (err) {
