@@ -697,13 +697,9 @@ router.get('/', restoreUser, async (req, res) => {
    // Process spots
    spots = await Promise.all(spots.map(async (spot) => {
 
-    console.log("Processing spot with id:", spot.id);
-
     const review = await Review.findOne({
       where: { spotId: spot.id },
     });
-
-    console.log("Found review for spot:", review);
 
     let image;
     if (review) {
@@ -712,13 +708,20 @@ router.get('/', restoreUser, async (req, res) => {
           attributes: ['url'],
         })};
 
-    console.log("Found image for review:", image);
+        const reviews = await Review.findAll({
+            where: { spotId: spot.id },
+            attributes: ['stars']
+        });
 
-     spot.previewImage = image ? image.url : "image url";
-     spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
-     spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
-     spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
-     spot.avgRating = parseFloat((parseFloat(spot.avgRating) || 0).toFixed(1));
+        const totalStars = reviews.reduce((acc, review) => acc + review.dataValues.stars, 0);
+        const avgRating = (reviews.length > 0) ? totalStars / reviews.length : 0;
+        spot.avgRating = parseFloat(avgRating.toFixed(1));
+
+        spot.previewImage = image ? image.url : "image url";
+        spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
+        spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
+        spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
+
 
      return spot;
    }));
