@@ -168,7 +168,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
                 const reviews = await Review.findAll({ where: { spotId: spotData.id } });
 
                 // Calculate the average rating
-                let avgRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+                let avgRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length;
 
                 // Handle cases when there are no reviews
                 spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
