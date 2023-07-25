@@ -165,7 +165,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
           ],
     });
 
-    const updatedSpots = spots.map((spot) => {
+    const updatedSpots = await Promise.all(spots.map(async (spot) => {
         let spotData = spot.toJSON();
         const reviews = spotData.reviews || [];
 
@@ -185,7 +185,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
         spotData.avgRating = parseFloat(avgRating.toFixed(1)); // Convert to float with one decimal place
 
         return spotData;
-    });
+    }));
 
     res.status(200).json({ Spots: updatedSpots });
 });
