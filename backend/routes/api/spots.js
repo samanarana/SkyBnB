@@ -160,11 +160,10 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
             {
               model: Review,
               as: 'reviews',
-              attributes: ['stars'],
+              attributes: ['stars', 'spotId'],
             },
           ],
     });
-
 
     const updatedSpots = spots.map((spot) => {
         let spotData = spot.toJSON();
