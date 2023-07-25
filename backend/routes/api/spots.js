@@ -537,14 +537,14 @@ router.get('/:spotId', async (req, res) => {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
-// Calculate avgRating and numReviews directly from the reviews
+        // Calculate avgRating and numReviews directly from the reviews
         const reviews = await Review.findAll({ where: { spotId: spot.id } });
         let totalStars = 0;
         reviews.forEach(review => {
             totalStars += review.stars;
         });
-        const avgRating = totalStars / reviews.length;
-        const numReviews = reviews.length;
+        spot.dataValues.avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+        spot.dataValues.numReviews = reviews.length;
 
 
         let spotDataValues = spot.toJSON();
