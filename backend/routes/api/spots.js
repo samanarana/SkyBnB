@@ -562,7 +562,7 @@ router.get('/:spotId', async (req, res) => {
 
         delete spotDataValues.Reviews;
 
-        spotDataValues.avgRating = spotDataValues.avgRating || 0;
+        spotDataValues.avgStarRating = spot.dataValues.avgRating ? parseFloat(spot.dataValues.avgRating.toFixed(1)) : 0;
         spotDataValues.numReviews = spotDataValues.numReviews || 0;
 
         res.status(200).json(spotDataValues);
