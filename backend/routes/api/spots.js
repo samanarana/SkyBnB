@@ -149,47 +149,45 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
 
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
 router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-    console.log ("current.user", req.user);
     const userId = req.user.id;
 
     const spots = await Spot.findAll({
         where: {
             ownerId: userId
         },
-        attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage', 'avgRating'] // Include avgRating attribute
+        attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage'],
+        include: [
+            {
+              model: Review,
+              as: 'reviews',
+              attributes: ['stars'],
+            },
+          ],
     });
 
-    const updatedSpots = [];
-    for(let spot of spots) {
-        // Get all related reviews
-        const reviews = await Review.findAll({ where: { spotId: spot.id } });
-        let totalStars = 0;
-        reviews.forEach(review => {
-            totalStars += review.stars;
-        });
-        let avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-        let spotData = spot.toJSON();
+    const updatedSpots = spots.map((spot) => {
+        const totalStars = spot.reviews.reduce((acc, review) => acc + review.stars, 0);
+        const avgRating = spot.reviews.length > 0 ? totalStars / spot.reviews.length : 0;
+
+        const spotData = spot.toJSON();
         // Convert lat, lng, and price to numbers
         spotData.lat = parseFloat(spotData.lat);
         spotData.lng = parseFloat(spotData.lng);
         spotData.price = parseFloat(spotData.price);
 
-        // Format createdAt and updatedAt
+        // Format createdAt and updatedAt using moment
         spotData.createdAt = moment(spotData.createdAt).format('YYYY-MM-DD HH:mm:ss');
         spotData.updatedAt = moment(spotData.updatedAt).format('YYYY-MM-DD HH:mm:ss');
 
-        // Add the reviews to the spotData
-        spotData.reviews = reviews;
-
         // Add the calculated avgRating to the spotData
-        spotData.avgRating = avgRating;
+        spotData.avgRating = parseFloat(avgRating.toFixed(1)); // Convert to float with one decimal place
 
-        updatedSpots.push(spotData);
-    }
+        return spotData;
+      });
 
-    res.status(200).json({ Spots: updatedSpots });
-});
+      res.status(200).json({ Spots: updatedSpots });
+    });
 
 
 // ROUTE TO DELETE A SPOT
@@ -450,6 +448,10 @@ router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
             delete reviewDataValues.ReviewImages[y].updatedAt;
         }
 
+        // Format createdAt and updatedAt using moment
+        reviewDataValues.createdAt = moment(reviewDataValues.createdAt).format('YYYY-MM-DD HH:mm:ss');
+        reviewDataValues.updatedAt = moment(reviewDataValues.updatedAt).format('YYYY-MM-DD HH:mm:ss');
+
         reviews[i] = reviewDataValues;
     }
 
@@ -554,25 +556,22 @@ router.get('/:spotId', async (req, res) => {
         reviews.forEach(review => {
             totalStars += review.stars;
         });
-        spot.dataValues.avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
+        spot.dataValues.avgStarRating = reviews.length > 0 ? totalStars / reviews.length : 0;
         spot.dataValues.numReviews = reviews.length;
 
-
         let spotDataValues = spot.toJSON();
-
-        // Add your 'avgStarRating' to the response
-        spotDataValues.avgStarRating = spot.dataValues.avgRating;
 
         for (let i in spotDataValues.SpotImages) {
             delete spotDataValues.SpotImages[i].avgRating;
         }
 
-        delete spotDataValues.Reviews;
+        delete spotDataValues.reviews;
 
-        spotDataValues.avgStarRating = spot.dataValues.avgRating ? parseFloat(spot.dataValues.avgRating.toFixed(1)) : 0;
+        spotDataValues.avgStarRating = spot.dataValues.avgStarRating ? parseFloat(spot.dataValues.avgStarRating.toFixed(1)) : 0;
         spotDataValues.numReviews = spotDataValues.numReviews || 0;
 
         res.status(200).json(spotDataValues);
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });

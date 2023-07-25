@@ -1,16 +1,14 @@
 'use strict';
 
-
 let options = {};
 if (process.env.NODE_ENV === 'production') {
-  options.schema = process.env.SCHEMA;  // define your schema in options object
+  options.schema = process.env.SCHEMA;
 }
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     options.tableName = "Reviews";
-    return queryInterface.bulkInsert(options, [
+    await queryInterface.bulkInsert(options, [
       {
         userId: 1,
         spotId: 1,
@@ -36,10 +34,41 @@ module.exports = {
         stars: 5,
       }
     ], {});
+
+    const spots = [
+      {
+        id: 1,
+        avgRating: (5 + 4) / 2, // Calculate the average rating for Spot 1
+      },
+      {
+        id: 2,
+        avgRating: 3, // Only one review for Spot 2
+      },
+      {
+        id: 3,
+        avgRating: 5, // Only one review for Spot 3
+      },
+    ];
+
+    // Update the Spots table with the calculated average ratings
+    for (const spot of spots) {
+      await queryInterface.bulkUpdate(
+        "Spots",
+        { avgRating: spot.avgRating },
+        { id: spot.id }
+      );
+    }
   },
 
   down: async (queryInterface, Sequelize) => {
     options.tableName = "Reviews";
-    return queryInterface.bulkDelete(options, null, {});
+    await queryInterface.bulkDelete(options, null, {});
+
+    // Reset the average rating for each spot in the Spots table
+    await queryInterface.bulkUpdate(
+        "Spots",
+        { avgRating: null },  // Or set it to a default value
+        {}
+    );
   }
 };
