@@ -144,9 +144,33 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
 });
 
 
+
+// A function that updates the spot data with the avgRating
+async function updateSpotWithAvgRating(spot) {
+    let spotData = spot.toJSON();
+
+    // Convert lat, lng, and price to numbers
+    spotData.lat = parseFloat(spotData.lat);
+    spotData.lng = parseFloat(spotData.lng);
+    spotData.price = parseFloat(spotData.price);
+
+    // Get all related reviews
+    const reviews = await Review.findAll({ where: { spotId: spotData.id } });
+
+    // Calculate the average rating
+    let avgRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length;
+
+    // Handle cases when there are no reviews
+    spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
+
+    return spotData;
+}
+
+
+
+
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
 router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-    console.log ("current.user", req.user);
             const userId = req.user.id;
 
             const spots = await Spot.findAll({
@@ -164,20 +188,16 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
                 spotData.lng = parseFloat(spotData.lng);
                 spotData.price = parseFloat(spotData.price);
 
-                // Get all related reviews
-                const reviews = await Review.findAll({ where: { spotId: spotData.id } });
+                const updatedSpots = [];
+                for(let spot of spots) {
+                    const updatedSpot = await updateSpotWithAvgRating(spot);
+                    updatedSpots.push(updatedSpot);
+                }
 
-                // Calculate the average rating
-                let avgRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length;
-
-                // Handle cases when there are no reviews
-                spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
-
-                // Replace the spot in the array with the modified data
-                spots[spots.indexOf(spot)] = spotData;
-            }
+                res.status(200).json({ Spots: updatedSpots });
 
             res.status(200).json({ Spots: spots });
+            }
     });
 
 
