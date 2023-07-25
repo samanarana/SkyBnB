@@ -549,6 +549,9 @@ router.get('/:spotId', async (req, res) => {
 
         let spotDataValues = spot.toJSON();
 
+        // Add your 'avgStarRating' to the response
+        spotDataValues.avgStarRating = spot.dataValues.avgRating;
+
         for (let i in spotDataValues.SpotImages) {
             delete spotDataValues.SpotImages[i].avgRating;
         }
