@@ -145,60 +145,42 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
 
 
 
-// A function that updates the spot data with the avgRating
-async function updateSpotWithAvgRating(spot) {
-    let spotData = spot.toJSON();
-
-    // Convert lat, lng, and price to numbers
-    spotData.lat = parseFloat(spotData.lat);
-    spotData.lng = parseFloat(spotData.lng);
-    spotData.price = parseFloat(spotData.price);
-
-    // Get all related reviews
-    const reviews = await Review.findAll({ where: { spotId: spotData.id } });
-
-    // Calculate the average rating
-    let avgRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length;
-
-    // Handle cases when there are no reviews
-    spotData.avgRating = reviews.length > 0 ? Math.round(avgRating) : 0;
-
-    return spotData;
-}
-
-
-
 
 //ROUTE TO GET ALL SPOTS OWNED BY THE CURRENT USER
 router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
-            const userId = req.user.id;
+    console.log ("current.user", req.user);
+    const userId = req.user.id;
 
-            const spots = await Spot.findAll({
-                where: {
-                    ownerId: userId
-                },
-                attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage']
-            });
-
-            for(let spot of spots) {
-                let spotData = spot.toJSON();
-
-                // Convert lat, lng, and price to numbers
-                spotData.lat = parseFloat(spotData.lat);
-                spotData.lng = parseFloat(spotData.lng);
-                spotData.price = parseFloat(spotData.price);
-
-                const updatedSpots = [];
-                for(let spot of spots) {
-                    const updatedSpot = await updateSpotWithAvgRating(spot);
-                    updatedSpots.push(updatedSpot);
-                }
-
-                res.status(200).json({ Spots: updatedSpots });
-
-            res.status(200).json({ Spots: spots });
-            }
+    const spots = await Spot.findAll({
+        where: {
+            ownerId: userId
+        },
+        attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'description', 'price', 'createdAt', 'updatedAt', 'previewImage', 'avgRating'] // Include avgRating attribute
     });
+
+    const updatedSpots = [];
+    for(let spot of spots) {
+        let spotData = spot.toJSON();
+
+        // Convert lat, lng, and price to numbers
+        spotData.lat = parseFloat(spotData.lat);
+        spotData.lng = parseFloat(spotData.lng);
+        spotData.price = parseFloat(spotData.price);
+
+        // Get all related reviews
+        const reviews = await Review.findAll({ where: { spotId: spotData.id } });
+
+        // Calculate the average rating
+        let avgRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length; // Use review.stars
+
+        // Handle cases when there are no reviews
+        spotData.avgRating = reviews.length > 0 ? Math.round(avgRating * 10) / 10 : 0; // Consider decimals
+
+        updatedSpots.push(spotData);
+    }
+
+    res.status(200).json({ Spots: updatedSpots });
+});
 
 
 // ROUTE TO DELETE A SPOT
