@@ -166,29 +166,25 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
     });
 
 
-    const updatedSpots = spots.map((spot) => {
-        const totalStars = spot.reviews.reduce((acc, review) => acc + review.stars, 0);
-        const avgRating = spot.reviews.length > 0 ? totalStars / spot.reviews.length : 0;
+    const updatedSpots = spots.map(spot => {
+        const { reviews, ...spotData } = spot.toJSON();
 
-        const spotData = spot.toJSON();
-        // Convert lat, lng, and price to numbers
-        spotData.lat = parseFloat(spotData.lat);
-        spotData.lng = parseFloat(spotData.lng);
-        spotData.price = parseFloat(spotData.price);
+        const totalStars = reviews.reduce((acc, review) => acc + review.stars, 0);
+        const avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
-        // Format createdAt and updatedAt using moment
-        spotData.createdAt = moment(spotData.createdAt).format('YYYY-MM-DD HH:mm:ss');
-        spotData.updatedAt = moment(spotData.updatedAt).format('YYYY-MM-DD HH:mm:ss');
-
-        // Add the calculated avgRating to the spotData
-        spotData.avgRating = parseFloat(avgRating.toFixed(1)); // Convert to float with one decimal place
-
-        return spotData;
-      });
-
-      res.status(200).json({ Spots: updatedSpots });
+        return {
+            ...spotData,
+            avgRating: parseFloat(avgRating.toFixed(1)), // Convert to float with one decimal place
+            lat: parseFloat(spotData.lat),
+            lng: parseFloat(spotData.lng),
+            price: parseFloat(spotData.price),
+            createdAt: moment(spotData.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+            updatedAt: moment(spotData.updatedAt).format('YYYY-MM-DD HH:mm:ss')
+        };
     });
 
+    res.status(200).json({ Spots: updatedSpots });
+});
 
 // ROUTE TO DELETE A SPOT
 router.delete('/:spotId', restoreUser, requireAuth, async (req, res, next) => {
