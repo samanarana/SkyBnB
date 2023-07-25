@@ -121,12 +121,13 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         const numReviews = reviews.length;
         const avgStarRating = reviews.length ? totalStars / reviews.length : 0;
 
+        console.log('Updating spot...', spotId, numReviews, avgStarRating);
         // Update the spot
         await spot.update({
             numReviews: numReviews,
             avgRating: avgStarRating
         });
-
+        console.log('Updated spot', spotId);
 
         let reviewData = newReview.get({ plain: true });
 
@@ -160,21 +161,22 @@ router.get('/current', restoreUser, requireAuth, async (req, res, next) => {
 
     const updatedSpots = [];
     for(let spot of spots) {
-        let spotData = spot.toJSON();
+        // Get all related reviews
+        const reviews = await Review.findAll({ where: { spotId: spot.id } });
+        let totalStars = 0;
+        reviews.forEach(review => {
+            totalStars += review.stars;
+        });
+        let avgRating = reviews.length > 0 ? totalStars / reviews.length : 0;
 
+        let spotData = spot.toJSON();
         // Convert lat, lng, and price to numbers
         spotData.lat = parseFloat(spotData.lat);
         spotData.lng = parseFloat(spotData.lng);
         spotData.price = parseFloat(spotData.price);
 
-        // Get all related reviews
-        const reviews = await Review.findAll({ where: { spotId: spotData.id } });
-
-        // Calculate the average rating
-        let avgRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length; // Use review.stars
-
-        // Handle cases when there are no reviews
-        spotData.avgRating = reviews.length > 0 ? Math.round(avgRating * 10) / 10 : 0; // Consider decimals
+        // Add the calculated avgRating to the spotData
+        spotData.avgRating = avgRating;
 
         updatedSpots.push(spotData);
     }
