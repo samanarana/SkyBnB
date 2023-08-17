@@ -1,53 +1,59 @@
 // frontend/src/store/session.js
+import { csrfFetch } from "./csrf";
 
-import { csrfFetch } from './csrf';
+const SET_USER = "session/setUser";
+const REMOVE_USER = "session/removeUser";
 
-//Action Types
-const SET_USER = 'session/SET_USER';
-const REMOVE_USER = 'session/REMOVE_USER';
-
-//POJO Action Creators
-export const setUser = user => ({
+const setUser = (user) => {
+  return {
     type: SET_USER,
-    payload: user
-});
+    payload: user,
+  };
+};
 
-export const removeUser = () => ({
-    type: REMOVE_USER
-});
+const removeUser = () => {
+  return {
+    type: REMOVE_USER,
+  };
+};
 
+export const login = (user) => async (dispatch) => {
+  const { credential, password } = user;
+  const response = await csrfFetch("/api/session", {
+    method: "POST",
+    body: JSON.stringify({
+      credential,
+      password,
+    }),
+  });
+  const data = await response.json();
+  dispatch(setUser(data.user));
+  return response;
+};
 
-//Thunk Action Creator
-export const login = (credential, password) => async dispatch => {
-    const response = await csrfFetch('/api/session', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ credential, password })
-    });
+export const restoreUser = () => async (dispatch) => {
+    const response = await csrfFetch("/api/session");
+    const data = await response.json();
+    dispatch(setUser(data.user));
+    return response;
+  };
 
-    if (response.ok) {
-        const data = await response.json();
-        dispatch(setUser(data.user));
-        return null;
-    }
-}
-
-
-//Initial State
 const initialState = { user: null };
 
-//Reducer
 const sessionReducer = (state = initialState, action) => {
-    switch (action.type) {
-        case SET_USER:
-            return { user: action.payload };
-        case REMOVE_USER:
-            return initialState;
-        default:
-            return state;
-    }
+  let newState;
+  switch (action.type) {
+    case SET_USER:
+      newState = Object.assign({}, state);
+      newState.user = action.payload;
+      return newState;
+    case REMOVE_USER:
+      newState = Object.assign({}, state);
+      newState.user = null;
+      return newState;
+    default:
+      return state;
+  }
 };
 
 export default sessionReducer;
