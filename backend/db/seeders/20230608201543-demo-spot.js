@@ -11,7 +11,7 @@ module.exports = {
     options.tableName = "Spots";
     return queryInterface.bulkInsert(options, [
       {
-        owner_id: 1,
+        ownerId: 1,
         address: '123 Main St',
         city: 'Example City',
         state: 'Example State',
@@ -21,11 +21,10 @@ module.exports = {
         name: 'Spot 1',
         description: 'This is the first spot',
         price: 100.0,
-        avgStarRating: 4.5,
-        preview_image: 'https://www.google.com/'
+        previewImage: 'https://www.google.com/'
       },
       {
-        owner_id: 2,
+        ownerId: 2,
         address: '456 Elm St',
         city: 'Another City',
         state: 'Another State',
@@ -35,11 +34,10 @@ module.exports = {
         name: 'Spot 2',
         description: 'This is the second spot',
         price: 150.0,
-        avgStarRating: 4.0,
-        preview_image: 'http://placekitten.com/200/300'
+        previewImage: 'http://placekitten.com/200/300'
       },
       {
-        owner_id: 1,
+        ownerId: 1,
         address: '789 Oak St',
         city: 'Third City',
         state: 'Third State',
@@ -49,8 +47,7 @@ module.exports = {
         name: 'Spot 3',
         description: 'This is the third spot',
         price: 200.0,
-        avgStarRating: 4.8,
-        preview_image: 'https://www.twitter.com/'
+        previewImage: 'https://www.twitter.com/'
       }
     ], {});
   },

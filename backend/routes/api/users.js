@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { check, validationResult } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-
+const validator = require('validator');
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
 
@@ -31,13 +31,6 @@ const validateSignup = [
 ];
 
 
-
-
-//   //router.get('/user/:userId', restoreUser, async (req, res) => {
-//   router.get('/user/:userId', restoreUser, async (req, res) => {
-//     const id = req.params.userId;
-
-
 //NEW ROUTE - GET THE CURRENT USER
   router.get('/current', restoreUser, async (req, res) => {
     const id = req.userId;
@@ -63,61 +56,53 @@ const validateSignup = [
 
 
 
-// ROUTE TO LOGIN
-router.post('/login', async (req, res) => {
-  const { credential, password } = req.body;
-
-  if (!credential || !password) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "credential": "Email or username is required",
-        "password": "Password is required"
-      }
-    });
-  }
-
-  const user = await User.scope('withFullName').findOne({
-    where: { email: credential },
-    attributes: ['id', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
-  });
-
-  const token = await setTokenCookie(res, user);
-
-  let resObj = user.toSafeObject();
-
-  //resObj.token = token;
-
-  resObj.firstName = user.firstName;
-  resObj.lastName = user.lastName;
-
-  user.token = token;
-
-  if (!user || !(await bcrypt.compare(password, user.hashedPassword))) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-
-  res.json(resObj);
-});
-
-
-
-
 // NEW ROUTE SIGNUP ENDPOINT
-
 router.post('', validateSignup, async (req, res) => {
 
   const { firstName, lastName, email, username, password } = req.body;
 
-  // Check if all fields are filled
-  if (!firstName || !lastName || !email || !username || !password) {
+  // Check each field individually
+  if (!firstName || !firstName.trim()) {
     return res.status(400).json({
       message: "Bad Request",
       errors: {
-        "firstName": "First Name is required",
-        "lastName": "Last Name is required",
-        "email": "Invalid email",
+        "firstName": "First Name is required"
+      }
+    });
+  }
+
+  if (!lastName || !lastName.trim()) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "lastName": "Last Name is required"
+      }
+    });
+  }
+
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "email": "Invalid email"
+      }
+    });
+  }
+
+  if (!username || !username.trim()) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
         "username": "Username is required"
+      }
+    });
+  }
+
+  if (!password || !password.trim()) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors: {
+        "password": "Password is required and cannot be only whitespace"
       }
     });
   }
@@ -164,18 +149,14 @@ router.post('', validateSignup, async (req, res) => {
 
 await setTokenCookie(res, safeUser);
 
-
-
   // return user info
   const { id, firstName: fName, lastName: lName, email: eMail, username: uName } = newUser;
   res.status(200).json({
-    user: {
-      id,
-      firstName: fName,
-      lastName: lName,
-      email: eMail,
-      username: uName
-    }
+    id,
+    firstName: fName,
+    lastName: lName,
+    email: eMail,
+    username: uName
   });
 });
 

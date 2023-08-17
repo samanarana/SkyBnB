@@ -1,4 +1,7 @@
 'use strict';
+
+const moment = require('moment');
+
 const {
   Model
 } = require('sequelize');
@@ -10,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Spot, { foreignKey: 'spot_id', as: 'spot' });
-      this.hasMany(models.ReviewImage, { foreignKey: 'review_id', as: 'images', onDelete: 'CASCADE' });
-      this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
+      this.belongsTo(models.Spot, { foreignKey: 'spotId', as: 'Spot' });
+      this.hasMany(models.ReviewImage, { foreignKey: 'reviewId', as: 'ReviewImages', onDelete: 'CASCADE' });
+      this.belongsTo(models.User, { foreignKey: 'userId', as: 'User' });
     }
   }
   Review.init({
@@ -21,11 +24,15 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'User',
+        key: 'id',
+      },
     },
-    spot_id: {
+    spotId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -33,13 +40,35 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id',
       },
     },
-    review: DataTypes.TEXT,
-    stars: DataTypes.INTEGER,
+    review: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    stars: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: 1,
+        max: 5,
+      },
+    },
     createdAt: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW, // Set the default value to the current timestamp
+      defaultValue: DataTypes.NOW,
+      get() {
+        const value = this.getDataValue('createdAt');
+        return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : moment().format('YYYY-MM-DD HH:mm:ss');
+      },
     },
-    updatedAt: DataTypes.DATE,
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      get() {
+        const value = this.getDataValue('updatedAt');
+        return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : moment().format('YYYY-MM-DD HH:mm:ss');
+      },
+    },
   },
   {
     sequelize,

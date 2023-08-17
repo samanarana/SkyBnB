@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "express-validator": "^7.0.1"
+    "express-validator": "^7.0.1",
+    "moment": "^2.29.4"
   },
   "name": "airbnb",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "install": "npm --prefix backend install backend",
     "dev:backend": "npm --prefix backend start",

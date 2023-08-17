@@ -16,14 +16,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
+      userId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Users',
           field: 'id'
         }
       },
-      spot_id: {
+      spotId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Spots',

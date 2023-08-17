@@ -16,31 +16,25 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      spot_id: {
+      spotId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Spots',
           field: 'id'
         }
       },
-      user_id: {
+      userId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Users',
           field: 'id'
         },
       },
-      start_date: {
+      startDate: {
         type: Sequelize.STRING
       },
-      end_date: {
+      endDate: {
         type: Sequelize.STRING
-      },
-      created_at: {
-        type: Sequelize.DATE
-      },
-      updated_at: {
-        type: Sequelize.DATE
       },
       createdAt: {
         type: Sequelize.DATE

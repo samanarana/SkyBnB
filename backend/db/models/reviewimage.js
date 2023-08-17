@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Review, { foreignKey: 'review_id', as: 'review' });
+      this.belongsTo(models.Review, { foreignKey: 'reviewId', as: 'review' });
     }
   }
   ReviewImage.init({
@@ -19,8 +19,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    review_id: DataTypes.INTEGER,
-    url: DataTypes.STRING
+    reviewId: DataTypes.INTEGER,
+    url: {
+      type: DataTypes.STRING,
+      validate: {
+        is: "^[a-zA-Z]",
+        notEmpty: true,
+      },
+    },
   }, {
     sequelize,
     modelName: 'ReviewImage',

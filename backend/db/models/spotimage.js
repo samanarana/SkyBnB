@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Spot, { foreignKey: 'spot_id', as: 'spot', onDelete: 'CASCADE' });
+      this.belongsTo(models.Spot, { foreignKey: 'spotId', as: 'spot', onDelete: 'CASCADE' });
     }
   }
   SpotImage.init({
@@ -19,11 +19,21 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    spot_id: DataTypes.INTEGER,
-    url: DataTypes.STRING,
+    spotId: DataTypes.INTEGER,
+    url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      },
+    },
     preview: DataTypes.BOOLEAN,
-    avgStarRating: {
+    avgRating: {
       type: DataTypes.DECIMAL,
+      get() {
+        const value = this.getDataValue('avgRating');
+        return value ? parseFloat(value.toFixed(1)) : 0;
+      },
       validate: {
         min: 0,
         max: 5,

@@ -18,12 +18,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      review_id: {
+      reviewId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Reviews',
           field: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       url: {
         type: Sequelize.STRING
