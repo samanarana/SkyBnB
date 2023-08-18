@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
+const Sequelize = require('sequelize');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
@@ -39,7 +40,10 @@ router.post('', validateLogin, async (req, res) => {
   }
 
   const user = await User.scope('withFullName').findOne({
-    where: { email: credential },
+    where: {     [Sequelize.Op.or]: [
+      { email: credential },
+      { username: credential }
+    ] },
     attributes: ['id', 'firstName', 'lastName', 'email', 'hashedPassword'], // add hashedPassword to the attributes
   });
 
