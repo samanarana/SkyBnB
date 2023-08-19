@@ -6,6 +6,7 @@ import LoginFormPage from "./components/LoginFormPage";
 import SignupFormPage from "./components/SignupFormPage";
 import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
+import { ModalProvider, Modal } from './context/Modal';
 
 function App() {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ function App() {
   }, [dispatch]);
 
   return (
-    <>
+    <ModalProvider>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
         <Switch>
@@ -27,7 +28,8 @@ function App() {
           </Route>
         </Switch>
       )}
-    </>
+      <Modal />
+    </ModalProvider>
   );
 }
 
