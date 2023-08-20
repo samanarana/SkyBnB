@@ -28,9 +28,6 @@ function Navigation({ isLoaded }){
   return (
     <ul className="navbar">
       <li className="logo">SkyBnB</li>
-      <li>
-        <NavLink exact to="/">Home</NavLink>
-      </li>
       {isLoaded && (
         <li>
           <ProfileButton user={sessionUser} />
