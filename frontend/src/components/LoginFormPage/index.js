@@ -33,6 +33,11 @@ function LoginFormPage() {
     );
   };
 
+  const fillDemoCredentials = () => {
+    setCredential("Demo-lition");
+    setPassword("password");
+  }
+
   return (
     <>
         <h1>Log In</h1>
@@ -53,7 +58,7 @@ function LoginFormPage() {
             />
             {errors.credential && <p>{errors.credential}</p>}
             <button type="submit">Log In</button>
-            <span className="demo-user">Demo User</span>
+            <span className="demo-user" onClick={fillDemoCredentials}>Demo User</span>
         </form>
     </>
 );
