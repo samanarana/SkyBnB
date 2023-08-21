@@ -19,6 +19,9 @@ const reviewImagesRouter = require('./routes/api/reviewimages');
 
 const app = express();
 
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
+
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
