@@ -5,31 +5,18 @@ import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import './Navigation.css';
 
+import LogoImage from './LogoImage/SkyBnBLogo.png';
+
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
-
-//   let sessionLinks;
-//   if (sessionUser) {
-//     sessionLinks = (
-//         <li>
-//         <ProfileButton user={sessionUser} />
-//       </li>
-//     );
-//   } else {
-//     sessionLinks = (
-//         <div className="nav-items">
-//         <NavLink to="/login">Log In</NavLink>
-//         <NavLink to="/signup">Sign Up</NavLink>
-//       </div>
-//     );
-//   }
 
   return (
     <ul className="navbar">
       <li className="logo">
         <NavLink to="/" exact>
-          SkyBnB
+        <img src={LogoImage} alt="Logo" className="logo-image" />
+          skybnb
         </NavLink>
       </li>
       {isLoaded && (
