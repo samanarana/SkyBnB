@@ -27,7 +27,7 @@ const SpotTile = ({ spot }) => {
             <div className="spot-details">
                 <div>
                     <div className='spot-location'>{`${spot.city}, ${spot.state}`}</div>
-                    <div className='spot-price'>{`$ ${spot.price} / night`}</div>
+                    <div className='spot-price'>{`$ ${spot.price} night`}</div>
                 </div>
                 <div className='spot-rating'>
                     ★ {spot.avgRating || 'New'}

@@ -8,6 +8,7 @@ import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
 import { ModalProvider, Modal } from './context/Modal';
 import SpotTileList from './components/SpotTileList/SpotTileList';
+import SpotDetails from './components/SpotDetails/index';
 
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
           </Route>
           <Route path="/signup">
             <SignupFormPage />
+          </Route>
+          <Route path="/spots/:spotId">
+            <SpotDetails />
           </Route>
           <Route path="/">
             <SpotTileList />

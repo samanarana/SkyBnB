@@ -1,0 +1,154 @@
+/* SpotDetails.css */
+
+.spot-details-container {
+    display: grid;
+    gap: 3rem;
+    padding: 1.25rem 22.5rem 3.125rem 22.5rem;
+    border-radius: 8px;
+    max-width: 100%;
+}
+
+.spot-title-location {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    color: black;
+}
+
+.spot-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.spot-location {
+    font-size: 18px;
+    color: rgb(0, 0, 0);
+}
+
+.spot-images {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.main-image {
+    height: 6rem; /* Temporary  */
+    margin-right: 1rem;
+}
+
+.thumbnail {
+    height: 150px; /* Temporary */
+}
+
+.main-image, .thumbnail {
+    position: relative;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: 0.3s ease;
+    background-color: #e0e0e0; /* Temporary */
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 4px;
+        z-index: 1;
+    }
+
+    &:hover {
+        transform: none; /* Remove the scaling effect */
+        box-shadow: none; /* Remove box shadow on hover */
+
+        &::before {
+            opacity: 1; /* Display the overlay on hover */
+        }
+    }
+}
+
+.thumbnail-images {
+    width: 33%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+
+.spot-description-reserve-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.spot-host-description {
+    font-size: 18px;
+    width: 65%; /* Adjust to your liking, just leaving space for the callout-box */
+    margin-right: 1rem;
+}
+
+.hosted-by {
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.description {
+    width: 75%;
+    text-align: left;
+}
+
+.callout-box {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20%;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000000;
+    margin-left: 10px;
+}
+
+.price-rating-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px;
+}
+
+.spot-rating-spot-id-page {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.reserve-button {
+    padding: 10px 20px;
+    width: 95%;
+    margin-bottom: 10px;
+    background-color: #FF5A5F;
+    color: white;
+    border: 2px black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reserve-button:hover {
+    background-color: #FF5A5F;
+}

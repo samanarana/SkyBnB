@@ -2,7 +2,7 @@
 import { csrfFetch } from "./csrf";
 
 const GET_ALL_SPOTS = 'spots/getAllSpots';
-//const GET_SPOT_DETAILS = 'spots/getSpotDetails'
+const GET_SPOT_DETAILS = 'spots/getSpotDetails'
 
 export const getAllSpots = (spots) => {
     return {
@@ -10,7 +10,13 @@ export const getAllSpots = (spots) => {
         spots,
     };
 };
-//test
+
+export const getSpotDetails = (spot) => {
+    return {
+        type: GET_SPOT_DETAILS,
+        spot,
+    };
+};
 
 export const allSpotsThunk = () => async (dispatch) => {
  const response = await csrfFetch('/api/spots');
@@ -21,14 +27,30 @@ export const allSpotsThunk = () => async (dispatch) => {
  }
 }
 
+export const spotDetailsThunk = (spotId) => async (dispatch) => {
+    const response = await csrfFetch(`/api/spots/${spotId}`);
+    if (response.ok) {
+        const spot = await response.json();
+        dispatch(getSpotDetails(spot));
+    }
+}
 
-const initialState = [];
+
+const initialState = {
+    allSpots: [],
+    spotDetails: null,
+};
 
 
 const spotReducer = (state = initialState, action) => {
     switch (action.type) {
         case GET_ALL_SPOTS:
             return action.spots;
+        case GET_SPOT_DETAILS:
+            return {
+                ...state,
+                spotDetails: action.spot
+            };
         default:
             return state;
     }
