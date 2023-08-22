@@ -64,6 +64,19 @@
     align-items: center;
     width: 100%;
     margin-top: 10px;
+    font-size: 16px;
+}
+
+@media (max-width: 1400px) {
+    .spot-details {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 1300px) {
+    .spot-details {
+        font-size: 14px;
+    }
 }
 
 .spot-location {
@@ -91,8 +104,17 @@
     font-weight: 500;
     position: absolute;
     bottom: 25px;
-    right: 15px;
+    right: 10px;
+    font-size: 1.25rem;
 }
+
+@media (max-width: 1400px) {
+    .spot-rating {
+        font-size: 1rem;
+    }
+}
+
+
 
 .tooltip {
     position: fixed;
