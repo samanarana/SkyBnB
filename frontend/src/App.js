@@ -9,6 +9,7 @@ import Navigation from "./components/Navigation";
 import { ModalProvider, Modal } from './context/Modal';
 import SpotTileList from './components/SpotTileList/SpotTileList';
 import SpotDetails from './components/SpotDetails/index';
+import CreateSpotForm from './components/CreateSpotForm';
 
 
 function App() {
@@ -31,6 +32,9 @@ function App() {
           </Route>
           <Route path="/spots/:spotId">
             <SpotDetails />
+          </Route>
+          <Route path="/create-spot">
+            <CreateSpotForm />
           </Route>
           <Route path="/">
             <SpotTileList />

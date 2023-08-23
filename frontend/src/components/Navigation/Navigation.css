@@ -12,13 +12,12 @@
 
   .navbar a {
     text-decoration: none;
-    color: #FF5A5F;
     margin-left: 20px;
-    transition: color 0.3s;
+    transition: transform 0.3s ease;
   }
 
   .navbar a:hover {
-    color: #FF5A5F;
+    color: #276c76;
   }
 
   .logo {
@@ -51,6 +50,7 @@
 
   .profile-button {
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
   }
 
   .fas.fa-user-circle {
@@ -119,6 +119,11 @@
 .profile-dropdown li.manage-spots a {
   display: block;
   margin: 0;
+  color: #000000;
+}
+
+.profile-dropdown li.manage-spots a:hover {
+  color: #FF5A5F;
 }
 
 .hamburger-icon {
@@ -147,4 +152,23 @@
 
 .hamburger-icon span:last-child {
   margin-bottom: 0;
+}
+
+
+.create-spot-link {
+  color: #276c76;
+  transition: font-weight 0.3s, transform 0.3s;
+}
+
+.create-spot-link:hover {
+  font-weight: bold;
+  transform: scale(1.1);
+}
+
+
+.profile-create-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 10px;
 }

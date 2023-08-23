@@ -1,0 +1,142 @@
+.create-spot-form-page {
+    width: 30rem;
+    margin: auto;
+  }
+
+  @media (max-width: 480px) {
+    .create-spot-form-page {
+        width: 100%;
+        padding: .5rem;
+    }
+}
+
+  .form-section input{
+    margin-bottom: 1rem;
+    width: 98%;
+  }
+
+  .form-section p {
+    color: black;
+    margin-bottom: 1rem;
+    font-size: medium;
+    font-family: inherit;
+
+  }
+
+  .create-spot-heading {
+    margin-top: 2rem;
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+
+  textarea {
+    width: 100%;
+    height: 8rem;
+    resize: none;
+    overflow: auto;
+    border: 2.5px solid #000000;
+    border-radius: 4px;
+    background-color:  #f3ebff;
+    margin-bottom: 10px;
+  }
+
+  hr {
+    border: none;
+    border-top: 2.5px solid black;
+    height: 1px;
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .dollar-sign {
+    margin-right: 10px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .submit-spot-button {
+    display: block;
+    width: 30%;
+    margin: auto;
+    margin-top: 1rem;
+  }
+
+  .city-state-row {
+    display: flex;
+    align-items: center;
+    width: 99%;
+  }
+
+  .lat-long-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .comma {
+    margin-left: 15px;
+    margin-right: 20px;
+    margin-top: 15px;
+    line-height: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%
+  }
+
+  .error {
+    margin-left: .25rem;
+    display: inline;
+    color: red;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .input-with-error {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .price-input-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .input-and-error-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .input-container2 {
+    display: flex;
+    align-items: center;
+  }
+
+  .input-container2 input {
+    margin-top: 15px;
+  }
+
+  .input-error {
+    color: red;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 2px;
+    align-self: flex-start; /* Aligns the error to the start of the flex container */
+  }
+
+  .input-and-error-container-pics input {
+    margin-top: 10px;
+  }
+
+ .error-preview {
+    color: red;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 0px;
+ }

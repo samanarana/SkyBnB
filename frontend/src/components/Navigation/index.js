@@ -20,12 +20,22 @@ function Navigation({ isLoaded }){
         </NavLink>
       </li>
       {isLoaded && (
-        <li>
-          <ProfileButton user={sessionUser} />
-        </li>
+        <div className="profile-create-container">
+          {sessionUser && (
+            <li>
+              <NavLink to="/create-spot" className="create-spot-link">
+                Create a New Spot
+              </NavLink>
+            </li>
+          )}
+          <li>
+            <ProfileButton user={sessionUser} />
+          </li>
+        </div>
       )}
     </ul>
   );
 }
+
 
 export default Navigation;
