@@ -15,9 +15,7 @@ const SpotTileList = () => {
     }, [dispatch]);
 
     //get spots data from redux state
-    const spotsState = useSelector(state => state.spot);
-
-    const spots = spotsState[0] || [];
+    const spots = useSelector(state => state.spot.allSpots) || [];
 
     return (
         <div className='spot-tile-list'>

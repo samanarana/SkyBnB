@@ -29,11 +29,11 @@ export const createSpot = (spot) => {
 
 // Thunks
 export const allSpotsThunk = () => async (dispatch) => {
- const response = await csrfFetch('/api/spots');
- if (response.ok) {
-    const spotsObj = await response.json();
-    const spotsArray = Object.values(spotsObj);
-    dispatch(getAllSpots(spotsArray));
+    const response = await csrfFetch('/api/spots');
+    if (response.ok) {
+        const spotsObj = await response.json();
+        const spotsArray = spotsObj.Spots;
+        dispatch(getAllSpots(spotsArray));
  }
 }
 
@@ -83,7 +83,7 @@ const spotReducer = (state = initialState, action) => {
         case GET_ALL_SPOTS:
             return {
                 ...state,
-                allSpots: Object.values(action.spots)
+                allSpots: action.spots
             };
         case GET_SPOT_DETAILS:
             return {
