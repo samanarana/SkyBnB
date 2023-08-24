@@ -21,6 +21,13 @@ function SignupFormPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if(!emailPattern.test(email)){
+      setErrors({...errors, email: "Invalid email format"});
+      return;
+    }
+
     if (password === confirmPassword) {
       setErrors({});
       return dispatch(
@@ -33,6 +40,7 @@ function SignupFormPage() {
         })
       ).catch(async (res) => {
         const data = await res.json();
+        console.log("Backend returned errors", data);
         if (data && data.errors) {
           setErrors(data.errors);
         }
@@ -43,10 +51,15 @@ function SignupFormPage() {
     });
   };
 
+  // Condition to check if the button should be disabled
+  const isButtonDisabled = !email || !username || !firstName || !lastName || !password || !confirmPassword || (password !== confirmPassword);
+
   return (
     <>
       <h1>Sign Up</h1>
       <form onSubmit={handleSubmit}>
+        {errors.email && <div className="error">{errors.email}</div>}
+        {errors.username && <div className="error">{errors.username}</div>}
         <input
           type="text"
           value={email}
@@ -54,7 +67,6 @@ function SignupFormPage() {
           required
           placeholder="Email"
         />
-        <div className="error">{errors.email}</div>
 
         <input
           type="text"
@@ -63,7 +75,6 @@ function SignupFormPage() {
           required
           placeholder="Username"
         />
-        <div className="error">{errors.username}</div>
 
         <input
           type="text"
@@ -72,7 +83,6 @@ function SignupFormPage() {
           required
           placeholder="First Name"
         />
-        <div className="error">{errors.firstName}</div>
 
         <input
           type="text"
@@ -81,7 +91,6 @@ function SignupFormPage() {
           required
           placeholder="Last Name"
         />
-        <div className="error">{errors.lastName}</div>
 
         <input
           type="password"
@@ -90,7 +99,6 @@ function SignupFormPage() {
           required
           placeholder="Password"
         />
-        <div className="error">{errors.password}</div>
 
         <input
           type="password"
@@ -99,9 +107,8 @@ function SignupFormPage() {
           required
           placeholder="Confirm Password"
         />
-        <div className="error">{errors.confirmPassword}</div>
 
-        <button type="submit">Sign Up</button>
+        <button type="submit" disabled={isButtonDisabled}>Sign Up</button>
       </form>
     </>
   );

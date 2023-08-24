@@ -58,58 +58,59 @@ const validateSignup = [
 
 // NEW ROUTE SIGNUP ENDPOINT
 router.post('', validateSignup, async (req, res) => {
-
+  let errors = {};
   const { firstName, lastName, email, username, password } = req.body;
 
-  // Check each field individually
-  if (!firstName || !firstName.trim()) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "firstName": "First Name is required"
-      }
-    });
-  }
-
-  if (!lastName || !lastName.trim()) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "lastName": "Last Name is required"
-      }
-    });
-  }
-
-  if (!email || !validator.isEmail(email)) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "email": "Invalid email"
-      }
-    });
-  }
-
-  if (!username || !username.trim()) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "username": "Username is required"
-      }
-    });
-  }
-
-  if (!password || !password.trim()) {
-    return res.status(400).json({
-      message: "Bad Request",
-      errors: {
-        "password": "Password is required and cannot be only whitespace"
-      }
-    });
-  }
+  console.log("req.body", req.body);
 
   // Check if user exists already
   const existingUserEmail = await User.findOne({ where: { email: email } });
   const existingUserUsername = await User.findOne({ where: { username: username } });
+
+  if (existingUserEmail) {
+    errors.email = "User with that email already exists";
+  }
+
+  if (existingUserUsername) {
+    errors.username = "User with that username already exists";
+  }
+
+   // Check each field individually
+   if (!firstName || !firstName.trim()) {
+    errors.firstName = "First Name is required";
+  }
+
+  if (!lastName || !lastName.trim()) {
+    errors.lastName = "Last Name is required";
+  }
+
+  if (!email || !validator.isEmail(email)) {
+    errors.email = "Invalid email";
+  }
+
+  if (!username || !username.trim()) {
+    errors.username = "Username is required";
+  }
+
+  if (!password || !password.trim()) {
+    errors.password = "Password is required and cannot be only whitespace";
+  }
+
+  if (existingUserEmail) {
+    errors.email = "User with that email already exists";
+  }
+
+  if (existingUserUsername) {
+    errors.username = "User with that username already exists";
+  }
+
+  // If there are errors, return them
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors
+    });
+  }
 
   if (existingUserEmail) {
     return res.status(500).json({

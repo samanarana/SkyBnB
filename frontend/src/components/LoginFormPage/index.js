@@ -28,7 +28,7 @@ function LoginFormPage() {
     .catch(
       async (res) => {
         const data = await res.json();
-        if (data && data.errors) setErrors(data.errors);
+        if (data && data.message) setErrors({credential: data.message});
       }
     );
   };
@@ -38,10 +38,15 @@ function LoginFormPage() {
     setPassword("password");
   }
 
+  // Condition to check if the button should be disabled
+  const isButtonDisabled = credential.length < 4 || password.length < 6;
+
   return (
     <>
         <h1>Log In</h1>
+
         <form onSubmit={handleSubmit}>
+        {errors.credential && <p className="error">The provided credentials were invalid.</p>}
             <input
                 type="text"
                 value={credential}
@@ -56,8 +61,7 @@ function LoginFormPage() {
                 required
                 placeholder="Password"
             />
-            {errors.credential && <p>{errors.credential}</p>}
-            <button type="submit">Log In</button>
+            <button type="submit" disabled={isButtonDisabled}>Log In</button>
             <span className="demo-user" onClick={fillDemoCredentials}>Demo User</span>
         </form>
     </>
