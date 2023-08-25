@@ -51,6 +51,7 @@
   .profile-button {
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
     margin-bottom: 20px;
+    border-radius: 25px !important;
   }
 
   .fas.fa-user-circle {

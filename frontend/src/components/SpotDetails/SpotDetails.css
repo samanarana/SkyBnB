@@ -6,6 +6,7 @@
     padding: 1.25rem 22.5rem 3.125rem 22.5rem;
     border-radius: 8px;
     max-width: 100%;
+    transition: padding 0.5s ease-in-out, width 0.5s ease-in-out;
 }
 
 .spot-title-location {
@@ -64,14 +65,14 @@
         z-index: 1;
     }
 
-    &:hover {
-        transform: none; /* Remove the scaling effect */
-        box-shadow: none; /* Remove box shadow on hover */
+    /*&:hover {
+        transform: none;
+        box-shadow: none;
 
         &::before {
-            opacity: 1; /* Display the overlay on hover */
+            opacity: 1;
         }
-    }
+    }*/
 }
 
 .thumbnail-images {
@@ -114,6 +115,7 @@
     flex-direction: column;
     align-items: center;
     width: 35%;
+    transition: padding 0.5s ease-in-out, width 0.5s ease-in-out;
 }
 
 .price {
