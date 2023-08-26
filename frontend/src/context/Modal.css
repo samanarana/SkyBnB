@@ -25,3 +25,7 @@
     box-shadow: none;
     border-radius: 10px;
   }
+
+  #modal, #modal-background, #modal-content {
+    z-index: 1005;
+  }

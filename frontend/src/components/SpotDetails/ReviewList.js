@@ -46,20 +46,20 @@ function ReviewList ({ spotId }) {
                 { reviews.length === 0 ? "NEW" : <span className="big-star">★ {avgRating.toFixed(1)}</span> }
                 <span className="review-count"> • {reviews.length} reviews</span>
             </div>
-            <button onClick={() => setIsOpen(true)}>Post Your Review</button>
+            <button className="post-your-review-button" onClick={() => setIsOpen(true)}>Post Your Review</button>
 
             <ReviewModal spotId={spotId} isOpen={isOpen} setIsOpen={setIsOpen} />
 
             {reviews.map(review => (
             <div key={review.id} className="individual-review">
                 <div className="review-author">
-                {review.User.firstName} {/* First name */}
+                {review.User.firstName}
                 </div>
                 <div className="review-date">
-                {format(parseISO(review.createdAt), 'MMMM yyyy')} {/* Month and Year */}
+                {format(parseISO(review.createdAt), 'MMMM yyyy')}
                 </div>
                 <div className="review-content">
-                {review.review} {/* Review description */}
+                {review.review}
                 </div>
             </div>
             ))}

@@ -1,6 +1,6 @@
 // frontend/src/components/SpotDetails/ReviewModal.js
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { createReviewThunk } from '../../store/review';
 import './ReviewModal.css';
@@ -11,18 +11,18 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
   const [content, setContent] = useState('');
   const modalRef = useRef(null);
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = useCallback((event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       setIsOpen(false);
     }
-  };
+  }, [setIsOpen, modalRef]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  });
+  }, [handleClickOutside]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,22 +36,29 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
     setIsOpen(false);
   };
 
+  const toggleRating = (i) => {
+    if (rating === i) {
+      setRating(0);
+    } else {
+      setRating(i);
+    }
+  };
+
   const renderStars = () => {
     let starArray = [];
     for (let i = 1; i <= 5; i++) {
       starArray.push(
         <span
           key={i}
-          className={`star ${i <= rating ? 'filled' : ''}`}
-          onClick={() => setRating(i)}
+          className={`star ${i <= rating ? 'filled' : 'empty'}`}
+          onClick={() => toggleRating(i)}
         >
-          ★
+          {i <= rating ? "⭐" : "☆"}
         </span>
       );
     }
     return starArray;
   };
-
   const isButtonDisabled = content.length < 10 || rating === 0;
 
   return (
@@ -70,7 +77,7 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
               </label>
               <div className="star-rating">
                 {renderStars()}
-                <span> Stars</span>
+                <span className="star-label">Stars</span>
               </div>
               <button type="submit" disabled={isButtonDisabled}>
                 Submit Your Review
@@ -81,6 +88,7 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
       )}
     </>
   );
+
 }
 
 export default ReviewModal;

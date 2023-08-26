@@ -61,7 +61,7 @@ function LoginFormPage() {
                 required
                 placeholder="Password"
             />
-            <button type="submit" disabled={isButtonDisabled}>Log In</button>
+            <button className="login-button" type="submit" disabled={isButtonDisabled}>Log In</button>
             <span className="demo-user" onClick={fillDemoCredentials}>Demo User</span>
         </form>
     </>
