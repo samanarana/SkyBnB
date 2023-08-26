@@ -1,19 +1,40 @@
 //frontend/src/components/SpotDetails/index.js
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { spotDetailsThunk } from '../../store/spot';
+import { getAllReviewsThunk } from '../../store/review';
 import './SpotDetails.css';
+
+import ReviewList from './ReviewList';
+import ReviewModal from './ReviewModal';
 
 function SpotDetails() {
     const { spotId } = useParams();
     const dispatch = useDispatch();
     const spot = useSelector(state => state.spot.spotDetails);
 
+    const [avgRating, setAvgRating] = useState(0);
+    const reviews = useSelector(state => state.review.reviews);
+
     useEffect(() => {
         dispatch(spotDetailsThunk(spotId));
+        dispatch(getAllReviewsThunk(spotId));
     }, [dispatch, spotId]);
+
+    useEffect(() => {
+        if (reviews && reviews.length > 0) {
+            const totalStars = reviews.reduce((acc, review) => {
+                return acc + (review.stars || 0);
+            }, 0);
+
+            const average = totalStars / reviews.length;
+            setAvgRating(average);
+        } else {
+            setAvgRating(0);
+        }
+    }, [reviews]);
 
     if(!spot) {
         return null;
@@ -42,15 +63,19 @@ function SpotDetails() {
                     <p className="description">{spot.description}</p>
                 </div>
                 <div className="callout-box">
-                    <div className="price-rating-container">
-                        <p className="price">${spot.price} night</p>
-                        <div className="spot-rating-spot-id-page">
-                        ★ {spot.avgRating || 'New'}
-                        </div>
+                <div className="price-rating-container">
+                    <p className="price">${spot.price} night</p>
+                    <div className="spot-rating-spot-id-page">
+                    ★ {avgRating ? avgRating.toFixed(1) : 'New'}
+                    </div>
                     </div>
                 <button className="reserve-button" onClick={() => alert('Feature coming soon')}>Reserve</button>
             </div>
             </div>
+
+            <ReviewList spotId={spotId} />
+
+            <ReviewModal spotId={spotId} />
         </div>
     );
 }
