@@ -8,11 +8,13 @@ import './ReviewList.css';
 
 import ReviewModal from './ReviewModal';
 
-function ReviewList ({ spotId }) {
+function ReviewList ({ spotId, ownerId }) {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
     const reviews = useSelector(state => state.review.reviews);
     const [avgRating, setAvgRating] = useState(0);
+
+    const userId = useSelector(state => state.session.user.id);
 
     useEffect(() => {
         dispatch(getAllReviewsThunk(spotId));
@@ -46,7 +48,16 @@ function ReviewList ({ spotId }) {
                 { reviews.length === 0 ? "NEW" : <span className="big-star">★ {avgRating.toFixed(1)}</span> }
                 <span className="review-count"> • {reviews.length} reviews</span>
             </div>
+
+            {userId !== ownerId && (
             <button className="post-your-review-button" onClick={() => setIsOpen(true)}>Post Your Review</button>
+            )}
+
+            {reviews.length === 0 && userId !== ownerId && (
+                <div className="be-the-first">
+                    Be the first to post a review!
+                </div>
+            )}
 
             <ReviewModal spotId={spotId} isOpen={isOpen} setIsOpen={setIsOpen} />
 

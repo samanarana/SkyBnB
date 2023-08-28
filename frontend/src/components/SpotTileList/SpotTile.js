@@ -5,6 +5,9 @@ import { useState } from 'react';
 import './SpotTile.css';
 
 const SpotTile = ({ spot }) => {
+
+    console.log(spot);
+
     const history = useHistory();
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
@@ -19,8 +22,8 @@ const SpotTile = ({ spot }) => {
     return (
         <div className='spot-tile' onClick={handleTileClick}>
             <img
-               src={spot.thumbnailUrl}
-               alt={`${spot.name}`}
+                src={`/Images/${spot.previewImage}`}
+                alt={`${spot.name}`}
                onMouseMove={handleMouseMove}
             />
             <div className="tooltip" style={{ left: tooltipPos.x, top: tooltipPos.y }}>{spot.name}</div>

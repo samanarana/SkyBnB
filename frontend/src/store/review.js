@@ -43,7 +43,6 @@ export const getAllReviewsThunk = (spotId) => async (dispatch) => {
     const response = await csrfFetch(`/api/spots/${spotId}/reviews`);
     if (response.ok) {
         const reviews = await response.json();
-        console.log("Fetched reviews in Thunk: ", reviews);
         dispatch(getAllReviews(reviews.Reviews));
     }
 };
@@ -57,19 +56,32 @@ export const getOneReviewThunk = (reviewId) => async (dispatch) => {
 };
 
 export const createReviewThunk = (reviewData) => async (dispatch) => {
+    try {
     const response = await csrfFetch(`/api/spots/${reviewData.spotId}/reviews`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(reviewData),
+        body: JSON.stringify({
+            review: reviewData.review,
+            stars: reviewData.stars
+        }),
     });
+    console.log("Review Data:", reviewData);
 
     if (response.ok) {
         const review = await response.json();
         dispatch(createReview(review));
+        return null;
+      } else {
+        const errorData = await response.json();
+        return errorData.message;
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
+      return 'Review already exists for this spot';
     }
-};
+  };
 
 export const deleteReviewThunk = (reviewId) => async (dispatch) => {
     const response = await csrfFetch(`/api/reviews/${reviewId}`, {

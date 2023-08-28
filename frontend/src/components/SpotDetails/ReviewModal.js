@@ -9,6 +9,7 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
   const dispatch = useDispatch();
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
   const modalRef = useRef(null);
 
   const handleClickOutside = useCallback((event) => {
@@ -27,13 +28,19 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const reviewData = {
-      spotId,
-      rating,
-      content,
+      spotId: Number(spotId),
+      stars: rating,
+      review: content
     };
 
-    await dispatch(createReviewThunk(reviewData));
-    setIsOpen(false);
+    const error = await dispatch(createReviewThunk(reviewData));
+
+
+    if (error) {
+      setErrorMessage(error);
+    } else {
+      setIsOpen(false);
+    }
   };
 
   const toggleRating = (i) => {
@@ -44,16 +51,30 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
     }
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      setContent('');
+      setRating(0);
+      setHoverRating(0);
+      setErrorMessage(null);
+    }
+  }, [isOpen]);
+
+  const [hoverRating, setHoverRating] = useState(0);
+
   const renderStars = () => {
     let starArray = [];
     for (let i = 1; i <= 5; i++) {
+      const isFilled = i <= (hoverRating || rating);
       starArray.push(
         <span
           key={i}
-          className={`star ${i <= rating ? 'filled' : 'empty'}`}
+          className={`star ${isFilled ? 'filled' : 'empty'}`}
           onClick={() => toggleRating(i)}
+          onMouseEnter={() => setHoverRating(i)}
+          onMouseLeave={() => setHoverRating(0)}
         >
-          {i <= rating ? "⭐" : "☆"}
+          {isFilled ? "⭐" : "☆"}
         </span>
       );
     }
@@ -67,6 +88,9 @@ function ReviewModal({ spotId, isOpen, setIsOpen }) {
         <div className="modal-overlay">
           <div ref={modalRef} className="modal">
             <h1>How was your stay?</h1>
+
+            {errorMessage && <div className="error-message-review">{errorMessage}</div>}
+
             <form onSubmit={handleSubmit}>
               <label>
                 <textarea

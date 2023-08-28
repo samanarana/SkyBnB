@@ -17,13 +17,15 @@
   }
 
   .navbar a:hover {
-    color: #276c76;
+    color: #FF5A5F;
+    transform: scale(1.05);
   }
 
   .logo {
     color: #FF5A5F;
     font-weight: bold;
     font-size: 2.5rem;
+    transition: transform 0.3s ease;
   }
 
   .logo a {

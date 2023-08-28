@@ -59,21 +59,22 @@ function SpotDetails() {
 
             <div className="spot-description-reserve-container">
                 <div className="spot-host-description">
-                    <p className="hosted-by">Hosted by {spot.hostFirstName} {spot.hostLastName}</p>
+                    <p className="hosted-by">Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</p>
                     <p className="description">{spot.description}</p>
                 </div>
                 <div className="callout-box">
                 <div className="price-rating-container">
                     <p className="price">${spot.price} night</p>
                     <div className="spot-rating-spot-id-page">
-                    ★ {avgRating ? avgRating.toFixed(1) : 'New'}
+                    {reviews.length === 0 ? 'NEW' : <span className="big-star-box">★ {avgRating.toFixed(1)}</span>}
+                    <span className="review-count-box"> • {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}</span>
                     </div>
                     </div>
                 <button className="reserve-button" onClick={() => alert('Feature coming soon')}>Reserve</button>
             </div>
             </div>
 
-            <ReviewList spotId={spotId} />
+            <ReviewList spotId={spotId} ownerId={spot.ownerId} />
 
             <ReviewModal spotId={spotId} />
         </div>

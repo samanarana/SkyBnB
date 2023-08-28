@@ -3,9 +3,11 @@
 .spot-details-container {
     display: grid;
     gap: 3rem;
-    padding: 1.25rem 22.5rem 3.125rem 22.5rem;
     border-radius: 8px;
-    max-width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 0 20px;
     transition: padding 0.5s ease-in-out, width 0.5s ease-in-out;
 }
 
@@ -92,18 +94,21 @@
 
 .spot-host-description {
     font-size: 18px;
-    width: 65%; /* Adjust to your liking, just leaving space for the callout-box */
+    width: 75%;
     margin-right: 1rem;
 }
 
 .hosted-by {
-    font-style: italic;
     margin-bottom: 10px;
+    color: black;
+    font-size: 1.55em;
 }
 
 .description {
-    width: 75%;
+    width: 80%;
     text-align: left;
+    color: black;
+    font-size: 1em;
 }
 
 .callout-box {
@@ -114,7 +119,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 35%;
+    width: 45%;
     transition: padding 0.5s ease-in-out, width 0.5s ease-in-out;
 }
 
@@ -123,6 +128,55 @@
     font-weight: bold;
     color: #000000;
     margin-left: 10px;
+    transition: font-size 0.5s ease-in-out;
+}
+
+
+.spot-rating-spot-id-page {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+    transition: font-size 0.5s ease-in-out;
+}
+
+@media (max-width: 950px) {
+    .callout-box .price {
+        font-size: 18px;
+    }
+
+    .callout-box .spot-rating-spot-id-page {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 850px) {
+    .callout-box .price {
+        font-size: 16px;
+    }
+
+    .callout-box .spot-rating-spot-id-page {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 770px) {
+    .callout-box .price {
+        font-size: 14px;
+    }
+
+    .callout-box .spot-rating-spot-id-page {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 770px) {
+    .callout-box .price {
+        font-size: 12px;
+    }
+
+    .callout-box .spot-rating-spot-id-page {
+        font-size: 12px;
+    }
 }
 
 .price-rating-container {
@@ -131,12 +185,6 @@
     align-items: center;
     width: 100%;
     padding: 5px;
-}
-
-.spot-rating-spot-id-page {
-    font-size: 20px;
-    font-weight: bold;
-    margin-right: 10px;
 }
 
 .reserve-button {
