@@ -110,6 +110,7 @@
     text-align: left;
     color: black;
     font-size: 1em;
+    overflow-wrap: break-word;
 }
 
 .callout-box {

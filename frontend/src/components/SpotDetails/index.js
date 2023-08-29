@@ -66,8 +66,13 @@ function SpotDetails() {
                 <div className="price-rating-container">
                     <p className="price">${spot.price} night</p>
                     <div className="spot-rating-spot-id-page">
-                    {reviews.length === 0 ? 'NEW' : <span className="big-star-box">★ {avgRating.toFixed(1)}</span>}
-                    <span className="review-count-box"> • {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}</span>
+                    {reviews.length === 0
+                        ? <span className="big-star-box">★ NEW</span>
+                        : <>
+                            <span className="big-star-box">★ {avgRating.toFixed(1)}</span>
+                            <span className="review-count-box"> • {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}</span>
+                        </>
+                    }
                     </div>
                     </div>
                 <button className="reserve-button" onClick={() => alert('Feature coming soon')}>Reserve</button>

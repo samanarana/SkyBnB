@@ -52,8 +52,13 @@ function ReviewList ({ spotId, ownerId }) {
     return (
         <div className="review-list-container">
             <div className="review-header">
-                { reviews.length === 0 ? "NEW" : <span className="big-star">★ {avgRating.toFixed(1)}</span> }
-                <span className="review-count"> • {reviews.length} reviews</span>
+            {reviews.length === 0
+                ? <span className="big-star">★ NEW</span>
+                : <>
+                    <span className="big-star">★ {avgRating.toFixed(1)}</span>
+                    <span className="review-count"> • {reviews.length} reviews</span>
+                </>
+            }
             </div>
 
             {userId !== ownerId && (
