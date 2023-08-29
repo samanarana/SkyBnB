@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+.delete-spot-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 25em;
+  border: 5px solid black;
+  background-color: #fff;
+  border-radius: 20px;
+  z-index: 1001;
+}
+
+.delete-spot-modal h2 {
+  margin-bottom: .5em;
+  font-size: 1.5em;
+}
+
+.delete-spot-modal p {
+  margin-bottom: .5em;
+  font-size: 1em;
+  font-weight: 600;
+  color: black;
+}
+
+.button-to-yes {
+  margin-bottom: .25em;
+  width: 90%;
+  padding: 10px 20px;
+  background-color: #FF5A5F;;
+  color: #ffffff;
+  border: 3px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  cursor: pointer;
+  font-size: 1em;
+  transition: transform 0.2s ease;
+}
+
+.button-to-no {
+    margin-bottom: 1.5em;
+    width: 90%;
+    padding: 10px 20px;
+    background-color: rgb(104, 104, 104);
+    color: #ffffff;
+    border: 3px solid #000000;
+    box-shadow: 2px 2px 0px #000000;
+    cursor: pointer;
+    font-size: 1em;
+    transition: transform 0.2s ease;
+  }
+
+  .button-to-yes:hover {
+    transform: translateY(-3px);
+    border: 3px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+  }
+
+  .button-to-no:hover {
+    transform: translateY(-3px);
+    border: 3px solid #000000 !important;
+    box-shadow: 2px 2px 0px #000000 !important;
+    background-color: rgb(104, 104, 104) !important;
+  }

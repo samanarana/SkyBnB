@@ -1,7 +1,7 @@
 // frontend/src/components/Navigation/ProfileButton.js
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import * as sessionActions from '../../store/session';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
@@ -56,7 +56,7 @@ function ProfileButton({ user }) {
           <>
             <li>Hello, {user.username}</li>
             <li className="email">{user.email}</li>
-            <li className="manage-spots"><a href="/manage-spots">Manage Spots</a></li>
+            <li className="manage-spots"><Link to="/manage-spots">Manage Spots</Link></li>
             <li className="logout">
               <button onClick={logout}>Log Out</button>
             </li>

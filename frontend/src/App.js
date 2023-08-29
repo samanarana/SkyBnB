@@ -10,6 +10,8 @@ import { ModalProvider, Modal } from './context/Modal';
 import SpotTileList from './components/SpotTileList/SpotTileList';
 import SpotDetails from './components/SpotDetails/index';
 import CreateSpotForm from './components/CreateSpotForm';
+import ManageSpots from './components/ManageSpots/index';
+import UpdateSpot from './components/ManageSpots/UpdateSpot';
 
 
 function App() {
@@ -35,6 +37,12 @@ function App() {
           </Route>
           <Route path="/create-spot">
             <CreateSpotForm />
+          </Route>
+          <Route path="/manage-spots">
+            <ManageSpots />
+          </Route>
+          <Route path="/update-spot/:spotId">
+            <UpdateSpot />
           </Route>
           <Route path="/">
             <SpotTileList />
