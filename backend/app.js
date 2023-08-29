@@ -21,6 +21,8 @@ const app = express();
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
+app.use('/Images', express.static('public/Images'));
+
 
 app.use(morgan('dev'));
 app.use(cookieParser());

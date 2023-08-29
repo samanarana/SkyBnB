@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createSpot } from '../../store/spot';
+import { createSpotThunk } from '../../store/spot';
 import './CreateSpotForm.css';
 
 
@@ -68,25 +68,29 @@ const CreateSpotForm = () => {
         return;
       }
 
-        const spotData = {
-          country,
-          address,
-          city,
-          state,
-          description,
-          title,
-          price,
-          previewImage,
-          latitude: latitude ? latitude : null,
-          longitude: longitude ? longitude : null,
-          userId: user.id,
+      const spotData = {
+        country,
+        address,
+        city,
+        state,
+        description,
+        name: title,
+        price,
+        previewImage,
+        lat: latitude ? latitude : null,
+        lng: longitude ? longitude : null,
+        userId: user.id,
         };
 
-        const newSpot = await dispatch(createSpot(spotData));
+        const newSpot = await dispatch(createSpotThunk(spotData));
+
+        console.log("newSpot after dispatch:", newSpot);
 
         if (newSpot.errors) {
+          console.log("Found errors in newSpot:", newSpot.errors);
           setErrors(newSpot.errors);
         } else {
+          console.log("No errors found, redirecting...");
           history.push(`/spots/${newSpot.id}`);
         }
         };

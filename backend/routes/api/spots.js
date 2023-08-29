@@ -368,8 +368,7 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
 
     const user = req.user;
 
-
-    if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
+    if (!address || !city || !state || !country || !name || !description || !price) {
         return res.status(400).json({
             message: "Bad Request",
             errors: {
@@ -431,7 +430,7 @@ router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
         where: {
             spotId: spotId,
         },
-        include: [{ model: User, as: 'User'}, { model: ReviewImage, as: 'ReviewImages'}]
+        include: [{ model: User, as: 'User', attributes: ['firstName'] }, { model: ReviewImage, as: 'ReviewImages'}]
     });
 
     for (let i in reviews)

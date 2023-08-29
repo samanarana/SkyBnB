@@ -12,24 +12,65 @@ module.exports = {
     return queryInterface.bulkInsert(options, [
     {
       spotId: 1,
-      url: 'http://placekitten.com/200/300',
+      url: '/Images/santorini1.png',
       preview: true
     },
     {
       spotId: 1,
-      url: 'https://www.google.com/',
-      preview: false
+      url: '/Images/santorini2.png',
+      preview: true
+    },
+    {
+      spotId: 1,
+      url: '/Images/santorini3.png',
+      preview: true
+    },
+    {
+      url: '/Images/santorini4.png',
+      preview: true
+    },
+
+    {
+      spotId: 2,
+      url: '/Images/copacabana1.png',
+      preview: true
     },
     {
       spotId: 2,
-      url: 'http://placekitten.com/200/300',
+      url: '/Images/copacabana2.png',
+      preview: true
+    },
+    {
+      spotId: 2,
+      url: '/Images/copacabana3.png',
+      preview: true
+    },
+    {
+      spotId: 2,
+      url: '/Images/copacabana4.png',
+      preview: true
+    },
+
+    {
+      spotId: 3,
+      url: '/Images/whistler1.png',
       preview: true
     },
     {
       spotId: 3,
-      url: 'https://www.twitter.com/',
+      url: '/Images/whistler2.png',
       preview: true
-    }
+    },
+    {
+      spotId: 3,
+      url: '/Images/whistler3.png',
+      preview: true
+    },
+    {
+      spotId: 3,
+      url: '/Images/whistler4.png',
+      preview: true
+    },
   ], {});
   },
 
