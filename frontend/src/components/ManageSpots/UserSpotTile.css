@@ -1,4 +1,4 @@
-.spot-tile-list {
+.user-spot-tile-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     justify-content: center;
@@ -9,28 +9,28 @@
 
 /* Adjust to 3 columns when screen width is between 900px and 1200px */
 @media (max-width: 1200px) and (min-width: 901px) {
-    .spot-tile-list {
+    .user-spot-tile-list {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 /* Adjust to 2 columns when screen width is between 600px and 900px */
 @media (max-width: 900px) {
-    .spot-tile-list {
+    .user-spot-tile-list {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* Adjustments for very small screens */
 @media (max-width: 600px) {
-    .spot-tile-list {
+    .user-spot-tile-list {
         grid-template-columns: 1fr; /* This will be 1 column */
         gap: 10px;
         padding: 10px;
     }
 }
 
-.spot-tile {
+.user-spot-tile {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,21 +41,24 @@
     width: 100%;
 }
 
-.spot-image {
-    width: 24em;
-    height: 24em;
+.user-spot-tile img {
+    width: 100%;
+    height: 0;
+    padding-top: 100%;
     object-fit: cover;
     border-radius: 4px;
-    box-shadow: 0 4px 8px -4px rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.3s ease;
+    border: 1px solid #000000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin-bottom: 10px;
+
+    &:hover {
+        transform: scale(1.02);
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.479);
+    }
 }
 
-.spot-image:hover {
-    box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 1);
-}
-
-.spot-details {
+.user-spot-details {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -65,38 +68,25 @@
 }
 
 @media (max-width: 1400px) {
-    .spot-details {
+    .user-spot-details {
         font-size: 15px;
     }
 }
 
 @media (max-width: 1300px) {
-    .spot-details {
+    .user-spot-details {
         font-size: 14px;
     }
 }
 
-.spot-location {
+.user-spot-location {
     font-weight: 600;
     color: #484848;
     text-align: left;
     flex: 2;
 }
 
-@media (max-width: 1400px) {
-    .spot-location {
-        font-size: 15px !important;
-    }
-}
-
-@media (max-width: 1300px) {
-    .spot-location {
-        font-size: 10px;
-    }
-}
-
-
-.spot-price {
+.user-spot-price {
     font-weight: 600;
     color: #2c3e50;
     transition: color 0.3s;
@@ -108,7 +98,7 @@
     }
 }
 
-.spot-rating {
+.user-spot-rating {
     color: #000000;
     font-size: 1.25rem;
     font-weight: 500;
@@ -119,14 +109,12 @@
 }
 
 @media (max-width: 1400px) {
-    .spot-rating {
+    .user-spot-rating {
         font-size: 1rem;
     }
 }
 
-
-
-.tooltip {
+.user-tooltip {
     position: fixed;
     transform: translate(-50%, -50%);
     padding: 5px 10px;
@@ -141,6 +129,26 @@
     white-space: nowrap;
 }
 
-.spot-tile:hover .tooltip {
+.user-spot-tile:hover .user-tooltip {
     opacity: 1;
 }
+
+.update-spot, .delete-spot {
+    font-size: .8em;
+    border: 3px solid black;
+    background-color: rgb(104, 104, 104);
+    color: white; /* white text */
+    box-shadow: 3px 3px 0px black;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    transition: transform 0.3s ease;
+  }
+
+  .update-spot:hover, .delete-spot:hover {
+    border: 3px solid black !important;
+    background-color: rgb(104, 104, 104) !important;
+    box-shadow: 3px 3px 0px black;
+    transform: scale(1.05);
+  }

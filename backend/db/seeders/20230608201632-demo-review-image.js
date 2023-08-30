@@ -15,19 +15,19 @@ module.exports = {
     return queryInterface.bulkInsert(options, [
       {
         reviewId: 1,
-        url: 'http://placekitten.com/200/300'
+        url: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693422419/753de249-3efe-47f5-8d47-a35a352d1741_o04s1b.jpg'
       },
       {
         reviewId: 2,
-        url: 'http://placekitten.com/200/300'
+        url: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693422419/753de249-3efe-47f5-8d47-a35a352d1741_o04s1b.jpg'
       },
       {
         reviewId: 3,
-        url: 'http://placekitten.com/200/300'
+        url: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693422419/753de249-3efe-47f5-8d47-a35a352d1741_o04s1b.jpg'
       },
       {
         reviewId: 4,
-        url: 'http://placekitten.com/200/300'
+        url: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693422419/753de249-3efe-47f5-8d47-a35a352d1741_o04s1b.jpg'
       }
     ], {});
   },

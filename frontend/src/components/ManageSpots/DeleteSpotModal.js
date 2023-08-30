@@ -1,11 +1,11 @@
 // frontend/src/components/ManageSpots/DeleteSpotModal.js
 
-import { useModal } from '../../context/Modal';
 import './DeleteSpotModal.css';
+import { useDispatch } from 'react-redux';
+import { deleteSpotThunk } from '../../store/spot';
 
-function DeleteSpotModal({ isOpen, setIsOpen }) {
-    const { closeModal } = useModal();
-  if (!isOpen) return null;
+function DeleteSpotModal({ setIsOpen, spotId }) {
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setIsOpen(false);
@@ -14,7 +14,7 @@ function DeleteSpotModal({ isOpen, setIsOpen }) {
   const handleDeleteSpot = async () => {
     const result = await dispatch(deleteSpotThunk(spotId));
     if (!result.errors) {
-        closeModal();
+        setIsOpen(false);
     }
   };
 
@@ -30,7 +30,7 @@ function DeleteSpotModal({ isOpen, setIsOpen }) {
         <h2>Confirm Delete</h2>
         <p>Are you sure you want to remove this spot from the listings?</p>
         <button className="button-to-yes" onClick={handleDeleteSpot}>Yes (Delete Spot)</button>
-        <button className="button-to-no" onClick={closeModal}>No (Keep Spot)</button>
+        <button className="button-to-no" onClick={handleClose}>No (Keep Spot)</button>
       </div>
     </div>
   );

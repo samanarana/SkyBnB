@@ -21,7 +21,7 @@ module.exports = {
         name: 'Oia Sunset Spot',
         description: 'This spot offers a breathtaking view of the sunset over the Aegean Sea, a sight that has made Oia famous. It is a must-visit for photography and relaxation.',
         price: 250.0,
-        previewImage: '/Images/santoriniPreview.jpg'
+        previewImage: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419640/oia-top-1-1280_zgoa03.jpg'
       },
       {
         ownerId: 2,
@@ -34,7 +34,7 @@ module.exports = {
         name: 'Copacabana Beach',
         description: 'Located in the heart of Rio, Copacabana Beach is one of the most famous in the world. It offers a lively atmosphere and a stunning view of Sugarloaf Mountain.',
         price: 120.0,
-        previewImage: '/Images/copacabanaPreview.jpg'
+        previewImage: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419680/Praia_de_Copacabana_-_Rio_de_Janeiro_2C_Brasil_kzr5q1.jpg'
       },
       {
         ownerId: 3,
@@ -47,7 +47,7 @@ module.exports = {
         name: 'Whistler Ski Resort',
         description: 'Whistler Blackcomb is a major ski resort located in British Columbia, Canada. With a variety of ski and snowboarding trails, it is a winter sports haven.',
         price: 200.0,
-        previewImage: '/Images/whistlerPreview.jpg'
+        previewImage: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419813/whistler-village-bc_jvvijb.jpg'
       }
     ], {});
   },

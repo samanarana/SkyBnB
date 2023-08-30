@@ -31,10 +31,11 @@
 }
 
 .delete-spot-modal p {
-  margin-bottom: .5em;
+  padding: 0em 1.5em .5em 1.5em;
   font-size: 1em;
   font-weight: 600;
   color: black;
+  text-align: center;
 }
 
 .button-to-yes {

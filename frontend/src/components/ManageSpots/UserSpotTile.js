@@ -1,10 +1,10 @@
-// frontend/src/components/SpotTileList/SpotTile.js
+// frontend/src/components/ManageSpots/UserSpotTile.js
 
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
-import './SpotTile.css';
+import './UserSpotTile.css';
 
-const SpotTile = ({ spot }) => {
+const UserSpotTile = ({ spot }) => {
 
     console.log(spot);
 
@@ -20,20 +20,19 @@ const SpotTile = ({ spot }) => {
     };
 
     return (
-        <div className='spot-tile' onClick={handleTileClick}>
+        <div className="user-spot-tile" onClick={handleTileClick}>
             <img
-                className="spot-image"
                 src={`${spot.previewImage}`}
                 alt={`${spot.name}`}
                onMouseMove={handleMouseMove}
             />
-            <div className="tooltip" style={{ left: tooltipPos.x, top: tooltipPos.y }}>{spot.name}</div>
-            <div className="spot-details">
+            <div className="user-tooltip" style={{ left: tooltipPos.x, top: tooltipPos.y }}>{spot.name}</div>
+            <div className="user-spot-details">
                 <div>
-                    <div className='spot-location'>{`${spot.city}, ${spot.state}`}</div>
-                    <div className='spot-price'>{`$ ${spot.price} night`}</div>
+                    <div className="user-spot-location">{`${spot.city}, ${spot.state}`}</div>
+                    <div className="user-spot-price">{`$ ${spot.price} night`}</div>
                 </div>
-                <div className='spot-rating'>
+                <div className="user-spot-rating">
                     ★ {spot.avgRating || 'New'}
                 </div>
             </div>
@@ -41,4 +40,4 @@ const SpotTile = ({ spot }) => {
     );
 }
 
-export default SpotTile;
+export default UserSpotTile;

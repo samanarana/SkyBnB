@@ -128,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         get() {
           const value = this.getDataValue('previewImage');
-          return value ? value : 'image url';
+          return value ? value : 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419322/smudge-the-viral-cat_sxmxpn.jpg';
         },
       },
       numReviews: {
