@@ -40,6 +40,8 @@ function SpotDetails() {
         return null;
     }
 
+    const spotImages = spot.SpotImages.map(img => img.url);
+
     return (
         <div className="spot-details-container">
             <div className="spot-title-location">
@@ -50,10 +52,11 @@ function SpotDetails() {
             <div className="spot-images">
                 <img className="main-image" src={spot.previewImage} alt={spot.name} />
                 <div className="thumbnail-images">
-                    <img className="thumbnail" src={spot.image1} alt={`${spot.name} - 1`} />
-                    <img className="thumbnail" src={spot.image2} alt={`${spot.name} - 2`} />
-                    <img className="thumbnail" src={spot.image3} alt={`${spot.name} - 3`} />
-                    <img className="thumbnail" src={spot.image4} alt={`${spot.name} - 4`} />
+                    {spotImages.map((imageURL, index) => (
+                        <div className="thumbnail-wrapper" key={index}>
+                        <img className="thumbnail" src={imageURL} alt={`${spot.name} - ${index + 1}`} />
+                        </div>
+                    ))}
                 </div>
             </div>
 

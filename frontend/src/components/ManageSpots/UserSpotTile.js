@@ -21,11 +21,13 @@ const UserSpotTile = ({ spot }) => {
 
     return (
         <div className="user-spot-tile" onClick={handleTileClick}>
-            <img
-                src={`${spot.previewImage}`}
-                alt={`${spot.name}`}
-               onMouseMove={handleMouseMove}
-            />
+            <div class="image-wrapper">
+                <img
+                    src={`${spot.previewImage}`}
+                    alt={`${spot.name}`}
+                onMouseMove={handleMouseMove}
+                />
+            </div>
             <div className="user-tooltip" style={{ left: tooltipPos.x, top: tooltipPos.y }}>{spot.name}</div>
             <div className="user-spot-details">
                 <div>

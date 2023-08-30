@@ -26,6 +26,7 @@ module.exports = {
       preview: true
     },
     {
+      spotId: 1,
       url: 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419943/26bb208e-91d6-40a3-845f-a736f73b56cf_v0vluq.jpg',
       preview: true
     },

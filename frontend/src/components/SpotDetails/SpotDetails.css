@@ -16,7 +16,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 20px;
     color: black;
 }
 
@@ -32,57 +31,45 @@
 
 .spot-images {
     display: flex;
+    align-items: flex-start;
     margin-bottom: 10px;
+    max-height: 400px;
 }
 
 .main-image {
-    height: 6rem; /* Temporary  */
-    margin-right: 1rem;
-}
-
-.thumbnail {
-    height: 150px; /* Temporary */
-}
-
-.main-image, .thumbnail {
-    position: relative;
-    width: 100%;
-    height: auto;
+    flex: 1;
+    max-width: 52%;
+    height: 100%;
     object-fit: cover;
+    margin-right: 1rem;
     border-radius: 4px;
     box-shadow: none;
-    transition: 0.3s ease;
-    background-color: #e0e0e0; /* Temporary */
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        border-radius: 4px;
-        z-index: 1;
-    }
-
-    /*&:hover {
-        transform: none;
-        box-shadow: none;
-
-        &::before {
-            opacity: 1;
-        }
-    }*/
 }
 
 .thumbnail-images {
-    width: 33%;
+    flex: 1;
+    max-width: 48%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+}
+
+.thumbnail-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: none;
+    padding-top: 75%;
+}
+
+.thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
 

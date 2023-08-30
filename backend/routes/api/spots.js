@@ -541,7 +541,7 @@ router.get('/:spotId', async (req, res) => {
             attributes: [
                 'id', 'ownerId', 'address', 'city', 'state', 'country',
                 'lat', 'lng', 'name', 'description', 'price', 'createdAt',
-                'updatedAt', 'numReviews',
+                'updatedAt', 'numReviews', 'previewImage',
                 ['avgRating', 'avgStarRating']
             ]
         });
@@ -669,7 +669,8 @@ router.get('/', restoreUser, async (req, res) => {
        'price',
        'createdAt',
        'updatedAt',
-       'avgRating'
+       'avgRating',
+       'previewImage'
     ],
     raw: true,
     limit: size,
@@ -700,7 +701,6 @@ router.get('/', restoreUser, async (req, res) => {
       where: { spotId: spot.id },
     });
 
-    let image;
     if (review) {
        image = await ReviewImage.findOne({
           where: { reviewId: review.id },
@@ -716,7 +716,7 @@ router.get('/', restoreUser, async (req, res) => {
         const avgRating = (reviews.length > 0) ? totalStars / reviews.length : 0;
         spot.avgRating = parseFloat(avgRating.toFixed(1));
 
-        spot.previewImage = image ? image.url : "image url";
+        spot.previewImage = spot.previewImage ? spot.previewImage : "https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419322/smudge-the-viral-cat_sxmxpn.jpg";
         spot.lat = typeof spot.lat === 'string' ? parseFloat(spot.lat) : spot.lat;
         spot.lng = typeof spot.lng === 'string' ? parseFloat(spot.lng) : spot.lng;
         spot.price = typeof spot.price === 'string' ? parseFloat(spot.price) : spot.price;
