@@ -42,6 +42,8 @@ const CreateSpotForm = () => {
       if (!title) formErrors.title = "Name is required";
       if (!price) formErrors.price = "Price is required";
       if (!previewImage) formErrors.previewImage = "Preview image is required";
+      //if (!latitude) formErrors.latitude = "Latitude is required";
+      //if (!latitude) formErrors.latitude = "Latitude is required";
 
       if (!previewImage) {
         formErrors.previewImage = "Preview image is required";
@@ -77,6 +79,10 @@ const CreateSpotForm = () => {
         name: title,
         price,
         previewImage,
+        image1,
+        image2,
+        image3,
+        image4,
         lat: latitude ? latitude : null,
         lng: longitude ? longitude : null,
         userId: user.id,
@@ -87,10 +93,8 @@ const CreateSpotForm = () => {
         console.log("newSpot after dispatch:", newSpot);
 
         if (newSpot.errors) {
-          console.log("Found errors in newSpot:", newSpot.errors);
           setErrors(newSpot.errors);
         } else {
-          console.log("No errors found, redirecting...");
           history.push(`/spots/${newSpot.id}`);
         }
         };
@@ -175,7 +179,7 @@ const CreateSpotForm = () => {
               </p>
                 <textarea
                   id="description"
-                  placeholder="Description"
+                  placeholder="Please write at least 30 characters"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 ></textarea>

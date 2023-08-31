@@ -237,7 +237,12 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
         lng,
         name,
         description,
-        price
+        price,
+        previewImage,
+        image1,
+        image2,
+        image3,
+        image4,
     } = req.body;
 
     if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
@@ -260,9 +265,12 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
     const spot = await Spot.findOne({
         where: {
             id: spotId
-        }
+        },
+        include: [{
+            model: SpotImage,
+            as: 'SpotImages',
+        }]
     });
-
     if (!spot) {
         return res.status(404).json({ message: "Spot couldn't be found" });
     }
@@ -280,13 +288,15 @@ router.put('/:spotId', restoreUser, requireAuth, async (req, res) => {
         lng,
         name,
         description,
-        price
+        price,
+        previewImage,
     });
+
+    const imageUrls = [image1, image2, image3, image4];
 
     let spotData = updatedSpot.get({ plain: true });
 
     delete spotData.avgRating;
-    delete spotData.previewImage;
 
     res.json(spotData);
 
@@ -364,7 +374,7 @@ router.post('/:spotId/bookings', restoreUser, requireAuth, async (req, res) => {
 
 // ROUTE TO CREATE A NEW SPOT
 router.post('/', restoreUser, requireAuth, async (req, res) => {
-    const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt } = req.body;
+    const { address, city, state, country, lat, lng, name, description, price, createdAt, updatedAt, previewImage, image1, image2, image3, image4 } = req.body;
 
     const user = req.user;
 
@@ -397,13 +407,24 @@ router.post('/', restoreUser, requireAuth, async (req, res) => {
         description,
         price,
         createdAt,
-        updatedAt
+        updatedAt,
+        previewImage
     });
+
+    const imageUrls = [image1, image2, image3, image4];
+
+    for (let imageUrl of imageUrls) {
+        if (imageUrl) {
+            await SpotImage.create({
+                spotId: newSpot.id,
+                url: imageUrl,
+            });
+        }
+    }
 
     let spotData = newSpot.get({ plain: true });
 
     delete spotData.numReviews;
-    delete spotData.previewImage;
     delete spotData.avgRating;
 
 

@@ -57,7 +57,7 @@ function ReviewList ({ spotId, ownerId }) {
                 ? <span className="big-star">★ NEW</span>
                 : <>
                     <span className="big-star">★ {avgRating.toFixed(1)}</span>
-                    <span className="review-count"> • {reviews.length} reviews</span>
+                    <span className="review-count"> • {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}</span>
                 </>
             }
             </div>

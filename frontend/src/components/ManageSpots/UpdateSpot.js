@@ -33,6 +33,7 @@ const UpdateSpot = () => {
 
     useEffect(() => {
         if (spot) {
+          console.log("Spot Data:", spot);
           setCountry(spot.country);
           setAddress(spot.address);
           setCity(spot.city);
@@ -43,6 +44,14 @@ const UpdateSpot = () => {
           setPreviewImage(spot.previewImage);
           setLatitude(spot.lat);
           setLongitude(spot.lng);
+
+          const images = spot.spotImages || [];
+
+          if (images.length > 0) setImage1(images[0].url);
+          if (images.length > 1) setImage2(images[1].url);
+          if (images.length > 2) setImage3(images[2].url);
+          if (images.length > 3) setImage4(images[3].url);
+
         }
       }, [spot]);
 
@@ -57,7 +66,6 @@ const UpdateSpot = () => {
       if (!description || description.length < 30) formErrors.description = "Description is required and should be at least 30 characters";
       if (!title) formErrors.title = "Name is required";
       if (!price) formErrors.price = "Price is required";
-      if (!previewImage) formErrors.previewImage = "Preview image is required";
 
       if (!previewImage) {
         formErrors.previewImage = "Preview image is required";
@@ -93,13 +101,16 @@ const UpdateSpot = () => {
         name: title,
         price,
         previewImage,
+        image1,
+        image2,
+        image3,
+        image4,
         lat: latitude ? latitude : null,
         lng: longitude ? longitude : null,
         userId: user.id,
         };
 
-
-        const updatedSpot = await dispatch(updateSpotThunk(updatedSpotData));
+        const updatedSpot = await dispatch(updateSpotThunk(spotId, updatedSpotData));
 
       if (updatedSpot) {
         history.push(`/spots/${spotId}`);
