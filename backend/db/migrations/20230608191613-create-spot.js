@@ -48,7 +48,7 @@ module.exports = {
         allowNull: false
       },
       description: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(2500),
         allowNull: false
       },
       price: {
@@ -64,7 +64,7 @@ module.exports = {
         type: Sequelize.DECIMAL,
       },
       previewImage: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1024)
       },
       createdAt: {
         type: Sequelize.DATE,
