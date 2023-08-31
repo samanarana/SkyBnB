@@ -79,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(3000),
         allowNull: false,
         validate: {
           notEmpty: true,
