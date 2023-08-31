@@ -37,7 +37,56 @@ module.exports = {
         email: 'puppy2@gmail.com',
         username: 'Chewylayla',
         hashedPassword: bcrypt.hashSync('password4')
-      }
+      },
+      {
+        firstName: 'Zane',
+        lastName: 'Striker',
+        email: 'zane.striker@edge.com',
+        username: 'ZaneTheSlick',
+        hashedPassword: bcrypt.hashSync('password5')
+      },
+      {
+        firstName: 'Nova',
+        lastName: 'Vortex',
+        email: 'nova.vortex@spacemail.com',
+        username: 'StarGaze_Nova',
+        hashedPassword: bcrypt.hashSync('password6')
+      },
+      {
+        firstName: 'Lyra',
+        lastName: 'Frost',
+        email: 'lyra.frost@coldzone.net',
+        username: 'IceMaven',
+        hashedPassword: bcrypt.hashSync('password7')
+      },
+      {
+        firstName: 'Jax',
+        lastName: 'Havoc',
+        email: 'jax.havoc@chaosmail.com',
+        username: 'HavocJax',
+        hashedPassword: bcrypt.hashSync('password8')
+      },
+      {
+        firstName: 'Sage',
+        lastName: 'Pulsar',
+        email: 'sage.pulsar@nebula.org',
+        username: 'GalacticSage',
+        hashedPassword: bcrypt.hashSync('password9')
+      },
+      {
+        firstName: 'Echo',
+        lastName: 'Drift',
+        email: 'echo.drift@soundvoid.com',
+        username: 'EchoInMotion',
+        hashedPassword: bcrypt.hashSync('password10')
+      },
+      {
+        firstName: 'Blaze',
+        lastName: 'Ignite',
+        email: 'blaze.ignite@firemail.com',
+        username: 'BlazeInferno',
+        hashedPassword: bcrypt.hashSync('password11')
+      },
     ], {});
   },
 

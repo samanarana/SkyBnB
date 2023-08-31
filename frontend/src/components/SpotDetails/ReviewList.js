@@ -17,7 +17,8 @@ function ReviewList ({ spotId, ownerId }) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentReviewId, setCurrentReviewId] = useState(null);
 
-    const userId = useSelector(state => state.session.user.id);
+    const user = useSelector(state => state.session.user);
+    const userId = user ? user.id : null;
 
     useEffect(() => {
         dispatch(getAllReviewsThunk(spotId));
@@ -61,7 +62,7 @@ function ReviewList ({ spotId, ownerId }) {
             }
             </div>
 
-            {userId !== ownerId && (
+            {(userId || userId === 0) && userId !== ownerId && (
             <button className="post-your-review-button" onClick={() => setIsOpen(true)}>Post Your Review</button>
             )}
 
