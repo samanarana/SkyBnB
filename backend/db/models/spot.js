@@ -79,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       description: {
-        type: DataTypes.STRING(3000),
+        type: DataTypes.TEXT,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -125,7 +125,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       previewImage: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         get() {
           const value = this.getDataValue('previewImage');
           return value ? value : 'https://res.cloudinary.com/ddlkhhzk0/image/upload/v1693419322/smudge-the-viral-cat_sxmxpn.jpg';

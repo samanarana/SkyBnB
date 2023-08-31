@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     review: {
-      type: DataTypes.STRING(3000),
+      type: DataTypes.TEXT,
       validate: {
         notEmpty: true,
       },
