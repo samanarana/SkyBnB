@@ -1,4 +1,3 @@
-import { useModal } from '../../context/Modal';
 import SignupFormPage from '../SignupFormPage';
 
 function SignupFormModal() {
