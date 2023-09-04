@@ -6,38 +6,38 @@ SkyBnB is a clone of the popular website Airbnb, a website that provides an inte
 The backend of SkyBnb is built with a PostgreSQL database, while the frontend rendering is done with React.
 
 ## Technology Used
-    Backend:
-    - Javascript
-    - Sequelize
-    - Express
-    -PostgreSQL
+Backend:
+- Javascript
+- Sequelize
+- Express
+-PostgreSQL
 
-    Frontend:
-    - Javascript
-    - React
-    - Redux
-    - CSS
+Frontend:
+- Javascript
+- React
+- Redux
+- CSS
 
 
 ## Set Up & Installation
-    1. Clone the repository
-    2. Run npm install from the root directory
-    3. Open one terminal, and cd into the frontend folder, then run npm install
-    4. Open another terminal, and cd into the backend folder, then run npm install
-    5. Run npx dotenv sequelize-cli db:migrate & npx dotenv sequelize-cli db:seed:all in the backend terminal
-    6. Run npm start in both terminals to start the servers and see the application
+1. Clone the repository
+2. Run npm install from the root directory
+3. Open one terminal, and cd into the frontend folder, then run npm install
+4. Open another terminal, and cd into the backend folder, then run npm install
+5. Run npx dotenv sequelize-cli db:migrate & npx dotenv sequelize-cli db:seed:all in the backend terminal
+6. Run npm start in both terminals to start the servers and see the application
 
 ## Features and Implementation
-    - Spots CRUD Feature (Create, Read, Update, and Delete)
-    - Reviews Feature with Create Read and Delete
-    - Demo User with Login and Logout
+- Spots CRUD Feature (Create, Read, Update, and Delete)
+- Reviews Feature with Create Read and Delete
+- Demo User with Login and Logout
 
 ### Home Page
-    *Dropdown menu is open to show functionality
-![skybnb home page](https://github.com/samanarana/AirBnB/assets/1136360922dab7602-70d1-4e1a-84ec-adff97a506d0)
+*Dropdown menu is open to show functionality
+![skybnb home page](https://github.com/samanarana/AirBnB/assets/113636092/2bdfae85-b8f1-45d2-b3e0-1532adf00d2e)
 
 ### Create a Spot Page
-![Create a spot page](https://github.com/samanarana/AirBnB/assets/1136360920ac97166-3618-49e0-89ff-363e9129d415)
+![Create a spot page](https://github.com/samanarana/AirBnB/assets/113636092/9651f5e4-ff2e-4dfe-95e8-f9846c7f7141)
 
 ### Manage Spots Page
 ![Manage Spots Page](https://github.com/samanarana/AirBnB/assets/113636092/429a197c-e3b9-4476-b24e-c5cbf89170d8)
@@ -46,16 +46,16 @@ The backend of SkyBnb is built with a PostgreSQL database, while the frontend re
 ![Signup Modal](https://github.com/samanarana/AirBnB/assets/113636092/9d704329-94e1-42b6-aec5-b7c7db24e3d8)
 
 ### Spot Details Page
-*waiting to fix reviews to do this one
+![Spot Details Page](https://github.com/samanarana/AirBnB/assets/113636092/effac6aa-9664-4cbc-8463-cb1ad5f7a05f)
 
 ## Future Features
-    - Bookings CRUD Feature
-    - Spot Search
-    - Google Maps Search
-    - Favorites
-    - Messaging
-    - AWS Image Upload
-    - User profiles
+- Bookings CRUD Feature
+- Spot Search
+- Google Maps Search
+- Favorites
+- Messaging
+- AWS Image Upload
+- User profiles
 
 
 ## React Components List
