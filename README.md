@@ -32,25 +32,32 @@ Frontend:
 - Reviews Feature with Create Read and Delete
 - Demo User with Login and Logout
 
+
+
 ### Home Page
 *Dropdown menu is open to show functionality
 ![skybnb home page](https://github.com/samanarana/AirBnB/assets/113636092/2bdfae85-b8f1-45d2-b3e0-1532adf00d2e)
+
 
 
 ### Create a Spot Page
 ![Create a spot page](https://github.com/samanarana/AirBnB/assets/113636092/9651f5e4-ff2e-4dfe-95e8-f9846c7f7141)
 
 
+
 ### Manage Spots Page
 ![Manage Spots Page](https://github.com/samanarana/AirBnB/assets/113636092/429a197c-e3b9-4476-b24e-c5cbf89170d8)
+
 
 
 ### Signup Modal
 ![Signup Modal](https://github.com/samanarana/AirBnB/assets/113636092/9d704329-94e1-42b6-aec5-b7c7db24e3d8)
 
 
+
 ### Spot Details Page
-![Spot Details Page](https://github.com/samanarana/AirBnB/assets/113636092/effac6aa-9664-4cbc-8463-cb1ad5f7a05f)
+![Spot Details Page](https://github.com/samanarana/AirBnB/assets/113636092/f50fb862-1fc6-404e-a243-24ed51b55b95)
+
 
 
 ### User Reviews
