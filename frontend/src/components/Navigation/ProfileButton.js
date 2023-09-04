@@ -61,7 +61,7 @@ function ProfileButton({ user }) {
           <>
             <li>Hello, {user.username}</li>
             <li className="email">{user.email}</li>
-            <li className="manage-spots"><Link to="/manage-spots">Manage Spots</Link></li>
+            <li className="manage-spots"><Link to="/manage-spots" onClick={() => setShowMenu(false)}>Manage Spots</Link></li>
             <li className="logout">
               <button className="dropdown-logout-button" onClick={logout}>Log Out</button>
             </li>

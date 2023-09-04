@@ -19,7 +19,7 @@
 
   .navbar a:hover {
     color: #FF5A5F;
-    transform: scale(1.05);
+    transform: translateY(-4px);
   }
 
   .logo {
@@ -187,6 +187,7 @@
 }
 
 .create-spot-link:hover {
+  color: #276c76 !important;
   font-weight: bold;
   transform: scale(1.1);
 }
