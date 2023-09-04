@@ -1,6 +1,6 @@
 // frontend/src/components/SpotDetails/Reviewlist.js
 
-import { format, parseISO } from 'date-fns';
+import { format, parse as parseDate } from 'date-fns';
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllReviewsThunk, deleteReviewThunk } from '../../store/review';
@@ -16,6 +16,7 @@ function ReviewList ({ spotId, ownerId }) {
     const [avgRating, setAvgRating] = useState(0);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentReviewId, setCurrentReviewId] = useState(null);
+    const [hasPostedReview, setHasPostedReview] = useState(false);
 
     const user = useSelector(state => state.session.user);
     const userId = user ? user.id : null;
@@ -30,6 +31,10 @@ function ReviewList ({ spotId, ownerId }) {
             actualReviews = reviews[0];
         }
 
+        if (actualReviews && userId) {
+            setHasPostedReview(actualReviews.some(review => review.userId === userId));
+        }
+
         if (actualReviews && actualReviews.length > 0) {
             const totalStars = actualReviews.reduce((acc, review) => {
                 return acc + (review.stars || 0);
@@ -40,7 +45,7 @@ function ReviewList ({ spotId, ownerId }) {
         } else {
             setAvgRating(0);
         }
-    }, [reviews]);
+    }, [reviews, userId]);
 
     if(!reviews) {
         return null;
@@ -49,6 +54,8 @@ function ReviewList ({ spotId, ownerId }) {
     const handleDeleteReview = (reviewId) => {
         dispatch(deleteReviewThunk(reviewId));
     };
+
+    const sortedReviews = [...reviews].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return (
         <div className="review-list-container">
@@ -62,7 +69,7 @@ function ReviewList ({ spotId, ownerId }) {
             }
             </div>
 
-            {(userId || userId === 0) && userId !== ownerId && (
+            {(userId || userId === 0) && userId !== ownerId && !hasPostedReview && (
             <button className="post-your-review-button" onClick={() => setIsOpen(true)}>Post Your Review</button>
             )}
 
@@ -79,10 +86,15 @@ function ReviewList ({ spotId, ownerId }) {
                 setIsOpen={setIsDeleteModalOpen}
                 onDelete={() => handleDeleteReview(currentReviewId)}
                 />
-            {reviews.map(review => (
+            {sortedReviews.map(review => (
             <div key={review.id} className="individual-review">
                 <div className="review-author">{review.User?.firstName}</div>
-                <div className="review-date">{format(parseISO(review.createdAt), 'MMMM yyyy')}</div>
+                <div className="review-date">
+                {review.createdAt
+                    ? format(parseDate(review.createdAt, "yyyy-MM-dd HH:mm:ss", new Date()), 'MMMM yyyy')
+                    : 'Invalid date'
+                }
+                </div>
                 <div className="review-content">{review.review}</div>
                 {review.userId === userId && (
                     <button className="button-delete-review" onClick={() => {

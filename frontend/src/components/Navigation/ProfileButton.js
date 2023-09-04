@@ -18,6 +18,10 @@ function ProfileButton({ user }) {
     setShowMenu(true);
   };
 
+  const openDropdownAfterSignup = () => {
+    setShowMenu(true);
+  };
+
   useEffect(() => {
     if (!showMenu) return;
 
@@ -36,6 +40,7 @@ function ProfileButton({ user }) {
     e.preventDefault();
     dispatch(sessionActions.logout());
     history.push('/');
+    setShowMenu(false);
   };
 
   const ulClassName = `profile-dropdown ${user ? 'loggedin' : ''}` + (showMenu ? "" : " hidden");
@@ -43,7 +48,7 @@ function ProfileButton({ user }) {
 
   return (
     <>
-      <button className="profile-button" onClick={openMenu}>
+      <button className="profile-button-new" onClick={openMenu}>
         <div className="hamburger-icon">
         <span></span>
         <span></span>
@@ -51,29 +56,29 @@ function ProfileButton({ user }) {
   </div>
       <i className="fas fa-user-circle" />
       </button>
-      <ul className={ulClassName} ref={ulRef}>
+      <ul className={`${ulClassName} ${user ? 'after-login' : ''}`} ref={ulRef}>
       {user ? (
           <>
             <li>Hello, {user.username}</li>
             <li className="email">{user.email}</li>
             <li className="manage-spots"><Link to="/manage-spots">Manage Spots</Link></li>
             <li className="logout">
-              <button onClick={logout}>Log Out</button>
+              <button className="dropdown-logout-button" onClick={logout}>Log Out</button>
             </li>
           </>
         ) : (
           <>
             <li className="before-login">
               <OpenModalButton
-                buttonText="Log In"
-                modalComponent={<LoginFormModal />}
+                buttonText="Sign Up"
+                modalComponent={<SignupFormModal openDropdownAfterSignup={openDropdownAfterSignup} />}
                 closeDropdown={() => setShowMenu(false)}
               />
             </li>
             <li className="before-login">
               <OpenModalButton
-                buttonText="Sign Up"
-                modalComponent={<SignupFormModal />}
+                buttonText="Log In"
+                modalComponent={<LoginFormModal />}
                 closeDropdown={() => setShowMenu(false)}
               />
             </li>

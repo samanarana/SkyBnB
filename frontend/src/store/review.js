@@ -23,10 +23,10 @@ export const getOneReview = (review) => {
     };
 };
 
-export const createReview = (review) => {
+export const createReview = (updatedReviews) => {
     return {
         type: CREATE_REVIEW,
-        review,
+        updatedReviews,
     };
 };
 
@@ -55,7 +55,7 @@ export const getOneReviewThunk = (reviewId) => async (dispatch) => {
     }
 };
 
-export const createReviewThunk = (reviewData) => async (dispatch) => {
+export const createReviewThunk = (reviewData) => async (dispatch, getState) => {
     try {
     const response = await csrfFetch(`/api/spots/${reviewData.spotId}/reviews`, {
         method: 'POST',
@@ -70,8 +70,11 @@ export const createReviewThunk = (reviewData) => async (dispatch) => {
     console.log("Review Data:", reviewData);
 
     if (response.ok) {
-        const review = await response.json();
-        dispatch(createReview(review));
+        const newReview = await response.json();
+        //newReview.User = { firstName: User.firstName };
+        const currentReviews = getState().review.reviews;
+        const updatedReviews = [newReview, ...currentReviews];
+        dispatch(createReview(updatedReviews));
         return null;
       } else {
         const errorData = await response.json();
@@ -107,7 +110,7 @@ const reviewReducer = (state = initialState, action) => {
         case GET_ALL_REVIEWS:
             return {
                 ...state,
-                reviews: action.reviews,
+                reviews: action.reviews
             };
         case GET_ONE_REVIEW:
             return {
@@ -117,7 +120,7 @@ const reviewReducer = (state = initialState, action) => {
         case CREATE_REVIEW:
             return {
                 ...state,
-                reviews: [...state.reviews, action.review]
+                reviews: action.updatedReviews
             };
         case DELETE_REVIEW:
             return {

@@ -99,6 +99,19 @@ const CreateSpotForm = () => {
         }
         };
 
+      // Condition to check if the button should be disabled
+      const isButtonDisabled = !(
+        country &&
+        address &&
+        city &&
+        state &&
+        description &&
+        title &&
+        price &&
+        previewImage &&
+        description.length >= 30
+      );
+
     return (
         <div>
           <form onSubmit={handleSubmit} className="create-spot-form-page">
@@ -277,7 +290,7 @@ const CreateSpotForm = () => {
 
             <hr></hr>
 
-            <button type="submit" className="submit-spot-button">Create Spot</button>
+            <button type="submit" className="submit-spot-button" disabled={isButtonDisabled}>Create Spot</button>
           </form>
         </div>
       );

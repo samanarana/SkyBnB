@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import * as sessionActions from "../../store/session";
+import { useModal } from "../../context/Modal";
 
 import "./SignupForm.css";
 
-function SignupFormPage() {
+function SignupFormPage({ openDropdownAfterSignup }) {
   const dispatch = useDispatch();
   const sessionUser = useSelector((state) => state.session.user);
   const [email, setEmail] = useState("");
@@ -16,6 +17,8 @@ function SignupFormPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+
+  const { closeModal } = useModal();
 
   if (sessionUser) return <Redirect to="/" />;
 
@@ -38,7 +41,13 @@ function SignupFormPage() {
           lastName,
           password,
         })
-      ).catch(async (res) => {
+      )
+      .then(() => {
+        closeModal();
+        openDropdownAfterSignup();
+      })
+
+      .catch(async (res) => {
         const data = await res.json();
         console.log("Backend returned errors", data);
         if (data && data.errors) {
@@ -52,11 +61,11 @@ function SignupFormPage() {
   };
 
   // Condition to check if the button should be disabled
-  const isButtonDisabled = !email || !username || !firstName || !lastName || !password || !confirmPassword || (password !== confirmPassword);
+  const isButtonDisabled = !email || username.length < 4 || !firstName || !lastName || password.length < 6 || !confirmPassword || (password !== confirmPassword);
 
   return (
     <>
-      <h1>Sign Up</h1>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         {errors.email && <div className="error">{errors.email}</div>}
         {errors.username && <div className="error">{errors.username}</div>}

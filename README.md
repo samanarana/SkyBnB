@@ -1,1 +1,91 @@
-please work
+# SkyBnB
+
+To view the live site for SkyBnB, click here: [SkyBnb Live](https://airbnb-5tj9.onrender.com)
+
+SkyBnB is a clone of the popular website Airbnb, a website that provides an intermediary between those who want to rend out space and those who are looking for space to rent, both short-term and long-term stays.
+The backend of SkyBnb is built with a PostgreSQL database, while the frontend rendering is done with React.
+
+## Technology Used
+    Backend:
+    - Javascript
+    - Sequelize
+    - Express
+    -PostgreSQL
+
+    Frontend:
+    - Javascript
+    - React
+    - Redux
+    - CSS
+
+
+## Set Up & Installation
+    1. Clone the repository
+    2. Run npm install from the root directory
+    3. Open one terminal, and cd into the frontend folder, then run npm install
+    4. Open another terminal, and cd into the backend folder, then run npm install
+    5. Run npx dotenv sequelize-cli db:migrate & npx dotenv sequelize-cli db:seed:all in the backend terminal
+    6. Run npm start in both terminals to start the servers and see the application
+
+## Features and Implementation
+    - Spots CRUD Feature (Create, Read, Update, and Delete)
+    - Reviews Feature with Create Read and Delete
+    - Demo User with Login and Logout
+
+### Home Page
+    *Dropdown menu is open to show functionality
+![skybnb home page](https://github.com/samanarana/AirBnB/assets/1136360922dab7602-70d1-4e1a-84ec-adff97a506d0)
+
+### Create a Spot Page
+![Create a spot page](https://github.com/samanarana/AirBnB/assets/1136360920ac97166-3618-49e0-89ff-363e9129d415)
+
+### Manage Spots Page
+![Manage Spots Page](https://github.com/samanarana/AirBnB/assets/113636092/429a197c-e3b9-4476-b24e-c5cbf89170d8)
+
+### Signup Modal
+![Signup Modal](https://github.com/samanarana/AirBnB/assets/113636092/9d704329-94e1-42b6-aec5-b7c7db24e3d8)
+
+### Spot Details Page
+*waiting to fix reviews to do this one
+
+## Future Features
+    - Bookings CRUD Feature
+    - Spot Search
+    - Google Maps Search
+    - Favorites
+    - Messaging
+    - AWS Image Upload
+    - User profiles
+
+
+## React Components List
+
+| Folder            | Component Name        | Description                                     |
+|-------------------|-----------------------|-------------------------------------------------|
+| `CreateSpotForm`  | `index.js`            | Form for creating spots                         |
+| `LoginFormModal`  | `index.js`            | Modal for login form                            |
+| `LoginFormPage`   | `index.js`            | Full page for login form                        |
+| `ManageSpots`     | `DeleteSpotModal.js`  | Modal for deleting a spot                       |
+|                   | `UpdateSpot.js`       | Component for updating spots                    |
+|                   | `UserSpotTile.js`     | Component for displaying individual user spots  |
+|                   | `UserSpotTileList.js` | List of user spots                              |
+| `Navigation`      | `ProfileButton.js`    | Profile button in the navigation                |
+| `OpenModalButton` | `index.js`            | Button for opening modals                       |
+| `SignupFormModal` | `index.js`            | Modal for signup form                           |
+| `SignupFormPage`  | `index.js`            | Full page for signup form                       |
+| `SpotDetails`     | `DeleteReviewModal.js`| Modal for deleting a review                     |
+|                   | `ReviewList.js`       | List of reviews for a spot                      |
+|                   | `ReviewModal.js`      | Modal for creating/editing a review             |
+| `SpotTileList`    | `SpotTile.js`         | Individual spot tile                            |
+|                   | `SpotTileList.js`     | List of spot tiles                              |
+
+
+
+## Redux Store
+
+The Redux store is composed of the following slices:
+
+- `csrf`: Handles Cross-Site Request Forgery tokens.
+- `session`: Manages user sessions.
+- `spot`: Manages spots data.
+- `review`: Manages reviews for spots.

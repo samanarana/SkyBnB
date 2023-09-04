@@ -34,16 +34,27 @@ function LoginFormPage() {
   };
 
   const fillDemoCredentials = () => {
-    setCredential("Demo-lition");
-    setPassword("password");
-  }
+    const demoCredential = "Demo-lition";
+    const demoPassword = "password";
+
+    dispatch(sessionActions.login({ credential: demoCredential, password: demoPassword }))
+      .then(() => {
+        closeModal();
+      })
+      .catch(
+        async (res) => {
+          const data = await res.json();
+          if (data && data.message) setErrors({credential: data.message});
+        }
+      );
+  };
 
   // Condition to check if the button should be disabled
   const isButtonDisabled = credential.length < 4 || password.length < 6;
 
   return (
     <>
-        <h1>Log In</h1>
+        <h2>Log In</h2>
 
         <form onSubmit={handleSubmit}>
         {errors.credential && <p className="error">The provided credentials were invalid.</p>}

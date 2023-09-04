@@ -2,7 +2,7 @@
 
 h1 {
     text-align: center;
-    font-size: 2em;
+    font-size: 1.5em;
     margin-bottom: 0;
 }
 
@@ -10,8 +10,8 @@ form {
     display: flex;
     flex-direction: column;
     width: 300px;
-    margin: 10px auto;
-    padding: 20px;
+    margin: auto;
+    padding: 15px;
 }
 
 /* Input field styles */
@@ -83,6 +83,7 @@ p {
     text-align: center;
     display: block;
     margin-top: 15px;
+    margin-bottom: 2px;
     background-color: transparent;
     border: none;
     color: rgb(58, 94, 109);

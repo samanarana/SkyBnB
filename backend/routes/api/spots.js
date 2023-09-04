@@ -108,6 +108,19 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
             stars: stars,
         });
 
+        // Find the user's information to get the firstName
+        const user = await User.findByPk(userId, {
+            attributes: ['firstName'],
+        });
+
+        // Get a plain JS representation of the new review
+        let reviewData = newReview.get({ plain: true });
+
+        // Attach the firstName to the reviewData
+        reviewData.User = {
+            firstName: user.firstName
+        };
+
         // Get all reviews related to the spot
         const reviews = await Review.findAll({
             where: { spotId: spot.id }
@@ -121,15 +134,11 @@ router.post('/:spotId/reviews', restoreUser, requireAuth, async (req, res, next)
         const numReviews = reviews.length;
         const avgStarRating = reviews.length ? totalStars / reviews.length : 0;
 
-        console.log('Updating spot...', spotId, numReviews, avgStarRating);
         // Update the spot
         await spot.update({
             numReviews: numReviews,
             avgRating: avgStarRating
         });
-        console.log('Updated spot', spotId);
-
-        let reviewData = newReview.get({ plain: true });
 
         if (reviewData.User) {
             delete reviewData.User.username;
@@ -451,8 +460,11 @@ router.get('/:spotId/reviews', restoreUser, async (req, res, next) => {
         where: {
             spotId: spotId,
         },
-        include: [{ model: User, as: 'User', attributes: ['firstName'] }, { model: ReviewImage, as: 'ReviewImages'}]
+        include: [{ model: User, as: 'User', attributes: ['firstName'] }, { model: ReviewImage, as: 'ReviewImages'}],
+        order: [['createdAt', 'DESC']]
     });
+
+    console.log("Fetched reviews are:", reviews.map(r => ({ id: r.id, createdAt: r.createdAt })));
 
     for (let i in reviews)
     {
