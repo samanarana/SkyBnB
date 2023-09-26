@@ -10,17 +10,24 @@ import './SpotDetails.css';
 import ReviewList from './ReviewList';
 import ReviewModal from './ReviewModal';
 
+import SpotDetailSkeleton from '../Skeletons/SpotDetailSkeleton';
+
 function SpotDetails() {
     const { spotId } = useParams();
     const dispatch = useDispatch();
+
+    const [loading, setLoading] = useState(true);
+
     const spot = useSelector(state => state.spot.spotDetails);
 
     const [avgRating, setAvgRating] = useState(0);
     const reviews = useSelector(state => state.review.reviews);
 
     useEffect(() => {
-        dispatch(spotDetailsThunk(spotId));
-        dispatch(getAllReviewsThunk(spotId));
+        setLoading(true);
+        dispatch(spotDetailsThunk(spotId))
+        dispatch(getAllReviewsThunk(spotId))
+        .then(() => setLoading(false))
     }, [dispatch, spotId]);
 
     useEffect(() => {
@@ -35,6 +42,10 @@ function SpotDetails() {
             setAvgRating(0);
         }
     }, [reviews]);
+
+    if (loading) {
+        return <SpotDetailSkeleton />;
+    }
 
     if(!spot) {
         return null;

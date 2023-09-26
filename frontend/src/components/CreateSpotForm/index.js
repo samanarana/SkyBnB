@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSpotThunk } from '../../store/spot';
 import './CreateSpotForm.css';
 
+import CreateSpotSkeleton from '../Skeletons/CreateSpotSkeleton';
 
 const CreateSpotForm = () => {
     const dispatch = useDispatch();
@@ -27,10 +28,13 @@ const CreateSpotForm = () => {
     const [image3, setImage3] = useState('');
     const [image4, setImage4] = useState('');
 
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const user = useSelector(state => state.session.user);
 
     const handleSubmit = async (e) => {
+      setIsLoading(true);
       e.preventDefault();
       const formErrors = {};
 
@@ -90,7 +94,7 @@ const CreateSpotForm = () => {
 
         const newSpot = await dispatch(createSpotThunk(spotData));
 
-        console.log("newSpot after dispatch:", newSpot);
+        setIsLoading(false);
 
         if (newSpot.errors) {
           setErrors(newSpot.errors);
@@ -114,6 +118,9 @@ const CreateSpotForm = () => {
 
     return (
         <div>
+            {isLoading ? (
+              <CreateSpotSkeleton />
+            ) : (
           <form onSubmit={handleSubmit} className="create-spot-form-page">
           <h1 className="create-spot-heading">Create a New Spot</h1>
             {/* Validation Errors */}
@@ -292,8 +299,9 @@ const CreateSpotForm = () => {
 
             <button type="submit" className="submit-spot-button" disabled={isButtonDisabled}>Create Spot</button>
           </form>
+          )}
         </div>
-      );
+    );
     };
 
     export default CreateSpotForm;
